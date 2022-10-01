@@ -1,0 +1,10 @@
+app/build/*
+.idea/
+.gradle/
+.project
+.settings/
+app/.classpath
+app/.project
+app/.settings/
+
+google-services.json
