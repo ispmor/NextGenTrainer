@@ -1,5 +1,8 @@
 plugins {
     id "org.sonarqube" version "3.4.0.2513"
+
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 apply plugin: 'com.android.application'
@@ -16,7 +19,7 @@ android {
 
 
     defaultConfig {
-        applicationId "pl.koain.personal.trainer"
+        applicationId "com.nextgentrainer"
         minSdk 24
         multiDexEnabled true
         targetSdkVersion 31
@@ -24,7 +27,7 @@ android {
         versionCode 11
         versionName "1.11"
         vectorDrawables.useSupportLibrary = true
-        setProperty("archivesBaseName", "personal-trainer")
+        setProperty("archivesBaseName", "NextGenTrainer")
     }
     buildTypes {
         proguard {
@@ -51,7 +54,7 @@ android {
     androidResources {
         noCompress 'tflite'
     }
-    namespace 'pl.koain.sports.maestry.demo'
+    namespace 'com.nextgentrainer'
 
     // Do NOT compress tflite model files (need to call out to developers!)
 }
@@ -113,7 +116,8 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.guava:guava:27.1-android'
-    implementation 'com.google.firebase:firebase-auth:21.0.6'
+    implementation platform('com.google.firebase:firebase-bom:30.4.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // For how to setup gradle dependencies in Android X, see:
     // https://developer.android.com/training/testing/set-up-project#gradle-dependencies

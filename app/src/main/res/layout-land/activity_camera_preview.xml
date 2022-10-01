@@ -21,7 +21,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toStartOf="@+id/control"/>
 
-  <pl.koain.sports.maestry.demo.GraphicOverlay
+  <com.nextgentrainer.GraphicOverlay
       android:id="@+id/graphic_overlay"
       android:layout_width="0dp"
       android:layout_height="match_parent"
