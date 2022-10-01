@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">SELF-TRAINER POC</string>
+    <string name="app_name" translatable="false">NextGenTrainer</string>
     <string name="java_entry_title" translatable="false">Start!</string>
     <string name="log" translatable="false">Fit Log</string>
     <string name="rep_counter" translatable="false">Rep Counter</string>

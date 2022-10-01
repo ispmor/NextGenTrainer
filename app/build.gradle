@@ -3,6 +3,7 @@ plugins {
 
     id 'com.android.application'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.appdistribution'
 }
 
 apply plugin: 'com.android.application'
@@ -43,6 +44,10 @@ android {
         debug {
             minifyEnabled false
             proguardFiles 'proguard-rules.pro'
+            firebaseAppDistribution {
+                //releaseNotesFile="/path/to/releasenotes.txt"
+                groups="QA"
+            }
         }
         testBuildType "debug"
     }
