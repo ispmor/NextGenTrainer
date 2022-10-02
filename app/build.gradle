@@ -4,6 +4,8 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
+    id("org.jlleitschuh.gradle.ktlint") version("10.2.1")
+    id("io.gitlab.arturbosch.detekt") version("1.19.0")
 }
 
 apply plugin: 'com.android.application'
@@ -21,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId "com.nextgentrainer"
-        minSdk 24
+        minSdk 26
         multiDexEnabled true
         targetSdkVersion 31
 
