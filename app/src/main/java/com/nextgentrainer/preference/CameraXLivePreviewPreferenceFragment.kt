@@ -73,7 +73,7 @@ class CameraXLivePreviewPreferenceFragment : LivePreviewPreferenceFragment() {
                 context: Context, lensFacing: Int): CameraCharacteristics? {
             val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
             try {
-                val cameraList = Arrays.asList(*cameraManager.cameraIdList)
+                val cameraList = listOf(*cameraManager.cameraIdList)
                 for (availableCameraId in cameraList) {
                     val availableCameraCharacteristics = cameraManager.getCameraCharacteristics(availableCameraId!!)
                     val availableLensFacing = availableCameraCharacteristics.get(CameraCharacteristics.LENS_FACING)

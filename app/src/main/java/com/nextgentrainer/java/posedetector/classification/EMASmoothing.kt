@@ -4,7 +4,9 @@ import android.os.SystemClock
 import java.util.*
 import java.util.concurrent.LinkedBlockingDeque
 
-class EMASmoothing @JvmOverloads constructor(private val windowSize: Int = DEFAULT_WINDOW_SIZE, private val alpha: Float = DEFAULT_ALPHA) {
+class EMASmoothing @JvmOverloads constructor(
+        private val windowSize: Int = DEFAULT_WINDOW_SIZE,
+        private val alpha: Float = DEFAULT_ALPHA) {
     private val window: Deque<ClassificationResult?>
     private var lastInputMs: Long = 0
 

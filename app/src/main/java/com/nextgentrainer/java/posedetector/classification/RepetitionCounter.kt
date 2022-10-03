@@ -5,7 +5,10 @@ import android.util.Log
 /**
  * Counts reps for the give class.
  */
-class RepetitionCounter @JvmOverloads constructor(val className: String, private val enterThreshold: Float = DEFAULT_ENTER_THRESHOLD, private val exitThreshold: Float = DEFAULT_EXIT_THRESHOLD) {
+class RepetitionCounter @JvmOverloads
+constructor(val className: String,
+            private val enterThreshold: Float = DEFAULT_ENTER_THRESHOLD,
+            private val exitThreshold: Float = DEFAULT_EXIT_THRESHOLD) {
     var numRepeats = 0
         private set
     private var poseEntered = false
@@ -47,7 +50,8 @@ class RepetitionCounter @JvmOverloads constructor(val className: String, private
     }
 
     companion object {
-        // These thresholds can be tuned in conjunction with the Top K values in {@link PoseClassifier}.
+        // These thresholds can be tuned in conjunction with the Top K values in
+        // {@link PoseClassifier}.
         // The default Top K value is 10 so the range here is [0-10].
         private const val DEFAULT_ENTER_THRESHOLD = 6f
         private const val DEFAULT_EXIT_THRESHOLD = 4f

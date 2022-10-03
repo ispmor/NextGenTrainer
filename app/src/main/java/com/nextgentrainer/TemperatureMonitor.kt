@@ -45,7 +45,7 @@ class TemperatureMonitor(context: Context) : SensorEventListener {
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
     override fun onSensorChanged(sensorEvent: SensorEvent) {
         sensorReadingsCelsius[sensorEvent.sensor.name] = sensorEvent.values[0]
     }

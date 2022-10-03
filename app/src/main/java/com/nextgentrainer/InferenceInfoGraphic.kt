@@ -14,28 +14,21 @@ class InferenceInfoGraphic(
         private val detectorLatency: Long,
         // Only valid when a stream of input images is being processed. Null for single image mode.
         private val framesPerSecond: Int?) : Graphic(overlay) {
-    private val textPaint: Paint
+    private val textPaint: Paint = Paint()
     private var showLatencyInfo = true
 
     init {
-        textPaint = Paint()
         textPaint.color = TEXT_COLOR
         textPaint.textSize = TEXT_SIZE
-        textPaint.setShadowLayer(5.0f, 0f, 0f, Color.BLACK)
+        textPaint.setShadowLayer(RADIUS_SIZE, ZERO_F, ZERO_F, Color.BLACK)
         postInvalidate()
     }
 
-    /**
-     * Creates an [InferenceInfoGraphic] to only display image size.
-     */
-    constructor(overlay: GraphicOverlay) : this(overlay, 0, 0, null) {
-        showLatencyInfo = false
-    }
 
     @Synchronized
     override fun draw(canvas: Canvas) {
-        val x = TEXT_SIZE * 0.5f
-        val y = TEXT_SIZE * 1.5f
+        val x = TEXT_SIZE * HALF
+        val y = TEXT_SIZE * ONE_AND_A_HALF
         canvas.drawText(
                 "InputImage size: " + overlay.imageHeight + "x" + overlay.imageWidth,
                 x,
@@ -55,11 +48,16 @@ class InferenceInfoGraphic(
             canvas.drawText("Frame latency: $frameLatency ms", x, y + TEXT_SIZE, textPaint)
         }
         canvas.drawText(
-                "Detector latency: $detectorLatency ms", x, y + TEXT_SIZE * 2, textPaint)
+                "Detector latency: $detectorLatency ms", x, y + TEXT_SIZE * DOUBLE, textPaint)
     }
 
     companion object {
         private const val TEXT_COLOR = Color.WHITE
         private const val TEXT_SIZE = 60.0f
+        private const val RADIUS_SIZE = 5.0f
+        private const val ZERO_F = 0.0f
+        private const val HALF = 0.5f
+        private const val DOUBLE = 2
+        private const val ONE_AND_A_HALF = 1.5F
     }
 }

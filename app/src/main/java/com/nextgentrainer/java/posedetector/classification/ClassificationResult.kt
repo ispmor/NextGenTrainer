@@ -29,7 +29,9 @@ class ClassificationResult {
                 .key
 
     fun incrementClassConfidence(className: String?) {
-        classConfidences[className] = if (classConfidences.containsKey(className)) classConfidences[className]!! + 1F else 0F
+        classConfidences[className] =
+                if (classConfidences.containsKey(className))
+                    classConfidences[className]!! + 1F else 0F
     }
 
     fun putClassConfidence(className: String?, confidence: Float) {

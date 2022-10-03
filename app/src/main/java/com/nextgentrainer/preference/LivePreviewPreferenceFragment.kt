@@ -74,7 +74,8 @@ open class LivePreviewPreferenceFragment : PreferenceFragment() {
             } else {
                 previewSizePreference.summary = previewSizePreference.entry
             }
-            previewSizePreference.onPreferenceChangeListener = OnPreferenceChangeListener { preference: Preference?, newValue: Any ->
+            previewSizePreference.onPreferenceChangeListener = OnPreferenceChangeListener {
+                preference: Preference?, newValue: Any ->
                 val newPreviewSizeStringValue = newValue as String
                 previewSizePreference.summary = newPreviewSizeStringValue
                 PreferenceUtils.saveString(
