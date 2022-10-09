@@ -2,10 +2,8 @@ package com.nextgentrainer.java.utils
 
 import android.content.Context
 import android.net.Uri
-import android.provider.Settings.Global.getString
 import androidx.appcompat.app.AppCompatActivity
 import com.nextgentrainer.R
-import com.nextgentrainer.java.CameraActivity
 import com.nextgentrainer.java.posedetector.ExerciseProcessor
 import com.nextgentrainer.java.utils.Constants.PULL_UPS_TRAINER
 import com.nextgentrainer.java.utils.Constants.PUSH_UPS_TRAINER
@@ -14,7 +12,6 @@ import com.nextgentrainer.java.utils.Constants.SIT_UPS_TRAINER
 import com.nextgentrainer.java.utils.Constants.SQUATS_TRAINER
 import com.nextgentrainer.preference.PreferenceUtils
 import java.io.FileOutputStream
-import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 object CameraActivityHelper {
@@ -27,48 +24,58 @@ object CameraActivityHelper {
                 ExerciseProcessor(
                     context,
                     poseDetectorOptions,
-                    true,  /* isStreamMode = */
+                    true, /* isStreamMode = */
                     true,
-                    "all")
+                    "all"
+                )
             }
             PUSH_UPS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "pushups")
+                "pushups"
+            )
             PULL_UPS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "pullups")
+                "pullups"
+            )
             SIT_UPS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "situps")
+                "situps"
+            )
             SQUATS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "squats")
+                "squats"
+            )
             else -> throw IllegalStateException("Invalid model name")
         }
     }
 
     fun saveDataToFileInExternalStorage(data: String?, uri: Uri?, context: Context) {
-            context.contentResolver.openFileDescriptor(uri!!, "w").use {
-                    csv -> FileOutputStream(csv!!.fileDescriptor).use {
-                    fileOutputStream -> fileOutputStream.write(data!!.toByteArray(
-                StandardCharsets.UTF_8)) } }
+        context.contentResolver.openFileDescriptor(uri!!, "w").use { csv ->
+            FileOutputStream(csv!!.fileDescriptor).use { fileOutputStream ->
+                fileOutputStream.write(
+                    data!!.toByteArray(
+                        StandardCharsets.UTF_8
+                    )
+                )
+            }
+        }
     }
 
     fun saveDataToCache(data: String?, uri: String = "", context: Context) {
         val finalCacheFileName = if (uri == "") context.getString(R.string.cache_filename) else uri
-            context.openFileOutput(finalCacheFileName, AppCompatActivity.MODE_APPEND).use {
-                    fos -> fos.write(data!!.toByteArray(StandardCharsets.UTF_8)) }
+        context.openFileOutput(finalCacheFileName, AppCompatActivity.MODE_APPEND)
+            .use { fos -> fos.write(data!!.toByteArray(StandardCharsets.UTF_8)) }
     }
 }
