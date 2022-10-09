@@ -176,7 +176,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 camera!!.setPreviewTexture(null)
                 dummySurfaceTexture = null
                 camera!!.setPreviewDisplay(null)
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "Failed to clear camera preview: $e")
             }
             camera!!.release()

@@ -43,6 +43,7 @@ object PreferenceUtils {
             previewSizePrefKey = context.getString(R.string.pref_key_front_camera_preview_size)
             pictureSizePrefKey = context.getString(R.string.pref_key_front_camera_picture_size)
         }
+
         return try {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             SizePair(
@@ -74,114 +75,23 @@ object PreferenceUtils {
         return sharedPreferences.getBoolean(prefKey, false)
     }
 
-    fun getObjectDetectorOptionsForStillImage(context: Context): ObjectDetectorOptions {
-        return getObjectDetectorOptions(
-                context,
-                R.string.pref_key_still_image_object_detector_enable_multiple_objects,
-                R.string.pref_key_still_image_object_detector_enable_classification,
-                ObjectDetectorOptions.SINGLE_IMAGE_MODE)
-    }
-
-    fun getObjectDetectorOptionsForLivePreview(context: Context): ObjectDetectorOptions {
-        return getObjectDetectorOptions(
-                context,
-                R.string.pref_key_live_preview_object_detector_enable_multiple_objects,
-                R.string.pref_key_live_preview_object_detector_enable_classification,
-                ObjectDetectorOptions.STREAM_MODE)
-    }
-
-    private fun getObjectDetectorOptions(
-            context: Context,
-            @StringRes prefKeyForMultipleObjects: Int,
-            @StringRes prefKeyForClassification: Int,
-            @ObjectDetectorOptionsBase.DetectorMode mode: Int): ObjectDetectorOptions {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val enableMultipleObjects = sharedPreferences.getBoolean(context.getString(prefKeyForMultipleObjects), false)
-        val enableClassification = sharedPreferences.getBoolean(context.getString(prefKeyForClassification), true)
-        val builder = ObjectDetectorOptions.Builder().setDetectorMode(mode)
-        if (enableMultipleObjects) {
-            builder.enableMultipleObjects()
-        }
-        if (enableClassification) {
-            builder.enableClassification()
-        }
-        return builder.build()
-    }
-
-    fun getCustomObjectDetectorOptionsForStillImage(
-            context: Context, localModel: LocalModel): CustomObjectDetectorOptions {
-        return getCustomObjectDetectorOptions(
-                context,
-                localModel,
-                R.string.pref_key_still_image_object_detector_enable_multiple_objects,
-                R.string.pref_key_still_image_object_detector_enable_classification,
-                CustomObjectDetectorOptions.SINGLE_IMAGE_MODE)
-    }
-
-    fun getCustomObjectDetectorOptionsForLivePreview(
-            context: Context, localModel: LocalModel): CustomObjectDetectorOptions {
-        return getCustomObjectDetectorOptions(
-                context,
-                localModel,
-                R.string.pref_key_live_preview_object_detector_enable_multiple_objects,
-                R.string.pref_key_live_preview_object_detector_enable_classification,
-                CustomObjectDetectorOptions.STREAM_MODE)
-    }
-
-    private fun getCustomObjectDetectorOptions(
-            context: Context,
-            localModel: LocalModel,
-            @StringRes prefKeyForMultipleObjects: Int,
-            @StringRes prefKeyForClassification: Int,
-            @ObjectDetectorOptionsBase.DetectorMode mode: Int): CustomObjectDetectorOptions {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val enableMultipleObjects = sharedPreferences.getBoolean(context.getString(prefKeyForMultipleObjects), false)
-        val enableClassification = sharedPreferences.getBoolean(context.getString(prefKeyForClassification), true)
-        val builder = CustomObjectDetectorOptions.Builder(localModel).setDetectorMode(mode)
-        if (enableMultipleObjects) {
-            builder.enableMultipleObjects()
-        }
-        if (enableClassification) {
-            builder.enableClassification().setMaxPerObjectLabelCount(1)
-        }
-        return builder.build()
-    }
-
-    fun getFaceDetectorOptions(context: Context): FaceDetectorOptions {
-        val landmarkMode = getModeTypePreferenceValue(
-                context,
-                R.string.pref_key_live_preview_face_detection_landmark_mode,
-                FaceDetectorOptions.LANDMARK_MODE_NONE)
-        val contourMode = getModeTypePreferenceValue(
-                context,
-                R.string.pref_key_live_preview_face_detection_contour_mode,
-                FaceDetectorOptions.CONTOUR_MODE_ALL)
-        val classificationMode = getModeTypePreferenceValue(
-                context,
-                R.string.pref_key_live_preview_face_detection_classification_mode,
-                FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
-        val performanceMode = getModeTypePreferenceValue(
-                context,
-                R.string.pref_key_live_preview_face_detection_performance_mode,
-                FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val enableFaceTracking = sharedPreferences.getBoolean(
-                context.getString(R.string.pref_key_live_preview_face_detection_face_tracking), false)
-        val minFaceSize =
-                sharedPreferences.getString(
-                        context.getString(R.string.pref_key_live_preview_face_detection_min_face_size),
-                        "0.1")!!.toFloat()
-        val optionsBuilder = FaceDetectorOptions.Builder()
-                .setLandmarkMode(landmarkMode)
-                .setContourMode(contourMode)
-                .setClassificationMode(classificationMode)
-                .setPerformanceMode(performanceMode)
-                .setMinFaceSize(minFaceSize)
-        if (enableFaceTracking) {
-            optionsBuilder.enableTracking()
-        }
-        return optionsBuilder.build()
-    }
+//    private fun getObjectDetectorOptions(
+//            context: Context,
+//            @StringRes prefKeyForMultipleObjects: Int,
+//            @StringRes prefKeyForClassification: Int,
+//            @ObjectDetectorOptionsBase.DetectorMode mode: Int): ObjectDetectorOptions {
+//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+//        val enableMultipleObjects = sharedPreferences.getBoolean(context.getString(prefKeyForMultipleObjects), false)
+//        val enableClassification = sharedPreferences.getBoolean(context.getString(prefKeyForClassification), true)
+//        val builder = ObjectDetectorOptions.Builder().setDetectorMode(mode)
+//        if (enableMultipleObjects) {
+//            builder.enableMultipleObjects()
+//        }
+//        if (enableClassification) {
+//            builder.enableClassification()
+//        }
+//        return builder.build()
+//    }
 
     fun getPoseDetectorOptionsForLivePreview(context: Context): PoseDetectorOptionsBase {
         val performanceMode = getModeTypePreferenceValue(
@@ -205,87 +115,12 @@ object PreferenceUtils {
         }
     }
 
-    fun getPoseDetectorOptionsForStillImage(context: Context): PoseDetectorOptionsBase {
-        val performanceMode = getModeTypePreferenceValue(
-                context,
-                R.string.pref_key_still_image_pose_detection_performance_mode,
-                POSE_DETECTOR_PERFORMANCE_MODE_FAST)
-        val preferGPU = preferGPUForPoseDetection(context)
-        return if (performanceMode == POSE_DETECTOR_PERFORMANCE_MODE_FAST) {
-            val builder = PoseDetectorOptions.Builder().setDetectorMode(PoseDetectorOptions.SINGLE_IMAGE_MODE)
-            if (preferGPU) {
-                builder.setPreferredHardwareConfigs(PoseDetectorOptions.CPU_GPU)
-            }
-            builder.build()
-        } else {
-            val builder = AccuratePoseDetectorOptions.Builder()
-                    .setDetectorMode(AccuratePoseDetectorOptions.SINGLE_IMAGE_MODE)
-            if (preferGPU) {
-                builder.setPreferredHardwareConfigs(AccuratePoseDetectorOptions.CPU_GPU)
-            }
-            builder.build()
-        }
-    }
-
-    fun shouldGroupRecognizedTextInBlocks(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_group_recognized_text_in_blocks)
-        return sharedPreferences.getBoolean(prefKey, false)
-    }
-
-    fun showLanguageTag(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_show_language_tag)
-        return sharedPreferences.getBoolean(prefKey, false)
-    }
-
     fun preferGPUForPoseDetection(context: Context): Boolean {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val prefKey = context.getString(R.string.pref_key_pose_detector_prefer_gpu)
         return sharedPreferences.getBoolean(prefKey, true)
     }
 
-    fun shouldShowPoseDetectionInFrameLikelihoodLivePreview(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_live_preview_pose_detector_show_in_frame_likelihood)
-        return sharedPreferences.getBoolean(prefKey, true)
-    }
-
-    fun shouldShowPoseDetectionInFrameLikelihoodStillImage(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_still_image_pose_detector_show_in_frame_likelihood)
-        return sharedPreferences.getBoolean(prefKey, true)
-    }
-
-    fun shouldPoseDetectionVisualizeZ(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_pose_detector_visualize_z)
-        return sharedPreferences.getBoolean(prefKey, true)
-    }
-
-    fun shouldPoseDetectionRescaleZForVisualization(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_pose_detector_rescale_z)
-        return sharedPreferences.getBoolean(prefKey, true)
-    }
-
-    fun shouldPoseDetectionRunClassification(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_pose_detector_run_classification)
-        return sharedPreferences.getBoolean(prefKey, true)
-    }
-
-    fun shouldSegmentationEnableRawSizeMask(context: Context): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val prefKey = context.getString(R.string.pref_key_segmentation_raw_size_mask)
-        return sharedPreferences.getBoolean(prefKey, false)
-    }
-
-    /**
-     * Mode type preference is backed by [android.preference.ListPreference] which only support
-     * storing its entry value as string type, so we need to retrieve as string and then convert to
-     * integer.
-     */
     private fun getModeTypePreferenceValue(
             context: Context, @StringRes prefKeyResId: Int, defaultValue: Int): Int {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)

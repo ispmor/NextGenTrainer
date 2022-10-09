@@ -91,7 +91,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         pieChart.description = description
         pieChart.data = data
         //pieChart.setDrawEntryLabels(true);
-        pieChart.centerText = String.format("Total: %d", summedReps, Locale.getDefault())
+        pieChart.centerText = String.format( Locale.getDefault(), "Total: %d", summedReps)
         //pieChart.setHoleRadius(75);
         pieChart.setTouchEnabled(true)
         pieChart.animateX(MILLIS_1000)
@@ -103,8 +103,8 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         var whatShouldBeSessionSize = 0
         var setsAppearedSoFarForExercise: MutableMap<String?, MutableList<ExerciseSet>> = HashMap()
         val allSessions: MutableList<Map<String?, MutableList<ExerciseSet>>> = ArrayList()
-        try {
-            context.openFileInput(cacheFilename).use { inputStreamFromFile ->
+
+        context.openFileInput(cacheFilename).use { inputStreamFromFile ->
                 InputStreamReader(inputStreamFromFile, StandardCharsets.UTF_8).use { reader ->
                     whatShouldBeSessionSize++
                     val gson = GsonBuilder().create()
@@ -112,7 +112,6 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
                     var lastTimestamp: Date? = null
                     while (jsonStreamParserToObject.hasNext()) {
                         val singleJsonElement = jsonStreamParserToObject.next()
-                        if (singleJsonElement.isJsonObject) {
                             val loadedRepetition = gson.fromJson(
                                     singleJsonElement, Repetition::class.java
                             )
@@ -128,18 +127,13 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
                                     setsAppearedSoFarForExercise, loadedRepetition
                             )
                             addRepetitionToCounterAndFavourites(loadedRepetition)
-                        }
+
                     }
                     if (allSessions.isEmpty() || allSessions.size != whatShouldBeSessionSize) {
                         allSessions.add(setsAppearedSoFarForExercise)
                     }
                 }
             }
-        } catch (e: Exception) {
-            Log.d(TAG, e.message!!)
-            e.printStackTrace()
-            return ArrayList()
-        }
         return allSessions
     }
 

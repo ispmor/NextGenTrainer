@@ -95,11 +95,14 @@ class ExerciseProcessor(
             graphicOverlay: GraphicOverlay) {
         val oldClassificationResults: MutableList<String> = ArrayList()
         if (poseWithClassification.classificationResult?.repetitionCounter != null) {
-            oldClassificationResults.add(poseWithClassification.classificationResult.poseName + " " + poseWithClassification.classificationResult.repetitionCounter.numRepeats)
+            oldClassificationResults.add(poseWithClassification.classificationResult.poseName + " "
+                    + poseWithClassification.classificationResult.repetitionCounter.numRepeats)
         } else {
-            oldClassificationResults.add(poseWithClassification.classificationResult?.poseName + "No repetitions.")
+            oldClassificationResults.add(poseWithClassification.classificationResult?.poseName +
+                    "No repetitions.")
         }
-        oldClassificationResults.add(poseWithClassification.classificationResult?.confidence.toString())
+        oldClassificationResults.add(poseWithClassification.classificationResult?.confidence
+            .toString())
         graphicOverlay.add(
                 CustomPoseGraphics(
                         graphicOverlay,
@@ -107,23 +110,13 @@ class ExerciseProcessor(
                         oldClassificationResults,
                         poseWithClassification.classificationResult))
         if (poseWithClassification.classificationResult?.repetitionCounter != null) {
-            graphicOverlay.add(QualityGraphics(graphicOverlay, poseWithClassification.classificationResult))
+            graphicOverlay.add(QualityGraphics(graphicOverlay,
+                poseWithClassification.classificationResult))
             lastQualifiedRepetition = poseWithClassification.classificationResult
-
-//            String repsNumber = String.valueOf(poseWithClassification.classificationResult.getRepetitionCounter().getNumRepeats());
-//
-//            try {
-//                int repsNumberAsInt = Integer.parseInt(repsNumber);
-//                if (repsNumberAsInt != 0) {
-//                    //graphicOverlay.add(new QualityScaleGraphics(graphicOverlay, repsNumberAsInt));
-//                }
-//            } catch (Exception e) {
-//                Log.d(TAG, "Failed to draw scale...", e);
-//            }
         } else {
-//            graphicOverlay.add(new QualityScaleGraphics(graphicOverlay));
             if (lastQualifiedRepetition != null) {
-                graphicOverlay.add(QualityGraphics(graphicOverlay, poseWithClassification.classificationResult))
+                graphicOverlay.add(QualityGraphics(graphicOverlay,
+                    poseWithClassification.classificationResult))
             }
         }
     }

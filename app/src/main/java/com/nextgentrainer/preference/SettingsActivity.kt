@@ -28,16 +28,13 @@ class SettingsActivity : AppCompatActivity() {
         val launchSource = intent.getSerializableExtra(EXTRA_LAUNCH_SOURCE) as LaunchSource?
         val actionBar = supportActionBar
         actionBar?.setTitle(launchSource!!.titleResId)
-        try {
             fragmentManager
                     .beginTransaction()
                     .replace(
                             R.id.settings_container,
                             launchSource!!.prefFragmentClass.getDeclaredConstructor().newInstance())
                     .commit()
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
+
     }
 
     companion object {

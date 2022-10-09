@@ -21,12 +21,12 @@ class QualityGraphics(overlay: GraphicOverlay,
     override fun draw(canvas: Canvas) {
         val repsNumber = repetition?.repetitionCounter?.numRepeats.toString()
         repetition?.quality?.let {
-            String.format("QUALITY: %s", it.quality, Locale.getDefault()) }?.let {
+            String.format(Locale.getDefault(), "QUALITY: %s", it.quality) }!!.let {
             canvas.drawText(it, ZER0_F, canvas.height / QUARTER, whitePaint)
             }
         whitePaint.textSize = BIG_TEXT
         canvas.drawText(
-                String.format("%s", repsNumber, Locale.getDefault()),
+                String.format(Locale.getDefault(), "%s", repsNumber),
                 canvas.width / HALF_2F,
                 canvas.height / HALF_2F,
                 whitePaint
@@ -38,8 +38,8 @@ class QualityGraphics(overlay: GraphicOverlay,
         var qualityLocationY = QUALITY_STARTING_LOCATION
         repetition?.quality?.qualityFeatures!!.forEach {
             canvas.drawText(
-                    String.format(
-                            "%s: %s", it.name, it.isValid, Locale.getDefault()
+                    String.format( Locale.getDefault(),
+                            "%s: %s", it.name, it.isValid
                     ),
                     ZER0_F,
                     qualityLocationY,

@@ -33,6 +33,16 @@ import com.nextgentrainer.R
 import com.nextgentrainer.VisionImageProcessor
 import com.nextgentrainer.java.posedetector.ExerciseProcessor
 import com.nextgentrainer.java.posedetector.classification.RepetitionCounter
+import com.nextgentrainer.java.utils.CameraActivityHelper.saveDataToCache
+import com.nextgentrainer.java.utils.CameraActivityHelper.saveDataToFileInExternalStorage
+import com.nextgentrainer.java.utils.CameraActivityHelper.selectModel
+import com.nextgentrainer.java.utils.Constants.CREATE_FILE
+import com.nextgentrainer.java.utils.Constants.PULL_UPS_TRAINER
+import com.nextgentrainer.java.utils.Constants.PUSH_UPS_TRAINER
+import com.nextgentrainer.java.utils.Constants.REP_COUNTER
+import com.nextgentrainer.java.utils.Constants.SIT_UPS_TRAINER
+import com.nextgentrainer.java.utils.Constants.SQUATS_TRAINER
+import com.nextgentrainer.java.utils.Constants.STATE_SELECTED_MODEL
 import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
@@ -118,7 +128,7 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             countersAsString = counters!!.stream().map {
                 obj: RepetitionCounter? -> obj.toString()
             }.collect(Collectors.joining("\n"))
-            saveDataToCache(countersAsString)
+            saveDataToCache(countersAsString, "",this)
             createCSVDocumentPicker()
         }
     }
@@ -229,46 +239,7 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
                 cameraSelector!!, previewUseCase)
     }
 
-    fun selectModel(selectedModel: String): ExerciseProcessor {
-        return when (selectedModel) {
-            REP_COUNTER -> {
-                val poseDetectorOptions =
-                        PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
 
-                ExerciseProcessor(
-                        this,
-                        poseDetectorOptions,
-                        true,  /* isStreamMode = */
-                        true,
-                        "all")
-            }
-            PUSH_UPS_TRAINER -> ExerciseProcessor(
-                    this,
-                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                    true,
-                    true,
-                    "pushups")
-            PULL_UPS_TRAINER -> ExerciseProcessor(
-                    this,
-                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                    true,
-                    true,
-                    "pullups")
-            SIT_UPS_TRAINER -> ExerciseProcessor(
-                    this,
-                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                    true,
-                    true,
-                    "situps")
-            SQUATS_TRAINER -> ExerciseProcessor(
-                    this,
-                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                    true,
-                    true,
-                    "squats")
-            else -> throw IllegalStateException("Invalid model name")
-        }
-    }
 
     private fun bindAnalysisUseCase() {
         if (cameraProvider == null) {
@@ -281,7 +252,7 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             imageProcessor!!.stop()
         }
 
-        imageProcessor = selectModel(selectedModel)
+        imageProcessor = selectModel(selectedModel, this)
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
@@ -290,8 +261,10 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
         }
         analysisUseCase = builder.build()
         needUpdateGraphicOverlayImageSourceInfo = true
-        analysisUseCase!!.setAnalyzer( // imageProcessor.processImageProxy will use another thread to run the detection underneath,
-                // thus we can just runs the analyzer itself on main thread.
+        analysisUseCase!!.setAnalyzer(
+            //imageProcessor.processImageProxy will use another thread to run the
+            // detection underneath,
+            // thus we can just runs the analyzer itself on main thread.
                 ContextCompat.getMainExecutor(this)
         ) { imageProxy: ImageProxy ->
             if (needUpdateGraphicOverlayImageSourceInfo) {
@@ -323,37 +296,16 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             val uri: Uri?
             if (data != null) {
                 uri = data.data
-                saveDataToFileInExternalStorage(countersAsString, uri)
+                saveDataToFileInExternalStorage(countersAsString, uri, this)
             }
         }
     }
 
-    @JvmOverloads
-    fun saveDataToCache(data: String?, uri: String = "") {
-        val finalCacheFileName = if (uri == "") getString(R.string.cache_filename) else uri
-        try {
-            openFileOutput(finalCacheFileName, MODE_APPEND).use { fos -> fos.write(data!!.toByteArray(StandardCharsets.UTF_8)) }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
 
-    fun saveDataToFileInExternalStorage(data: String?, uri: Uri?) {
-        try {
-            contentResolver.openFileDescriptor(uri!!, "w").use { csv -> FileOutputStream(csv!!.fileDescriptor).use { fileOutputStream -> fileOutputStream.write(data!!.toByteArray(StandardCharsets.UTF_8)) } }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
+
+
 
     companion object {
-        private const val CREATE_FILE = 1
         private const val TAG = "CameraActivity"
-        private const val REP_COUNTER = "Repetition Counter"
-        private const val PUSH_UPS_TRAINER = "Push-ups Trainer"
-        private const val SIT_UPS_TRAINER = "Sit-ups Trainer"
-        private const val SQUATS_TRAINER = "Squats Trainer"
-        private const val PULL_UPS_TRAINER = "Pull-ups Trainer"
-        private const val STATE_SELECTED_MODEL = "selected_model"
     }
 }

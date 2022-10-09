@@ -33,13 +33,10 @@ class PoseClassifier @JvmOverloads constructor(
             return result
         }
 
-        // We do flipping on X-axis so we are horizontal (mirror) invariant.
         val flippedLandmarks: MutableList<PointF3D> = ArrayList(landmarks)
         Utils.multiplyAll(flippedLandmarks, PointF3D.from(-1f, 1f, 1f))
         val embedding = PoseEmbedding.getPoseEmbedding(landmarks)
         val flippedEmbedding = PoseEmbedding.getPoseEmbedding(flippedLandmarks)
-
-
 
         val maxDistances = PriorityQueue(
                 maxDistanceTopK) {
@@ -61,9 +58,7 @@ class PoseClassifier @JvmOverloads constructor(
                                 Utils.subtract(flippedEmbedding[it], sampleEmbedding[it]),
                                 axesWeights)))
             }
-            // Set the max distance as min of original and flipped max distance.
-            maxDistances.add(Pair(poseSample, Math.min(originalMax, flippedMax)))
-            // We only want to retain top n so pop the highest distance.
+            maxDistances.add(Pair(poseSample, originalMax.coerceAtMost(flippedMax)))
             if (maxDistances.size > maxDistanceTopK) {
                 maxDistances.poll()
             }
@@ -104,7 +99,6 @@ class PoseClassifier @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = "PoseClassifier"
         private const val MAX_DISTANCE_TOP_K = 20
         private const val MEAN_DISTANCE_TOP_K = 10
 

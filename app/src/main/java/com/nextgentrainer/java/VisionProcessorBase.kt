@@ -241,11 +241,11 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
             numRuns++
             frameProcessedInOneSecondInterval++
             totalFrameMs += currentFrameLatencyMs
-            maxFrameMs = Math.max(currentFrameLatencyMs, maxFrameMs)
-            minFrameMs = Math.min(currentFrameLatencyMs, minFrameMs)
+            maxFrameMs = currentFrameLatencyMs.coerceAtLeast(maxFrameMs)
+            minFrameMs = currentFrameLatencyMs.coerceAtMost(minFrameMs)
             totalDetectorMs += currentDetectorLatencyMs
-            maxDetectorMs = Math.max(currentDetectorLatencyMs, maxDetectorMs)
-            minDetectorMs = Math.min(currentDetectorLatencyMs, minDetectorMs)
+            maxDetectorMs = currentDetectorLatencyMs.coerceAtLeast(maxDetectorMs)
+            minDetectorMs = currentDetectorLatencyMs.coerceAtMost(minDetectorMs)
 
             if (frameProcessedInOneSecondInterval == 1) {
                 Log.d(TAG, "Num of Runs: $numRuns")
