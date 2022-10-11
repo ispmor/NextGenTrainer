@@ -29,17 +29,18 @@ class CameraXViewModel
                 cameraProviderLiveData = MutableLiveData()
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(getApplication())
                 cameraProviderFuture.addListener(
-                        {
-                            try {
-                                cameraProviderLiveData!!.setValue(cameraProviderFuture.get())
-                            } catch (e: ExecutionException) {
-                                // Handle any errors (including cancellation) here.
-                                Log.e(TAG, "Unhandled exception", e)
-                            } catch (e: InterruptedException) {
-                                Log.e(TAG, "Unhandled exception", e)
-                            }
-                        },
-                        ContextCompat.getMainExecutor(getApplication()))
+                    {
+                        try {
+                            cameraProviderLiveData!!.setValue(cameraProviderFuture.get())
+                        } catch (e: ExecutionException) {
+                            // Handle any errors (including cancellation) here.
+                            Log.e(TAG, "Unhandled exception", e)
+                        } catch (e: InterruptedException) {
+                            Log.e(TAG, "Unhandled exception", e)
+                        }
+                    },
+                    ContextCompat.getMainExecutor(getApplication())
+                )
             }
             return cameraProviderLiveData!!
         }

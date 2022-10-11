@@ -56,52 +56,123 @@ class MovementDescription(val poseList: List<Pose>) {
             rightElbowMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW))
             leftWristMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_WRIST))
             rightWristMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST))
-            mouthMovement.add(Utils.average(pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)!!
-                    .position3D, pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH)!!.position3D))
-            leftCalfLine.add(LineEquation.getLineBetweenPoints(leftKneeMovement[i]!!
-                    .position3D, leftAnkleMovement[i]!!.position3D))
-            rightCalfLine.add(LineEquation.getLineBetweenPoints(rightKneeMovement[i]!!
-                    .position3D, rightAnkleMovement[i]!!.position3D))
-            leftTightLine.add(LineEquation.getLineBetweenPoints(leftKneeMovement[i]!!
-                    .position3D, leftHipMovement[i]!!.position3D))
-            rightTightLine.add(LineEquation.getLineBetweenPoints(rightKneeMovement[i]!!
-                    .position3D, rightHipMovement[i]!!.position3D))
-            leftTorsoLine.add(LineEquation.getLineBetweenPoints(leftHipMovement[i]!!
-                    .position3D, leftShoulderMovement[i]!!.position3D))
-            rightTorsoLine.add(LineEquation.getLineBetweenPoints(rightHipMovement[i]!!
-                    .position3D, rightShoulderMovement[i]!!.position3D))
-            leftShoulderLine.add(LineEquation.getLineBetweenPoints(leftShoulderMovement[i]!!
-                    .position3D, leftElbowMovement[i]!!.position3D))
-            rightShoulderLine.add(LineEquation.getLineBetweenPoints(rightShoulderMovement[i]!!
-                    .position3D, rightElbowMovement[i]!!.position3D))
-            leftForearmLine.add(LineEquation.getLineBetweenPoints(leftElbowMovement[i]!!
-                    .position3D, leftWristMovement[i]!!.position3D))
-            rightForearmLine.add(LineEquation.getLineBetweenPoints(rightElbowMovement[i]!!
-                    .position3D, rightWristMovement[i]!!.position3D))
+            mouthMovement.add(
+                Utils.average(
+                    pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)!!
+                        .position3D,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH)!!.position3D
+                )
+            )
+            leftCalfLine.add(
+                LineEquation.getLineBetweenPoints(
+                    leftKneeMovement[i]!!
+                        .position3D,
+                    leftAnkleMovement[i]!!.position3D
+                )
+            )
+            rightCalfLine.add(
+                LineEquation.getLineBetweenPoints(
+                    rightKneeMovement[i]!!
+                        .position3D,
+                    rightAnkleMovement[i]!!.position3D
+                )
+            )
+            leftTightLine.add(
+                LineEquation.getLineBetweenPoints(
+                    leftKneeMovement[i]!!
+                        .position3D,
+                    leftHipMovement[i]!!.position3D
+                )
+            )
+            rightTightLine.add(
+                LineEquation.getLineBetweenPoints(
+                    rightKneeMovement[i]!!
+                        .position3D,
+                    rightHipMovement[i]!!.position3D
+                )
+            )
+            leftTorsoLine.add(
+                LineEquation.getLineBetweenPoints(
+                    leftHipMovement[i]!!
+                        .position3D,
+                    leftShoulderMovement[i]!!.position3D
+                )
+            )
+            rightTorsoLine.add(
+                LineEquation.getLineBetweenPoints(
+                    rightHipMovement[i]!!
+                        .position3D,
+                    rightShoulderMovement[i]!!.position3D
+                )
+            )
+            leftShoulderLine.add(
+                LineEquation.getLineBetweenPoints(
+                    leftShoulderMovement[i]!!
+                        .position3D,
+                    leftElbowMovement[i]!!.position3D
+                )
+            )
+            rightShoulderLine.add(
+                LineEquation.getLineBetweenPoints(
+                    rightShoulderMovement[i]!!
+                        .position3D,
+                    rightElbowMovement[i]!!.position3D
+                )
+            )
+            leftForearmLine.add(
+                LineEquation.getLineBetweenPoints(
+                    leftElbowMovement[i]!!
+                        .position3D,
+                    leftWristMovement[i]!!.position3D
+                )
+            )
+            rightForearmLine.add(
+                LineEquation.getLineBetweenPoints(
+                    rightElbowMovement[i]!!
+                        .position3D,
+                    rightWristMovement[i]!!.position3D
+                )
+            )
             leftKneeAngle.add(
-                    LineEquation.getAngleBetweenTwoLines(leftCalfLine[i], leftTightLine[i]))
+                LineEquation.getAngleBetweenTwoLines(leftCalfLine[i], leftTightLine[i])
+            )
             rightKneeAngle.add(
-                    LineEquation.getAngleBetweenTwoLines(rightCalfLine[i], rightTightLine[i]))
+                LineEquation.getAngleBetweenTwoLines(rightCalfLine[i], rightTightLine[i])
+            )
             torsoAngle.add(
-                    (LineEquation.getAngleBetweenTwoLines(rightTightLine[i], rightTorsoLine[i])
-                            + LineEquation.getAngleBetweenTwoLines(
-                            leftTightLine[i], leftTorsoLine[i])) / 2)
+                (
+                    LineEquation.getAngleBetweenTwoLines(rightTightLine[i], rightTorsoLine[i]) +
+                        LineEquation.getAngleBetweenTwoLines(
+                            leftTightLine[i],
+                            leftTorsoLine[i]
+                        )
+                    ) / 2
+            )
             leftElbowAngle.add(
-                    LineEquation.getAngleBetweenTwoLines(leftShoulderLine[i], leftForearmLine[i]))
+                LineEquation.getAngleBetweenTwoLines(leftShoulderLine[i], leftForearmLine[i])
+            )
             rightElbowAngle.add(
-                    LineEquation.getAngleBetweenTwoLines(rightShoulderLine[i], rightForearmLine[i]))
+                LineEquation.getAngleBetweenTwoLines(rightShoulderLine[i], rightForearmLine[i])
+            )
             leftElbowToTorsoAngle.add(
-                    LineEquation.getAngleBetweenTwoLines(leftShoulderLine[i], leftTorsoLine[i]))
+                LineEquation.getAngleBetweenTwoLines(leftShoulderLine[i], leftTorsoLine[i])
+            )
             rightElbowToTorsoAngle.add(
-                    LineEquation.getAngleBetweenTwoLines(rightShoulderLine[i], rightTorsoLine[i]))
+                LineEquation.getAngleBetweenTwoLines(rightShoulderLine[i], rightTorsoLine[i])
+            )
             distanceBetweenKnees.add(
-                    QualityDetector.getDistanceBetween3dPoints(
-                            leftKneeMovement[i]!!.position3D, rightKneeMovement[i]!!.position3D))
+                QualityDetector.getDistanceBetween3dPoints(
+                    leftKneeMovement[i]!!.position3D,
+                    rightKneeMovement[i]!!.position3D
+                )
+            )
             distanceBetweenAnkles.add(
-                    QualityDetector.getDistanceBetween3dPoints(
-                            leftAnkleMovement[i]!!.position3D, rightAnkleMovement[i]!!.position3D))
+                QualityDetector.getDistanceBetween3dPoints(
+                    leftAnkleMovement[i]!!.position3D,
+                    rightAnkleMovement[i]!!.position3D
+                )
+            )
             i += 1
         }
     }
-
 }

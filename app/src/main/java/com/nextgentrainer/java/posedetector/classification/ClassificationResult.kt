@@ -24,14 +24,15 @@ class ClassificationResult {
 
     val maxConfidenceClass: String?
         get() = Collections.max<Map.Entry<String?, Float>>(
-                classConfidences.entries
+            classConfidences.entries
         ) { (_, value): Map.Entry<String?, Float>, (_, value1): Map.Entry<String?, Float> -> (value - value1).toInt() }
-                .key
+            .key
 
     fun incrementClassConfidence(className: String?) {
         classConfidences[className] =
-                if (classConfidences.containsKey(className))
-                    classConfidences[className]!! + 1F else 0F
+            if (classConfidences.containsKey(className)) {
+                classConfidences[className]!! + 1F 
+            }else 0F
     }
 
     fun putClassConfidence(className: String?, confidence: Float) {

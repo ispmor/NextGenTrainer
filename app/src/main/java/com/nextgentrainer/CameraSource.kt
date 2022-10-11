@@ -80,8 +80,6 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         graphicOverlay.clear()
         processingRunnable = FrameProcessingRunnable()
         cameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-
-
     }
     // ==============================================================================================
     // Public
@@ -213,9 +211,10 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         var sizePair = PreferenceUtils.getCameraPreviewSizePair(activity, requestedCameraId)
         if (sizePair == null) {
             sizePair = selectSizePair(
-                    camera,
-                    DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH,
-                    DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
+                camera,
+                DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH,
+                DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT
+            )
         }
         if (sizePair == null) {
             throw IOException("Could not find suitable preview size.")
@@ -223,7 +222,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         previewSize = sizePair.preview
         Log.v(TAG, "Camera preview size: $previewSize")
         val previewFpsRange = selectPreviewFpsRange(camera, REQUESTED_FPS)
-                ?: throw IOException("Could not find suitable preview frames per second range.")
+            ?: throw IOException("Could not find suitable preview frames per second range.")
         val parameters = camera.parameters
         val pictureSize = sizePair.picture
         if (pictureSize != null) {
@@ -232,15 +231,17 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         }
         parameters.setPreviewSize(previewSize!!.width, previewSize!!.height)
         parameters.setPreviewFpsRange(
-                previewFpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
-                previewFpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX])
+            previewFpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
+            previewFpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]
+        )
         // Use YV12 so that we can exercise YV12->NV21 auto-conversion logic for OCR detection
         parameters.previewFormat = IMAGE_FORMAT
         setRotation(camera, parameters, requestedCameraId)
         if (REQUESTED_AUTO_FOCUS) {
             if (parameters
-                            .supportedFocusModes
-                            .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                .supportedFocusModes
+                .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)
+            ) {
                 parameters.focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
             } else {
                 Log.i(TAG, "Camera auto focus is not supported on this device.")
@@ -312,10 +313,10 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             rotationDegrees = (cameraInfo.orientation + degrees) % ROTATION_ANGLE_360
             displayAngle = (ROTATION_ANGLE_360 - rotationDegrees) % ROTATION_ANGLE_360
-        // compensate for it being mirrored
+            // compensate for it being mirrored
         } else { // back-facing
             rotationDegrees =
-                    (cameraInfo.orientation - degrees + ROTATION_ANGLE_360) % ROTATION_ANGLE_360
+                (cameraInfo.orientation - degrees + ROTATION_ANGLE_360) % ROTATION_ANGLE_360
             displayAngle = rotationDegrees
         }
         Log.d(TAG, "Display rotation is: $rotation")
@@ -419,9 +420,11 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 }
                 if (!bytesToByteBuffer.containsKey(data)) {
                     Log.d(
-                            TAG, "Skipping frame. Could not find ByteBuffer associated " +
-                            "with the image "
-                            + "data from the camera.")
+                        TAG,
+                        "Skipping frame. Could not find ByteBuffer associated " +
+                            "with the image " +
+                            "data from the camera."
+                    )
                     return
                 }
                 pendingFrameData = bytesToByteBuffer[data]
@@ -488,13 +491,14 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 try {
                     lock.withLock {
                         frameProcessor!!.processByteBuffer(
-                                data,
-                                FrameMetadata.Builder()
-                                        .setWidth(previewSize!!.width)
-                                        .setHeight(previewSize!!.height)
-                                        .setRotation(rotationDegrees)
-                                        .build(),
-                                graphicOverlay)
+                            data,
+                            FrameMetadata.Builder()
+                                .setWidth(previewSize!!.width)
+                                .setHeight(previewSize!!.height)
+                                .setRotation(rotationDegrees)
+                                .build(),
+                            graphicOverlay
+                        )
                     }
                 } catch (t: Exception) {
                     Log.e(TAG, "Exception thrown from receiver.", t)
@@ -624,7 +628,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 // picture later.
                 for (pictureSize in supportedPictureSizes) {
                     val pictureAspectRatio =
-                            pictureSize.width.toFloat() / pictureSize.height.toFloat()
+                        pictureSize.width.toFloat() / pictureSize.height.toFloat()
                     if (abs(previewAspectRatio - pictureAspectRatio) < ASPECT_RATIO_TOLERANCE) {
                         validPreviewSizes.add(SizePair(previewSize, pictureSize))
                         break
@@ -638,8 +642,10 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
             // Probably unlikely, but we
             // still account for it.
             if (validPreviewSizes.size == 0) {
-                Log.w(TAG,
-                        "No preview sizes have a corresponding same-aspect-ratio picture size")
+                Log.w(
+                    TAG,
+                    "No preview sizes have a corresponding same-aspect-ratio picture size"
+                )
                 for (previewSize in supportedPreviewSizes) {
                     // The null picture size will let us know that we shouldn't set a picture size.
                     validPreviewSizes.add(SizePair(previewSize, null))
@@ -677,7 +683,8 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
             val previewFpsRangeList = camera.parameters.supportedPreviewFpsRange
             for (range in previewFpsRangeList) {
                 val upperBoundDiff = abs(
-                        desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX])
+                    desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]
+                )
                 val lowerBound = range[Camera.Parameters.PREVIEW_FPS_MIN_INDEX]
                 if (upperBoundDiff <= minUpperBoundDiff && lowerBound <= minLowerBound) {
                     selectedFpsRange = range

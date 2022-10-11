@@ -19,7 +19,9 @@ object PoseEmbedding {
         val normalizedLandmarks: MutableList<PointF3D> = ArrayList(landmarks)
         // Normalize translation.
         val center = Utils.average(
-                landmarks[PoseLandmark.LEFT_HIP], landmarks[PoseLandmark.RIGHT_HIP])
+            landmarks[PoseLandmark.LEFT_HIP],
+            landmarks[PoseLandmark.RIGHT_HIP]
+        )
         Utils.subtractAll(center, normalizedLandmarks)
 
         // Normalize scale.
@@ -34,10 +36,13 @@ object PoseEmbedding {
         // Note: This approach uses only 2D landmarks to compute pose size as using Z wasn't helpful
         // in our experimentation but you're welcome to tweak.
         val hipsCenter = Utils.average(
-                landmarks[PoseLandmark.LEFT_HIP], landmarks[PoseLandmark.RIGHT_HIP])
+            landmarks[PoseLandmark.LEFT_HIP],
+            landmarks[PoseLandmark.RIGHT_HIP]
+        )
         val shouldersCenter = Utils.average(
-                landmarks[PoseLandmark.LEFT_SHOULDER],
-                landmarks[PoseLandmark.RIGHT_SHOULDER])
+            landmarks[PoseLandmark.LEFT_SHOULDER],
+            landmarks[PoseLandmark.RIGHT_SHOULDER]
+        )
         val torsoSize = Utils.l2Norm2D(Utils.subtract(hipsCenter, shouldersCenter))
         var maxDistance = torsoSize * TORSO_MULTIPLIER
         // torsoSize * TORSO_MULTIPLIER is the floor we want based on experimentation but actual size
@@ -60,14 +65,24 @@ object PoseEmbedding {
 
         // We group our distances by number of joints between the pairs.
         // One joint.
-        embedding.add(Utils.subtract(
+        embedding.add(
+            Utils.subtract(
                 Utils.average(lm[PoseLandmark.LEFT_HIP], lm[PoseLandmark.RIGHT_HIP]),
                 Utils.average(lm[PoseLandmark.LEFT_SHOULDER], lm[PoseLandmark.RIGHT_SHOULDER])
-        ))
-        embedding.add(Utils.subtract(
-                lm[PoseLandmark.LEFT_SHOULDER], lm[PoseLandmark.LEFT_ELBOW]))
-        embedding.add(Utils.subtract(
-                lm[PoseLandmark.RIGHT_SHOULDER], lm[PoseLandmark.RIGHT_ELBOW]))
+            )
+        )
+        embedding.add(
+            Utils.subtract(
+                lm[PoseLandmark.LEFT_SHOULDER],
+                lm[PoseLandmark.LEFT_ELBOW]
+            )
+        )
+        embedding.add(
+            Utils.subtract(
+                lm[PoseLandmark.RIGHT_SHOULDER],
+                lm[PoseLandmark.RIGHT_ELBOW]
+            )
+        )
         embedding.add(Utils.subtract(lm[PoseLandmark.LEFT_ELBOW], lm[PoseLandmark.LEFT_WRIST]))
         embedding.add(Utils.subtract(lm[PoseLandmark.RIGHT_ELBOW], lm[PoseLandmark.RIGHT_WRIST]))
         embedding.add(Utils.subtract(lm[PoseLandmark.LEFT_HIP], lm[PoseLandmark.LEFT_KNEE]))
@@ -76,10 +91,18 @@ object PoseEmbedding {
         embedding.add(Utils.subtract(lm[PoseLandmark.RIGHT_KNEE], lm[PoseLandmark.RIGHT_ANKLE]))
 
         // Two joints.
-        embedding.add(Utils.subtract(
-                lm[PoseLandmark.LEFT_SHOULDER], lm[PoseLandmark.LEFT_WRIST]))
-        embedding.add(Utils.subtract(
-                lm[PoseLandmark.RIGHT_SHOULDER], lm[PoseLandmark.RIGHT_WRIST]))
+        embedding.add(
+            Utils.subtract(
+                lm[PoseLandmark.LEFT_SHOULDER],
+                lm[PoseLandmark.LEFT_WRIST]
+            )
+        )
+        embedding.add(
+            Utils.subtract(
+                lm[PoseLandmark.RIGHT_SHOULDER],
+                lm[PoseLandmark.RIGHT_WRIST]
+            )
+        )
         embedding.add(Utils.subtract(lm[PoseLandmark.LEFT_HIP], lm[PoseLandmark.LEFT_ANKLE]))
         embedding.add(Utils.subtract(lm[PoseLandmark.RIGHT_HIP], lm[PoseLandmark.RIGHT_ANKLE]))
 
@@ -88,10 +111,18 @@ object PoseEmbedding {
         embedding.add(Utils.subtract(lm[PoseLandmark.RIGHT_HIP], lm[PoseLandmark.RIGHT_WRIST]))
 
         // Five joints.
-        embedding.add(Utils.subtract(
-                lm[PoseLandmark.LEFT_SHOULDER], lm[PoseLandmark.LEFT_ANKLE]))
-        embedding.add(Utils.subtract(
-                lm[PoseLandmark.RIGHT_SHOULDER], lm[PoseLandmark.RIGHT_ANKLE]))
+        embedding.add(
+            Utils.subtract(
+                lm[PoseLandmark.LEFT_SHOULDER],
+                lm[PoseLandmark.LEFT_ANKLE]
+            )
+        )
+        embedding.add(
+            Utils.subtract(
+                lm[PoseLandmark.RIGHT_SHOULDER],
+                lm[PoseLandmark.RIGHT_ANKLE]
+            )
+        )
         embedding.add(Utils.subtract(lm[PoseLandmark.LEFT_HIP], lm[PoseLandmark.LEFT_WRIST]))
         embedding.add(Utils.subtract(lm[PoseLandmark.RIGHT_HIP], lm[PoseLandmark.RIGHT_WRIST]))
 

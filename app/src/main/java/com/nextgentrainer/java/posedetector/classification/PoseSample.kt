@@ -28,17 +28,21 @@ class PoseSample(val name: String, val className: String, landmarks: List<PointF
                     return null
                 }
 
-            val name = tokens[0]
-            val className = tokens[1]
-            val landmarks: MutableList<PointF3D> = ArrayList()
-            // Read from the third token, first 2 tokens are name and class.
-            var i = 2
+                val name = tokens[0]
+                val className = tokens[1]
+                val landmarks: MutableList<PointF3D> = ArrayList()
+                // Read from the third token, first 2 tokens are name and class.
+                var i = 2
 
                 while (i < tokens.size) {
                     try {
                         landmarks.add(
-                                PointF3D.from(tokens[i].toFloat(), tokens[i + 1].toFloat(),
-                                    tokens[i + 2].toFloat()))
+                            PointF3D.from(
+                                tokens[i].toFloat(),
+                                tokens[i + 1].toFloat(),
+                                tokens[i + 2].toFloat()
+                            )
+                        )
                     } catch (e: NullPointerException) {
                         Log.e(TAG, "Invalid value " + tokens[i] + " for landmark position.")
                         return null
@@ -49,7 +53,6 @@ class PoseSample(val name: String, val className: String, landmarks: List<PointF
                     i += NUM_DIMS
                 }
                 return PoseSample(name, className, landmarks)
-
             }
             return PoseSample("", "", emptyList())
         }

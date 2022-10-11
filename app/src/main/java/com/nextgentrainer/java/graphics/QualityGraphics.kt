@@ -8,9 +8,10 @@ import com.nextgentrainer.GraphicOverlay.Graphic
 import com.nextgentrainer.java.utils.Repetition
 import java.util.*
 
-class QualityGraphics(overlay: GraphicOverlay,
-                      private val repetition: Repetition?
-                      ) : Graphic(overlay) {
+class QualityGraphics(
+    overlay: GraphicOverlay,
+    private val repetition: Repetition?
+) : Graphic(overlay) {
     private val whitePaint: Paint = Paint()
 
     init {
@@ -21,15 +22,16 @@ class QualityGraphics(overlay: GraphicOverlay,
     override fun draw(canvas: Canvas) {
         val repsNumber = repetition?.repetitionCounter?.numRepeats.toString()
         repetition?.quality?.let {
-            String.format(Locale.getDefault(), "QUALITY: %s", it.quality) }!!.let {
+            String.format(Locale.getDefault(), "QUALITY: %s", it.quality)
+        }!!.let {
             canvas.drawText(it, ZER0_F, canvas.height / QUARTER, whitePaint)
-            }
+        }
         whitePaint.textSize = BIG_TEXT
         canvas.drawText(
-                String.format(Locale.getDefault(), "%s", repsNumber),
-                canvas.width / HALF_2F,
-                canvas.height / HALF_2F,
-                whitePaint
+            String.format(Locale.getDefault(), "%s", repsNumber),
+            canvas.width / HALF_2F,
+            canvas.height / HALF_2F,
+            whitePaint
         )
         drawQuality(canvas)
     }
@@ -38,12 +40,15 @@ class QualityGraphics(overlay: GraphicOverlay,
         var qualityLocationY = QUALITY_STARTING_LOCATION
         repetition?.quality?.qualityFeatures!!.forEach {
             canvas.drawText(
-                    String.format( Locale.getDefault(),
-                            "%s: %s", it.name, it.isValid
-                    ),
-                    ZER0_F,
-                    qualityLocationY,
-                    whitePaint
+                String.format(
+                    Locale.getDefault(),
+                    "%s: %s",
+                    it.name,
+                    it.isValid
+                ),
+                ZER0_F,
+                qualityLocationY,
+                whitePaint
             )
             qualityLocationY += QUALITY_Y_INTERVAL
         }

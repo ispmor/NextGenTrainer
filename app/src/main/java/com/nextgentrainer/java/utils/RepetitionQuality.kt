@@ -15,11 +15,11 @@ class RepetitionQuality(val exerciseName: String, val qualityFeatures: List<Qual
 
     override fun toString(): String {
         return "{" +
-                "\"exerciseName\":" +
-                "\"" + exerciseName + "\"" +
-                ", \"qualityScore\": " + quality +
-                ", \"qualityFeatures\": " +
-                qualityFeatures.stream().map { obj: QualityFeature -> obj.toString() }.collect(Collectors.toList()) +
-                "}"
+            "\"exerciseName\":" +
+            "\"" + exerciseName + "\"" +
+            ", \"qualityScore\": " + quality +
+            ", \"qualityFeatures\": " +
+            qualityFeatures.stream().map { obj: QualityFeature -> obj.toString() }.collect(Collectors.toList()) +
+            "}"
     }
 }

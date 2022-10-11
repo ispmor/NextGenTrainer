@@ -121,8 +121,9 @@ class PoseClassifierProcessor @WorkerThread constructor(
             val maxConfidenceClassResult = String.format(
                 Locale.US,
                 "%s : %.2f confidence",
-                maxConfidenceClass, classification!!.getClassConfidence(maxConfidenceClass)
-                        / poseClassifier!!.confidenceRange()
+                maxConfidenceClass,
+                classification!!.getClassConfidence(maxConfidenceClass) /
+                    poseClassifier!!.confidenceRange()
             )
             lastRep!!.poseName = maxConfidenceClass
             lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
@@ -136,13 +137,13 @@ class PoseClassifierProcessor @WorkerThread constructor(
         val detectionResultHasChanged = lastDetectedClass != maxConfidenceClass
         if (detectionResultHasChanged) {
             lastDetectedClass = maxConfidenceClass
-            if (maxConfidenceClass != "" && repCounters!!.containsKey(maxConfidenceClass)
-                && detectionResultHasChanged
+            if (maxConfidenceClass != "" && repCounters!!.containsKey(maxConfidenceClass) &&
+                detectionResultHasChanged
             ) {
                 lastDetectedClass = maxConfidenceClass
                 val repCounter = repCounters!![maxConfidenceClass]
                 val repsBefore = repCounter!!.numRepeats
-                //int repsAfter = repCounter.addClassificationResult(classification);
+                // int repsAfter = repCounter.addClassificationResult(classification);
                 val repsAfter = repCounter.increaseCount(classification)
                 Log.d(TAG, "RepsBefore: $repsBefore Reps after: $repsAfter")
 
@@ -153,15 +154,17 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 }
                 MediaPlayer.create(context, R.raw.notification).start()
                 lastRepResult = String.format(
-                    Locale.US, "%s : %d reps", repCounter.className, repsAfter
+                    Locale.US,
+                    "%s : %d reps",
+                    repCounter.className,
+                    repsAfter
                 )
                 lastRep = Repetition(repCounter, repetitionQuality, maxConfidenceClass)
                 Log.d(
                     TAG,
                     String.format(Locale.getDefault(), "QUALITY: %s", repetitionQuality.quality)
                 )
-                saveRepetitionToCache(lastRep) //.posesFromLastRep
-
+                saveRepetitionToCache(lastRep) // .posesFromLastRep
 
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
@@ -178,7 +181,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
         val result = """
             ${jsonbuilder.toJson(rep)}
             
-            """.trimIndent()
+        """.trimIndent()
         val finalCacheFileName = context.getString(R.string.cache_filename)
         try {
             context.openFileOutput(finalCacheFileName, Context.MODE_APPEND)
@@ -228,7 +231,10 @@ class PoseClassifierProcessor @WorkerThread constructor(
         private const val SITUPS_CLASS = "situps_down"
         private const val PULLUPS_CLASS = "pullups_down"
         private val POSE_CLASSES = arrayOf(
-            PUSHUPS_CLASS, SQUATS_CLASS, SITUPS_CLASS, PULLUPS_CLASS
+            PUSHUPS_CLASS,
+            SQUATS_CLASS,
+            SITUPS_CLASS,
+            PULLUPS_CLASS
         )
     }
 }

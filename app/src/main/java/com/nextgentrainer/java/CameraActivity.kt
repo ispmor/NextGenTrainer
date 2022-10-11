@@ -46,9 +46,6 @@ import com.nextgentrainer.java.utils.Constants.STATE_SELECTED_MODEL
 import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.stream.Collectors
@@ -57,8 +54,10 @@ import java.util.stream.Collectors
  * Live preview demo app for ML Kit APIs using CameraX.
  */
 @KeepName
-class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
-        CompoundButton.OnCheckedChangeListener {
+class CameraActivity :
+    AppCompatActivity(),
+    OnItemSelectedListener,
+    CompoundButton.OnCheckedChangeListener {
     private var previewView: PreviewView? = null
     private var graphicOverlay: GraphicOverlay? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -94,7 +93,6 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
         options.add(SQUATS_TRAINER)
         options.add(SIT_UPS_TRAINER)
 
-
         // Creating adapter for spinner
         val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
         // Drop down layout style - list view with radio button
@@ -105,20 +103,21 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
         val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
         facingSwitch.setOnCheckedChangeListener(this)
         ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
-                .get(CameraXViewModel::class.java)
-                .processCameraProvider
-                .observe(
-                        this
-                ) { provider: ProcessCameraProvider? ->
-                    cameraProvider = provider
-                    bindAllCameraUseCases()
-                }
+            .get(CameraXViewModel::class.java)
+            .processCameraProvider
+            .observe(
+                this
+            ) { provider: ProcessCameraProvider? ->
+                cameraProvider = provider
+                bindAllCameraUseCases()
+            }
         val settingsButton = findViewById<ImageView>(R.id.settings_button)
         settingsButton.setOnClickListener { v: View? ->
             val intent = Intent(applicationContext, SettingsActivity::class.java)
             intent.putExtra(
-                    SettingsActivity.Companion.EXTRA_LAUNCH_SOURCE,
-                    LaunchSource.CAMERAX_LIVE_PREVIEW)
+                SettingsActivity.Companion.EXTRA_LAUNCH_SOURCE,
+                LaunchSource.CAMERAX_LIVE_PREVIEW
+            )
             startActivity(intent)
         }
         val saveButton = findViewById<Button>(R.id.save_button)
@@ -126,9 +125,10 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             assert(imageProcessor != null)
             val counters = (imageProcessor as ExerciseProcessor?)!!.repetitionCounters
             countersAsString = counters!!.stream().map {
-                obj: RepetitionCounter? -> obj.toString()
+                    obj: RepetitionCounter? ->
+                obj.toString()
             }.collect(Collectors.joining("\n"))
-            saveDataToCache(countersAsString, "",this)
+            saveDataToCache(countersAsString, "", this)
             createCSVDocumentPicker()
         }
     }
@@ -168,8 +168,9 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             return
         }
         val newLensFacing =
-                if (lensFacing == CameraSelector.LENS_FACING_FRONT)
-                    CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT
+            if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                CameraSelector.LENS_FACING_BACK 
+            }else CameraSelector.LENS_FACING_FRONT
         val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
         try {
             if (cameraProvider!!.hasCamera(newCameraSelector)) {
@@ -183,10 +184,11 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             // Falls through
         }
         Toast.makeText(
-                applicationContext,
-                "This device does not have lens with facing: $newLensFacing",
-                Toast.LENGTH_SHORT)
-                .show()
+            applicationContext,
+            "This device does not have lens with facing: $newLensFacing",
+            Toast.LENGTH_SHORT
+        )
+            .show()
     }
 
     public override fun onResume() {
@@ -235,11 +237,12 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
         }
         previewUseCase = builder.build()
         previewUseCase!!.setSurfaceProvider(previewView!!.surfaceProvider)
-        cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this,
-                cameraSelector!!, previewUseCase)
+        cameraProvider!!.bindToLifecycle(
+            /* lifecycleOwner = */this,
+            cameraSelector!!,
+            previewUseCase
+        )
     }
-
-
 
     private fun bindAnalysisUseCase() {
         if (cameraProvider == null) {
@@ -262,20 +265,26 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
         analysisUseCase = builder.build()
         needUpdateGraphicOverlayImageSourceInfo = true
         analysisUseCase!!.setAnalyzer(
-            //imageProcessor.processImageProxy will use another thread to run the
+            // imageProcessor.processImageProxy will use another thread to run the
             // detection underneath,
             // thus we can just runs the analyzer itself on main thread.
-                ContextCompat.getMainExecutor(this)
+            ContextCompat.getMainExecutor(this)
         ) { imageProxy: ImageProxy ->
             if (needUpdateGraphicOverlayImageSourceInfo) {
                 val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
                 val rotationDegrees = imageProxy.imageInfo.rotationDegrees
                 if (rotationDegrees == 0 || rotationDegrees == 180) {
                     graphicOverlay!!.setImageSourceInfo(
-                            imageProxy.width, imageProxy.height, isImageFlipped)
+                        imageProxy.width,
+                        imageProxy.height,
+                        isImageFlipped
+                    )
                 } else {
                     graphicOverlay!!.setImageSourceInfo(
-                            imageProxy.height, imageProxy.width, isImageFlipped)
+                        imageProxy.height,
+                        imageProxy.width,
+                        isImageFlipped
+                    )
                 }
                 needUpdateGraphicOverlayImageSourceInfo = false
             }
@@ -284,7 +293,7 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             } catch (e: MlKitException) {
                 Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
                 Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT)
-                        .show()
+                    .show()
             }
         }
         cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase)
@@ -300,10 +309,6 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener,
             }
         }
     }
-
-
-
-
 
     companion object {
         private const val TAG = "CameraActivity"

@@ -9,11 +9,12 @@ import com.nextgentrainer.GraphicOverlay.Graphic
  * Graphic instance for rendering inference info (latency, FPS, resolution) in an overlay view.
  */
 class InferenceInfoGraphic(
-        private val overlay: GraphicOverlay,
-        private val frameLatency: Long,
-        private val detectorLatency: Long,
-        // Only valid when a stream of input images is being processed. Null for single image mode.
-        private val framesPerSecond: Int?) : Graphic(overlay) {
+    private val overlay: GraphicOverlay,
+    private val frameLatency: Long,
+    private val detectorLatency: Long,
+    // Only valid when a stream of input images is being processed. Null for single image mode.
+    private val framesPerSecond: Int?
+) : Graphic(overlay) {
     private val textPaint: Paint = Paint()
     private var showLatencyInfo = true
 
@@ -24,31 +25,36 @@ class InferenceInfoGraphic(
         postInvalidate()
     }
 
-
     @Synchronized
     override fun draw(canvas: Canvas) {
         val x = TEXT_SIZE * HALF
         val y = TEXT_SIZE * ONE_AND_A_HALF
         canvas.drawText(
-                "InputImage size: " + overlay.imageHeight + "x" + overlay.imageWidth,
-                x,
-                y,
-                textPaint)
+            "InputImage size: " + overlay.imageHeight + "x" + overlay.imageWidth,
+            x,
+            y,
+            textPaint
+        )
         if (!showLatencyInfo) {
             return
         }
         // Draw FPS (if valid) and inference latency
         if (framesPerSecond != null) {
             canvas.drawText(
-                    "FPS: $framesPerSecond, Frame latency: $frameLatency ms",
-                    x,
-                    y + TEXT_SIZE,
-                    textPaint)
+                "FPS: $framesPerSecond, Frame latency: $frameLatency ms",
+                x,
+                y + TEXT_SIZE,
+                textPaint
+            )
         } else {
             canvas.drawText("Frame latency: $frameLatency ms", x, y + TEXT_SIZE, textPaint)
         }
         canvas.drawText(
-                "Detector latency: $detectorLatency ms", x, y + TEXT_SIZE * DOUBLE, textPaint)
+            "Detector latency: $detectorLatency ms",
+            x,
+            y + TEXT_SIZE * DOUBLE,
+            textPaint
+        )
     }
 
     companion object {

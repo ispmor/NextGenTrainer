@@ -31,8 +31,8 @@ import com.nextgentrainer.preference.PreferenceUtils
 import java.nio.ByteBuffer
 import java.util.*
 
-abstract class VisionProcessorBase<T> protected constructor(context: Context)
-    : VisionImageProcessor {
+abstract class VisionProcessorBase<T> protected constructor(context: Context) :
+    VisionImageProcessor {
     private val activityManager: ActivityManager
     private val fpsTimer = Timer()
     private val executor: ScopedExecutor
@@ -73,14 +73,15 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
         activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         executor = ScopedExecutor(TaskExecutors.MAIN_THREAD)
         fpsTimer.scheduleAtFixedRate(
-                object : TimerTask() {
-                    override fun run() {
-                        framesPerSecond = frameProcessedInOneSecondInterval
-                        frameProcessedInOneSecondInterval = 0
-                    }
-                },  /* delay = */
-                0,  /* period = */
-                1000)
+            object : TimerTask() {
+                override fun run() {
+                    framesPerSecond = frameProcessedInOneSecondInterval
+                    frameProcessedInOneSecondInterval = 0
+                }
+            }, /* delay = */
+            0, /* period = */
+            1000
+        )
         temperatureMonitor = TemperatureMonitor(context)
     }
 
@@ -90,26 +91,31 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
         if (isMlImageEnabled(graphicOverlay.context)) {
             val mlImage = BitmapMlImageBuilder(bitmap!!).build()
             requestDetectInImage(
-                    mlImage,
-                    graphicOverlay,  /* originalCameraImage= */
-                    null,  /* shouldShowFps= */
-                    false,
-                    frameStartMs)
+                mlImage,
+                graphicOverlay, /* originalCameraImage= */
+                null, /* shouldShowFps= */
+                false,
+                frameStartMs
+            )
             mlImage.close()
             return
         }
         requestDetectInImage(
-                InputImage.fromBitmap(bitmap!!, 0),
-                graphicOverlay,  /* originalCameraImage= */
-                null,  /* shouldShowFps= */
-                false,
-                frameStartMs)
+            InputImage.fromBitmap(bitmap!!, 0),
+            graphicOverlay, /* originalCameraImage= */
+            null, /* shouldShowFps= */
+            false,
+            frameStartMs
+        )
     }
 
     // -----------------Code for processing live preview frame from Camera1 API--------------------
     @Synchronized
     override fun processByteBuffer(
-            data: ByteBuffer?, frameMetadata: FrameMetadata?, graphicOverlay: GraphicOverlay) {
+        data: ByteBuffer?,
+        frameMetadata: FrameMetadata?,
+        graphicOverlay: GraphicOverlay
+    ) {
         latestImage = data
         latestImageMetaData = frameMetadata
         if (processingImage == null && processingMetaData == null) {
@@ -129,40 +135,51 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
     }
 
     private fun processImage(
-            data: ByteBuffer, frameMetadata: FrameMetadata, graphicOverlay: GraphicOverlay) {
+        data: ByteBuffer,
+        frameMetadata: FrameMetadata,
+        graphicOverlay: GraphicOverlay
+    ) {
         val frameStartMs = SystemClock.elapsedRealtime()
 
-
-        val bitmap = if (PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context))
-            null else BitmapUtils.getBitmap(data, frameMetadata)
+        val bitmap = if (PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context)) {
+            null 
+        }else BitmapUtils.getBitmap(data, frameMetadata)
         if (isMlImageEnabled(graphicOverlay.context)) {
             val mlImage = ByteBufferMlImageBuilder(
-                    data,
-                    frameMetadata.width,
-                    frameMetadata.height,
-                    MlImage.IMAGE_FORMAT_NV21)
-                    .setRotation(frameMetadata.rotation)
-                    .build()
-            requestDetectInImage(mlImage, graphicOverlay, bitmap,
-                    /* shouldShowFps= */true, frameStartMs)
-                    .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
+                data,
+                frameMetadata.width,
+                frameMetadata.height,
+                MlImage.IMAGE_FORMAT_NV21
+            )
+                .setRotation(frameMetadata.rotation)
+                .build()
+            requestDetectInImage(
+                mlImage,
+                graphicOverlay,
+                bitmap,
+                /* shouldShowFps= */true,
+                frameStartMs
+            )
+                .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
 
             // This is optional. Java Garbage collection can also close it eventually.
             mlImage.close()
             return
         }
         requestDetectInImage(
-                InputImage.fromByteBuffer(
-                        data,
-                        frameMetadata.width,
-                        frameMetadata.height,
-                        frameMetadata.rotation,
-                        InputImage.IMAGE_FORMAT_NV21),
-                graphicOverlay,
-                bitmap,  /* shouldShowFps= */
-                true,
-                frameStartMs)
-                .addOnSuccessListener(executor) { results: T -> processLatestImage(graphicOverlay) }
+            InputImage.fromByteBuffer(
+                data,
+                frameMetadata.width,
+                frameMetadata.height,
+                frameMetadata.rotation,
+                InputImage.IMAGE_FORMAT_NV21
+            ),
+            graphicOverlay,
+            bitmap, /* shouldShowFps= */
+            true,
+            frameStartMs
+        )
+            .addOnSuccessListener(executor) { results: T -> processLatestImage(graphicOverlay) }
     }
 
     // -----------------Code for processing live preview frame from CameraX API-----------------------
@@ -179,58 +196,71 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
         }
         if (isMlImageEnabled(graphicOverlay.context)) {
             val mlImage = MediaMlImageBuilder(image.image!!)
-                    .setRotation(image.imageInfo.rotationDegrees)
-                    .build()
+                .setRotation(image.imageInfo.rotationDegrees)
+                .build()
             requestDetectInImage(
-                    mlImage,
-                    graphicOverlay,  /* originalCameraImage= */
-                    bitmap,  /* shouldShowFps= */
-                    true,
-                    frameStartMs)
-                    .addOnCompleteListener { image.close() }
+                mlImage,
+                graphicOverlay, /* originalCameraImage= */
+                bitmap, /* shouldShowFps= */
+                true,
+                frameStartMs
+            )
+                .addOnCompleteListener { image.close() }
             return
         }
         requestDetectInImage(
-                InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
-                graphicOverlay,  /* originalCameraImage= */
-                bitmap,  /* shouldShowFps= */
-                true,
-                frameStartMs)
-                .addOnCompleteListener { image.close() }
+            InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
+            graphicOverlay, /* originalCameraImage= */
+            bitmap, /* shouldShowFps= */
+            true,
+            frameStartMs
+        )
+            .addOnCompleteListener { image.close() }
     }
 
     // -----------------Common processing logic----------------------------------------------------
     private fun requestDetectInImage(
-            image: InputImage,
-            graphicOverlay: GraphicOverlay,
-            originalCameraImage: Bitmap?,
-            shouldShowFps: Boolean,
-            frameStartMs: Long): Task<T> {
+        image: InputImage,
+        graphicOverlay: GraphicOverlay,
+        originalCameraImage: Bitmap?,
+        shouldShowFps: Boolean,
+        frameStartMs: Long
+    ): Task<T> {
         return setUpListener(
-                detectInImage(image),
-                graphicOverlay, originalCameraImage, shouldShowFps, frameStartMs)
+            detectInImage(image),
+            graphicOverlay,
+            originalCameraImage,
+            shouldShowFps,
+            frameStartMs
+        )
     }
 
     private fun requestDetectInImage(
-            image: MlImage,
-            graphicOverlay: GraphicOverlay,
-            originalCameraImage: Bitmap?,
-            shouldShowFps: Boolean,
-            frameStartMs: Long): Task<T> {
+        image: MlImage,
+        graphicOverlay: GraphicOverlay,
+        originalCameraImage: Bitmap?,
+        shouldShowFps: Boolean,
+        frameStartMs: Long
+    ): Task<T> {
         return setUpListener(
-                detectInImage(image),
-                graphicOverlay, originalCameraImage, shouldShowFps, frameStartMs)
+            detectInImage(image),
+            graphicOverlay,
+            originalCameraImage,
+            shouldShowFps,
+            frameStartMs
+        )
     }
 
     private fun setUpListener(
-            task: Task<T>,
-            graphicOverlay: GraphicOverlay,
-            originalCameraImage: Bitmap?,
-            shouldShowFps: Boolean,
-            frameStartMs: Long): Task<T> {
+        task: Task<T>,
+        graphicOverlay: GraphicOverlay,
+        originalCameraImage: Bitmap?,
+        shouldShowFps: Boolean,
+        frameStartMs: Long
+    ): Task<T> {
         val detectorStartMs = SystemClock.elapsedRealtime()
         return task.addOnSuccessListener(
-                executor
+            executor
         ) { results: T ->
             val endMs = SystemClock.elapsedRealtime()
             val currentFrameLatencyMs = endMs - frameStartMs
@@ -249,10 +279,14 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
 
             if (frameProcessedInOneSecondInterval == 1) {
                 Log.d(TAG, "Num of Runs: $numRuns")
-                Log.d(TAG,
-         "Frame latency: max=$maxFrameMs min=$minFrameMs avg=${totalFrameMs / numRuns}")
-                Log.d(TAG,
-  "Detector latency: max=$maxDetectorMs min=$minDetectorMs avg=${totalDetectorMs / numRuns}")
+                Log.d(
+                    TAG,
+                    "Frame latency: max=$maxFrameMs min=$minFrameMs avg=${totalFrameMs / numRuns}"
+                )
+                Log.d(
+                    TAG,
+                    "Detector latency: max=$maxDetectorMs min=$minDetectorMs avg=${totalDetectorMs / numRuns}"
+                )
                 val mi = ActivityManager.MemoryInfo()
                 activityManager.getMemoryInfo(mi)
                 val availableMegs = mi.availMem / 0x100000L
@@ -266,28 +300,32 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
             this@VisionProcessorBase.onSuccess(results, graphicOverlay)
             if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
                 graphicOverlay.add(
-                        InferenceInfoGraphic(
-                                graphicOverlay,
-                                currentFrameLatencyMs,
-                                currentDetectorLatencyMs,
-                                if (shouldShowFps) framesPerSecond else null))
+                    InferenceInfoGraphic(
+                        graphicOverlay,
+                        currentFrameLatencyMs,
+                        currentDetectorLatencyMs,
+                        if (shouldShowFps) framesPerSecond else null
+                    )
+                )
             }
             graphicOverlay.postInvalidate()
         }
-                .addOnFailureListener(
-                        executor
-                ) { e: Exception ->
-                    graphicOverlay.clear()
-                    graphicOverlay.postInvalidate()
-                    val error = "Failed to process. Error: " + e.localizedMessage
-                    Toast.makeText(
-                            graphicOverlay.context,
-                            "$error Cause: ${e.cause}".trimIndent(), Toast.LENGTH_SHORT)
-                            .show()
-                    Log.d(TAG, error)
-                    e.printStackTrace()
-                    this@VisionProcessorBase.onFailure(e)
-                }
+            .addOnFailureListener(
+                executor
+            ) { e: Exception ->
+                graphicOverlay.clear()
+                graphicOverlay.postInvalidate()
+                val error = "Failed to process. Error: " + e.localizedMessage
+                Toast.makeText(
+                    graphicOverlay.context,
+                    "$error Cause: ${e.cause}".trimIndent(),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.d(TAG, error)
+                e.printStackTrace()
+                this@VisionProcessorBase.onFailure(e)
+            }
     }
 
     override fun stop() {
@@ -311,9 +349,11 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context)
     protected abstract fun detectInImage(image: InputImage?): Task<T>
     protected open fun detectInImage(image: MlImage?): Task<T> {
         return Tasks.forException(
-                MlKitException(
-                        "MlImage is currently not demonstrated for this feature",
-                        MlKitException.INVALID_ARGUMENT))
+            MlKitException(
+                "MlImage is currently not demonstrated for this feature",
+                MlKitException.INVALID_ARGUMENT
+            )
+        )
     }
 
     protected abstract fun onSuccess(results: T, graphicOverlay: GraphicOverlay)

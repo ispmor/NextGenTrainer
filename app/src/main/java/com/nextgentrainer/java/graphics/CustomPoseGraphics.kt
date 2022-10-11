@@ -14,10 +14,11 @@ import com.nextgentrainer.java.utils.Repetition
  * Draw the detected pose in preview.
  */
 class CustomPoseGraphics(
-        overlay: GraphicOverlay,
-        private val pose: Pose,
-        private val poseClassification: List<String>,
-        repetition: Repetition?) : Graphic(overlay) {
+    overlay: GraphicOverlay,
+    private val pose: Pose,
+    private val poseClassification: List<String>,
+    repetition: Repetition?
+) : Graphic(overlay) {
     private var zMin = Float.MAX_VALUE
     private var zMax = Float.MIN_VALUE
     private val classificationTextPaint: Paint = Paint()
@@ -46,13 +47,16 @@ class CustomPoseGraphics(
         // Draw pose classification text.
         val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * HALF
         for (i in poseClassification.indices) {
-            val classificationY = canvas.height - (POSE_CLASSIFICATION_TEXT_SIZE * ONE_AND_A_HALF
-                    * (poseClassification.size - i))
+            val classificationY = canvas.height - (
+                POSE_CLASSIFICATION_TEXT_SIZE * ONE_AND_A_HALF
+                    * (poseClassification.size - i)
+                )
             canvas.drawText(
-                    poseClassification[i],
-                    classificationX,
-                    classificationY,
-                    classificationTextPaint)
+                poseClassification[i],
+                classificationX,
+                classificationY,
+                classificationTextPaint
+            )
         }
 
         // Draw all the points
@@ -108,11 +112,12 @@ class CustomPoseGraphics(
         val avgZInImagePixel = (start.z + end.z) / 2
         maybeUpdatePaintColor(paint, canvas, avgZInImagePixel)
         canvas.drawLine(
-                translateX(start.x),
-                translateY(start.y),
-                translateX(end.x),
-                translateY(end.y),
-                paint)
+            translateX(start.x),
+            translateY(start.y),
+            translateX(end.x),
+            translateY(end.y),
+            paint
+        )
     }
 
     private fun maybeUpdatePaintColor(paint: Paint, canvas: Canvas, zInImagePixel: Float) {

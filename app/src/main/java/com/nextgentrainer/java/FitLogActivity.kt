@@ -27,11 +27,9 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonStreamParser
-import com.google.gson.JsonSyntaxException
 import com.nextgentrainer.R
 import com.nextgentrainer.java.utils.ExerciseSet
 import com.nextgentrainer.java.utils.Repetition
-import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -67,14 +65,16 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         // Set up ListView and Adapter
         val listView = findViewById<ListView>(R.id.list_sessions)
         val adapter = MyArrayAdapter(
-                this, android.R.layout.simple_list_item_2, separateSessions
+            this,
+            android.R.layout.simple_list_item_2,
+            separateSessions
         )
         listView.adapter = adapter
     }
 
     private fun fillPieChartWithData(repsOfEachExercise: Map<String?, Float>) {
         val entries = repsOfEachExercise.entries.stream().map {
-            (key, value): Map.Entry<String?, Float> ->
+                (key, value): Map.Entry<String?, Float> ->
             PieEntry(value, key!!.split("_").toTypedArray()[0].uppercase())
         }.collect(Collectors.toList())
         val set = PieDataSet(entries, "")
@@ -90,50 +90,50 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         pieChart.setEntryLabelColor(Color.BLACK)
         pieChart.description = description
         pieChart.data = data
-        //pieChart.setDrawEntryLabels(true);
-        pieChart.centerText = String.format( Locale.getDefault(), "Total: %d", summedReps)
-        //pieChart.setHoleRadius(75);
+        // pieChart.setDrawEntryLabels(true);
+        pieChart.centerText = String.format(Locale.getDefault(), "Total: %d", summedReps)
+        // pieChart.setHoleRadius(75);
         pieChart.setTouchEnabled(true)
         pieChart.animateX(MILLIS_1000)
-        //pieChart.invalidate(); // refresh
+        // pieChart.invalidate(); // refresh
     }
 
-    private fun readHistoryFromFile(context: Context, cacheFilename: String)
-    : MutableList<Map<String?, MutableList<ExerciseSet>>> {
+    private fun readHistoryFromFile(context: Context, cacheFilename: String): MutableList<Map<String?, MutableList<ExerciseSet>>> {
         var whatShouldBeSessionSize = 0
         var setsAppearedSoFarForExercise: MutableMap<String?, MutableList<ExerciseSet>> = HashMap()
         val allSessions: MutableList<Map<String?, MutableList<ExerciseSet>>> = ArrayList()
 
         context.openFileInput(cacheFilename).use { inputStreamFromFile ->
-                InputStreamReader(inputStreamFromFile, StandardCharsets.UTF_8).use { reader ->
-                    whatShouldBeSessionSize++
-                    val gson = GsonBuilder().create()
-                    val jsonStreamParserToObject = JsonStreamParser(reader)
-                    var lastTimestamp: Date? = null
-                    while (jsonStreamParserToObject.hasNext()) {
-                        val singleJsonElement = jsonStreamParserToObject.next()
-                            val loadedRepetition = gson.fromJson(
-                                    singleJsonElement, Repetition::class.java
-                            )
-                            val actualTimestamp = loadedRepetition.timestamp
-                            lastTimestamp = lastTimestamp ?: actualTimestamp
-                            if (!isSameDayUsingInstant(lastTimestamp, actualTimestamp)) {
-                                whatShouldBeSessionSize++
-                                allSessions.add(setsAppearedSoFarForExercise)
-                                setsAppearedSoFarForExercise = HashMap()
-                                lastTimestamp = actualTimestamp
-                            }
-                            setsAppearedSoFarForExercise = addRepetitionToExerciseSet(
-                                    setsAppearedSoFarForExercise, loadedRepetition
-                            )
-                            addRepetitionToCounterAndFavourites(loadedRepetition)
-
-                    }
-                    if (allSessions.isEmpty() || allSessions.size != whatShouldBeSessionSize) {
+            InputStreamReader(inputStreamFromFile, StandardCharsets.UTF_8).use { reader ->
+                whatShouldBeSessionSize++
+                val gson = GsonBuilder().create()
+                val jsonStreamParserToObject = JsonStreamParser(reader)
+                var lastTimestamp: Date? = null
+                while (jsonStreamParserToObject.hasNext()) {
+                    val singleJsonElement = jsonStreamParserToObject.next()
+                    val loadedRepetition = gson.fromJson(
+                        singleJsonElement,
+                        Repetition::class.java
+                    )
+                    val actualTimestamp = loadedRepetition.timestamp
+                    lastTimestamp = lastTimestamp ?: actualTimestamp
+                    if (!isSameDayUsingInstant(lastTimestamp, actualTimestamp)) {
+                        whatShouldBeSessionSize++
                         allSessions.add(setsAppearedSoFarForExercise)
+                        setsAppearedSoFarForExercise = HashMap()
+                        lastTimestamp = actualTimestamp
                     }
+                    setsAppearedSoFarForExercise = addRepetitionToExerciseSet(
+                        setsAppearedSoFarForExercise,
+                        loadedRepetition
+                    )
+                    addRepetitionToCounterAndFavourites(loadedRepetition)
+                }
+                if (allSessions.isEmpty() || allSessions.size != whatShouldBeSessionSize) {
+                    allSessions.add(setsAppearedSoFarForExercise)
                 }
             }
+        }
         return allSessions
     }
 
@@ -147,9 +147,10 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun addRepetitionToExerciseSet(setsAppearedSoFarForExercise:
-                                           MutableMap<String?, MutableList<ExerciseSet>>,
-                                           loadedRepetition: Repetition
+    private fun addRepetitionToExerciseSet(
+        setsAppearedSoFarForExercise:
+            MutableMap<String?, MutableList<ExerciseSet>>,
+        loadedRepetition: Repetition
     ): MutableMap<String?, MutableList<ExerciseSet>> {
         val exerciseName = loadedRepetition.poseName
         if (setsAppearedSoFarForExercise.containsKey(exerciseName)) {
@@ -158,7 +159,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
             val lastRep = lastSet.repetitions[lastSet.repetitions.size - 1]
             if (repetitionShouldBeInTheSameSet(lastRep, loadedRepetition)) {
                 setsAppearedSoFarForExercise[exerciseName]!![lastIdx - 1]
-                        .addRepetition(loadedRepetition)
+                    .addRepetition(loadedRepetition)
             } else {
                 val newSet = ExerciseSet(lastIdx + 1)
                 newSet.addRepetition(loadedRepetition)
@@ -174,22 +175,29 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         return setsAppearedSoFarForExercise
     }
 
-    private fun repetitionShouldBeInTheSameSet(lastRep: Repetition,
-                                               loadedRepetition: Repetition): Boolean {
-        return (((lastRep.repetitionCounter?.numRepeats ?: MAX_REPS) <
-                (loadedRepetition.repetitionCounter?.numRepeats ?: MAX_REPS)
-                && isNoLaterThan15s(loadedRepetition.timestamp, lastRep.timestamp)))
+    private fun repetitionShouldBeInTheSameSet(
+        lastRep: Repetition,
+        loadedRepetition: Repetition
+    ): Boolean {
+        return (
+            (
+                (lastRep.repetitionCounter?.numRepeats ?: MAX_REPS) <
+                    (loadedRepetition.repetitionCounter?.numRepeats ?: MAX_REPS) &&
+                    isNoLaterThan15s(loadedRepetition.timestamp, lastRep.timestamp)
+                )
+            )
     }
 
     override fun onClick(v: View) {
-        //TODO
+        // TODO
     }
 
-    class MyArrayAdapter(context: Context,
-                         @LayoutRes private val resource: Int,
-                         private val objects:  MutableList<Map<String?, MutableList<ExerciseSet>>>
-                         )
-        : ArrayAdapter<Map<String?, MutableList<ExerciseSet>>>(context, resource, objects) {
+    class MyArrayAdapter(
+        context: Context,
+        @LayoutRes private val resource: Int,
+        private val objects: MutableList<Map<String?, MutableList<ExerciseSet>>>
+    ) :
+        ArrayAdapter<Map<String?, MutableList<ExerciseSet>>>(context, resource, objects) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             var view = convertView
@@ -203,15 +211,16 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
                 val format = formatter.format(firstSessionSet.get().value[0].repetitions[0].timestamp)
                 (view!!.findViewById<View>(android.R.id.text1) as TextView).text = format
                 val sessionTotalSets = objects[position].values.stream().mapToLong {
-                    obj: List<ExerciseSet> -> obj.size.toLong()
+                        obj: List<ExerciseSet> ->
+                    obj.size.toLong()
                 }.sum()
                 (view.findViewById<View>(android.R.id.text2) as TextView)
-                        .text = "Sets done: $sessionTotalSets"
+                    .text = "Sets done: $sessionTotalSets"
             } else {
                 (view!!.findViewById<View>(android.R.id.text1) as TextView)
-                        .text = "No session was found :/"
+                    .text = "No session was found :/"
                 (view.findViewById<View>(android.R.id.text2) as TextView)
-                        .text = "Work out a bit and come see there results!"
+                    .text = "Work out a bit and come see there results!"
             }
             return view
         }
@@ -227,7 +236,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         dataSet.color = Color.RED
         dataSet.fillColor = Color.RED
         dataSet.lineWidth = LINE_WIDTH
-        //dataSet.valueTextColor = 2 // styling, ...
+        // dataSet.valueTextColor = 2 // styling, ...
         val lineData = LineData(dataSet)
         val legend = chart.legend
         legend.isEnabled = false
@@ -243,12 +252,14 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun calculateAvgSessionQuality(session: Map<String?, MutableList<ExerciseSet>>): Float {
         return session.values.stream().flatMap { obj: List<ExerciseSet> -> obj.stream() }
-                .mapToDouble { exerciseSet: ExerciseSet -> exerciseSet.repetitions.stream()
-                        .mapToDouble { rep: Repetition -> rep.quality!!.quality.toDouble() }
-                        .average().orElse(Double.NaN) }
-                .average()
-                .orElse(Double.NaN)
-                .toFloat()
+            .mapToDouble { exerciseSet: ExerciseSet ->
+                exerciseSet.repetitions.stream()
+                    .mapToDouble { rep: Repetition -> rep.quality!!.quality.toDouble() }
+                    .average().orElse(Double.NaN)
+            }
+            .average()
+            .orElse(Double.NaN)
+            .toFloat()
     }
 
     companion object {
@@ -261,12 +272,11 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         private const val LINE_WIDTH = 1f
         fun isSameDayUsingInstant(date1: Date, date2: Date): Boolean {
             val instant1 = date1.toInstant()
-                    .truncatedTo(ChronoUnit.DAYS)
+                .truncatedTo(ChronoUnit.DAYS)
             val instant2 = date2.toInstant()
-                    .truncatedTo(ChronoUnit.DAYS)
+                .truncatedTo(ChronoUnit.DAYS)
             return instant1 == instant2
         }
-
 
         fun isNoLaterThan15s(later: Date, earlier: Date): Boolean {
             return (later.time - earlier.time) < PERIOD_THRESHOLD_SECONDS * MILLIS_1000

@@ -6,9 +6,11 @@ import android.util.Log
  * Counts reps for the give class.
  */
 class RepetitionCounter @JvmOverloads
-constructor(val className: String,
-            private val enterThreshold: Float = DEFAULT_ENTER_THRESHOLD,
-            private val exitThreshold: Float = DEFAULT_EXIT_THRESHOLD) {
+constructor(
+    val className: String,
+    private val enterThreshold: Float = DEFAULT_ENTER_THRESHOLD,
+    private val exitThreshold: Float = DEFAULT_EXIT_THRESHOLD
+) {
     var numRepeats = 0
         private set
     private var poseEntered = false

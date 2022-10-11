@@ -76,9 +76,9 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
 
         if (permissionsToRequest.isNotEmpty()) {
             ActivityCompat.requestPermissions(
-                    this,
-                    permissionsToRequest.toTypedArray(),
-                    PERMISSION_REQUESTS
+                this,
+                permissionsToRequest.toTypedArray(),
+                PERMISSION_REQUESTS
             )
         }
     }
@@ -98,10 +98,10 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
         private const val PERMISSION_REQUESTS = 1
 
         private val REQUIRED_RUNTIME_PERMISSIONS =
-                arrayOf(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                )
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
     }
 }

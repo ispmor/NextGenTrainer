@@ -20,13 +20,15 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
-                    ThreadPolicy.Builder().detectAll().penaltyLog().build())
+                ThreadPolicy.Builder().detectAll().penaltyLog().build()
+            )
             StrictMode.setVmPolicy(
-                    VmPolicy.Builder()
-                            .detectLeakedSqlLiteObjects()
-                            .detectLeakedClosableObjects()
-                            .penaltyLog()
-                            .build())
+                VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                    .build()
+            )
         }
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
@@ -49,7 +51,7 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
     companion object {
         private const val TAG = "ChooserActivity"
         private val CLASSES = arrayOf<Class<*>>(
-                CameraActivity::class.java
+            CameraActivity::class.java
         )
     }
 }

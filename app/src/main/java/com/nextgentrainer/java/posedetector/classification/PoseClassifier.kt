@@ -14,10 +14,11 @@ import kotlin.collections.ArrayList
  * https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm
  */
 class PoseClassifier @JvmOverloads constructor(
-        private val poseSamples: List<PoseSample>,
-        private val maxDistanceTopK: Int = MAX_DISTANCE_TOP_K,
-        private val meanDistanceTopK: Int = MEAN_DISTANCE_TOP_K,
-        private val axesWeights: PointF3D = AXES_WEIGHTS) {
+    private val poseSamples: List<PoseSample>,
+    private val maxDistanceTopK: Int = MAX_DISTANCE_TOP_K,
+    private val meanDistanceTopK: Int = MEAN_DISTANCE_TOP_K,
+    private val axesWeights: PointF3D = AXES_WEIGHTS
+) {
 
     fun confidenceRange(): Int {
         return maxDistanceTopK.coerceAtMost(meanDistanceTopK)
@@ -39,24 +40,36 @@ class PoseClassifier @JvmOverloads constructor(
         val flippedEmbedding = PoseEmbedding.getPoseEmbedding(flippedLandmarks)
 
         val maxDistances = PriorityQueue(
-                maxDistanceTopK) {
-            o1: Pair<PoseSample, Float?>,
-            o2: Pair<PoseSample, Float?> -> -(o1.second!!).compareTo(o2.second!!) }
+            maxDistanceTopK
+        ) {
+                o1: Pair<PoseSample, Float?>,
+                o2: Pair<PoseSample, Float?> ->
+            -(o1.second!!).compareTo(o2.second!!)
+        }
         for (poseSample in poseSamples) {
             val sampleEmbedding = poseSample.embedding
             var originalMax = 0f
             var flippedMax = 0f
-            embedding.indices.forEach{
+            embedding.indices.forEach {
                 originalMax = originalMax.coerceAtLeast(
-                        Utils.maxAbs(
-                                Utils.multiply(
-                                        Utils.subtract(
-                                                embedding[it], sampleEmbedding!![it]
-                                        ), axesWeights)))
-                flippedMax = flippedMax.coerceAtLeast(Utils.maxAbs(
+                    Utils.maxAbs(
                         Utils.multiply(
-                                Utils.subtract(flippedEmbedding[it], sampleEmbedding[it]),
-                                axesWeights)))
+                            Utils.subtract(
+                                embedding[it],
+                                sampleEmbedding!![it]
+                            ),
+                            axesWeights
+                        )
+                    )
+                )
+                flippedMax = flippedMax.coerceAtLeast(
+                    Utils.maxAbs(
+                        Utils.multiply(
+                            Utils.subtract(flippedEmbedding[it], sampleEmbedding[it]),
+                            axesWeights
+                        )
+                    )
+                )
             }
             maxDistances.add(Pair(poseSample, originalMax.coerceAtMost(flippedMax)))
             if (maxDistances.size > maxDistanceTopK) {
@@ -66,9 +79,11 @@ class PoseClassifier @JvmOverloads constructor(
 
         // Keeps higher mean distances on top so we can pop it when top_k size is reached.
         val meanDistances = PriorityQueue(
-                meanDistanceTopK) {
-            o1: Pair<PoseSample, Float?>, o2: Pair<PoseSample, Float?> ->
-            -java.lang.Float.compare(o1.second!!, o2.second!!) }
+            meanDistanceTopK
+        ) {
+                o1: Pair<PoseSample, Float?>, o2: Pair<PoseSample, Float?> ->
+            -java.lang.Float.compare(o1.second!!, o2.second!!)
+        }
         // Retrive top K poseSamples by least mean distance to remove outliers.
         for (sampleDistances in maxDistances) {
             val poseSample = sampleDistances.first
@@ -76,12 +91,21 @@ class PoseClassifier @JvmOverloads constructor(
             var originalSum = 0f
             var flippedSum = 0f
             for (i in embedding.indices) {
-                originalSum += Utils.sumAbs(Utils.multiply(
-                        Utils.subtract(embedding[i], sampleEmbedding!![i]), axesWeights))
+                originalSum += Utils.sumAbs(
+                    Utils.multiply(
+                        Utils.subtract(embedding[i], sampleEmbedding!![i]),
+                        axesWeights
+                    )
+                )
                 flippedSum += Utils.sumAbs(
-                        Utils.multiply(
-                                Utils.subtract(
-                                        flippedEmbedding[i], sampleEmbedding[i]), axesWeights))
+                    Utils.multiply(
+                        Utils.subtract(
+                            flippedEmbedding[i],
+                            sampleEmbedding[i]
+                        ),
+                        axesWeights
+                    )
+                )
             }
             // Set the mean distance as min of original and flipped mean distances.
             val meanDistance = Math.min(originalSum, flippedSum) / (embedding.size * 2)

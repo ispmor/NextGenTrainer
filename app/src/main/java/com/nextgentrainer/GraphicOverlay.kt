@@ -8,7 +8,6 @@ import android.view.View
 import com.google.common.base.Preconditions
 import com.nextgentrainer.GraphicOverlay.Graphic
 
-
 class GraphicOverlay(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val lock = Any()
     private val graphics: MutableList<Graphic> = ArrayList()
@@ -104,15 +103,16 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) : View(context, at
 
     init {
         addOnLayoutChangeListener {
-            view: View?,
-            left: Int,
-            top: Int,
-            right: Int,
-            bottom: Int,
-            oldLeft: Int,
-            oldTop: Int,
-            oldRight: Int,
-            oldBottom: Int -> needUpdateTransformation = true
+                view: View?,
+                left: Int,
+                top: Int,
+                right: Int,
+                bottom: Int,
+                oldLeft: Int,
+                oldTop: Int,
+                oldRight: Int,
+                oldBottom: Int ->
+            needUpdateTransformation = true
         }
     }
 

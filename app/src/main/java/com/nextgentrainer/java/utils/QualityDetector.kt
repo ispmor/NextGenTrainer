@@ -22,7 +22,6 @@ object QualityDetector {
     private const val DISTANCE_MULTIPLIER = 1.2
     private const val UNIT = 1
 
-
     fun squatQuality(poseList: List<Pose>, posesTimestamps: List<Date>): RepetitionQuality {
         /*
         What are the scoring rules for now:
@@ -47,44 +46,69 @@ object QualityDetector {
         val squatDepthDeeperThan90deg: MutableList<Boolean> = ArrayList()
         val postureIsOk: MutableList<Boolean> = ArrayList()
         val shoulderHipDistance: MutableList<Boolean> = ArrayList()
-        poseList.indices.forEach{
+        poseList.indices.forEach {
             distanceBetweenAnklesAndKneesDiff.add(
-                    abs(movementDescription.distanceBetweenKnees[it]!!)
-                            - HALF * abs(movementDescription.distanceBetweenAnkles[it]!!))
+                abs(movementDescription.distanceBetweenKnees[it]!!) -
+                    HALF * abs(movementDescription.distanceBetweenAnkles[it]!!)
+            )
             distanceBetweenAnklesAndKneesIsOk.add(distanceBetweenAnklesAndKneesDiff[it] > ZERO)
             squatDepthDeeperThan90deg.add(
-                    movementDescription.leftKneeAngle[it]!! < ZERO
-                            && movementDescription.rightKneeAngle[it]!! < ZERO)
+                movementDescription.leftKneeAngle[it]!! < ZERO &&
+                    movementDescription.rightKneeAngle[it]!! < ZERO
+            )
             postureIsOk.add(
-                    if (!squatDepthDeeperThan90deg[it])
-                        movementDescription.torsoAngle[it]!! > DEG_45
-                    else true)
+                if (!squatDepthDeeperThan90deg[it]) {
+                    movementDescription.torsoAngle[it]!! > DEG_45
+                } else true
+            )
             shoulderHipDistance.add(
-                    ((movementDescription.leftHipMovement[it]!!.position3D.y
-                            + movementDescription.rightHipMovement[it]!!.position3D.y
-                            ) * HALF -(
-                            movementDescription.leftShoulderMovement[it]!!.position3D.y
-                            + movementDescription.rightShoulderMovement[it]!!.position3D.y
-                            ) * HALF) > ZERO)
+                (
+                    (
+                        movementDescription.leftHipMovement[it]!!.position3D.y +
+                            movementDescription.rightHipMovement[it]!!.position3D.y
+                        ) * HALF - (
+                        movementDescription.leftShoulderMovement[it]!!.position3D.y +
+                            movementDescription.rightShoulderMovement[it]!!.position3D.y
+                        ) * HALF
+                    ) > ZERO
+            )
         }
         val repTime = getRepTime(posesTimestamps)
         movementSpeedOk =
-                MOVEMENT_SPEED_LOWER_THRESHOLD < repTime && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
+            MOVEMENT_SPEED_LOWER_THRESHOLD < repTime && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         kneesTrajectoryOk = distanceBetweenAnklesAndKneesIsOk.stream().allMatch { i -> i }
-        squatDeepEnough = squatDepthDeeperThan90deg.stream().anyMatch{ i -> i }
-        tightsTorsoAngleOkWhenSquatNotDeepEnough = postureIsOk.stream().allMatch{ i -> i }
-        shoulderHipDistanceOk = shoulderHipDistance.stream().allMatch{ i -> i }
-        results.add(QualityFeature("kneesTrajectoryOk", kneesTrajectoryOk,
-                        distanceBetweenAnklesAndKneesDiff))
-        results.add(QualityFeature("squatDeepEnough", squatDeepEnough,
-                squatDepthDeeperThan90deg))
+        squatDeepEnough = squatDepthDeeperThan90deg.stream().anyMatch { i -> i }
+        tightsTorsoAngleOkWhenSquatNotDeepEnough = postureIsOk.stream().allMatch { i -> i }
+        shoulderHipDistanceOk = shoulderHipDistance.stream().allMatch { i -> i }
+        results.add(
+            QualityFeature(
+                "kneesTrajectoryOk",
+                kneesTrajectoryOk,
+                distanceBetweenAnklesAndKneesDiff
+            )
+        )
+        results.add(
+            QualityFeature(
+                "squatDeepEnough",
+                squatDeepEnough,
+                squatDepthDeeperThan90deg
+            )
+        )
         results.add(QualityFeature(MOVEMENT_SPEED_OK, movementSpeedOk, listOf(repTime)))
-        results.add(QualityFeature("tightsTorsoAngleOkWhenSquatNotDeepEnough",
+        results.add(
+            QualityFeature(
+                "tightsTorsoAngleOkWhenSquatNotDeepEnough",
                 tightsTorsoAngleOkWhenSquatNotDeepEnough,
                 postureIsOk
-                ))
-        results.add(QualityFeature("shoulderHipDistanceOk", shoulderHipDistanceOk,
-                shoulderHipDistance))
+            )
+        )
+        results.add(
+            QualityFeature(
+                "shoulderHipDistanceOk",
+                shoulderHipDistanceOk,
+                shoulderHipDistance
+            )
+        )
         return RepetitionQuality("squats", results)
     }
 
@@ -109,33 +133,54 @@ object QualityDetector {
         val elbowsBentTo90: MutableList<Double> = ArrayList()
         val avgAngleBetweenTorsoAndElbows: MutableList<Double> = ArrayList()
         poseList.indices.forEach {
-            areLegsStraight.add(abs(
-                    (movementDescription.leftKneeAngle[it]!!
-                            + movementDescription.rightKneeAngle[it]!!) * HALF) > ZERO)
+            areLegsStraight.add(
+                abs(
+                    (
+                        movementDescription.leftKneeAngle[it]!! +
+                            movementDescription.rightKneeAngle[it]!!
+                        ) * HALF
+                ) > ZERO
+            )
             isBodyProperlyAligned.add(abs(movementDescription.torsoAngle[it]!!) < DEG_15)
             elbowsBentTo90.add(abs(movementDescription.leftElbowAngle[it]!!))
             avgAngleBetweenTorsoAndElbows.add(
-                    (abs(movementDescription.leftElbowToTorsoAngle[it]!!)
-                            + abs(movementDescription.rightElbowToTorsoAngle[it]!!)) * HALF)
+                (
+                    abs(movementDescription.leftElbowToTorsoAngle[it]!!) +
+                        abs(movementDescription.rightElbowToTorsoAngle[it]!!)
+                    ) * HALF
+            )
         }
-        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime
-                && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
-        legsAreStraight = areLegsStraight.stream().allMatch{ i -> i }
-        bodyIsStraight = isBodyProperlyAligned.stream().allMatch{ i -> i }
+        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
+            repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
+        legsAreStraight = areLegsStraight.stream().allMatch { i -> i }
+        bodyIsStraight = isBodyProperlyAligned.stream().allMatch { i -> i }
         elbowsBentBelow90deg = elbowsBentTo90.stream().anyMatch {
-            value: Double -> value > DEG_90 - DEG_15 }
+                value: Double ->
+            value > DEG_90 - DEG_15
+        }
         elbowsPositionRelativeToTorsoOk = avgAngleBetweenTorsoAndElbows.stream().allMatch {
-            value: Double -> value > DEG_15 && value < DEG_90 }
+                value: Double ->
+            value > DEG_15 && value < DEG_90
+        }
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
         results.add(QualityFeature("legsAreStraight", legsAreStraight, areLegsStraight))
         results.add(
-                QualityFeature("bodyIsStraight", bodyIsStraight,
-                        movementDescription.torsoAngle))
+            QualityFeature(
+                "bodyIsStraight",
+                bodyIsStraight,
+                movementDescription.torsoAngle
+            )
+        )
         results.add(
-                QualityFeature("elbowsBentBelow90deg", elbowsBentBelow90deg, elbowsBentTo90))
+            QualityFeature("elbowsBentBelow90deg", elbowsBentBelow90deg, elbowsBentTo90)
+        )
         results.add(
-                QualityFeature("elbowsPositionRelativeToTorsoOk",
-                        elbowsPositionRelativeToTorsoOk, avgAngleBetweenTorsoAndElbows))
+            QualityFeature(
+                "elbowsPositionRelativeToTorsoOk",
+                elbowsPositionRelativeToTorsoOk,
+                avgAngleBetweenTorsoAndElbows
+            )
+        )
         return RepetitionQuality("pushups", results)
     }
 
@@ -162,24 +207,34 @@ object QualityDetector {
         val mouthAboveWrist: MutableList<Boolean> = ArrayList()
         val repTime = getRepTime(posesTimestamps)
         for (i in poseList.indices) {
-            legsAndTorsoStraightMoreOrLess.add(abs(torsoAngle[i]!!) < DEG_45
-                    && abs((leftKneeAngle[i]!! + rightKneeAngle[i]!!) * HALF) < DEG_45)
+            legsAndTorsoStraightMoreOrLess.add(
+                abs(torsoAngle[i]!!) < DEG_45 &&
+                    abs((leftKneeAngle[i]!! + rightKneeAngle[i]!!) * HALF) < DEG_45
+            )
             mouthAboveWrist.add(
-                    movementDescription.mouthMovement[i]!!.y
-                            - movementDescription.rightWristMovement[i]!!.position3D.y < ZERO)
+                movementDescription.mouthMovement[i]!!.y -
+                    movementDescription.rightWristMovement[i]!!.position3D.y < ZERO
+            )
         }
-        noKipping = legsAndTorsoStraightMoreOrLess.stream().allMatch{ i -> i }
-        chinAboveTheBar = mouthAboveWrist.stream().anyMatch{ i -> i }
+        noKipping = legsAndTorsoStraightMoreOrLess.stream().allMatch { i -> i }
+        chinAboveTheBar = mouthAboveWrist.stream().anyMatch { i -> i }
         elbowsStraightAtTheBottom = movementDescription.leftElbowAngle.stream().anyMatch {
-            value: Double? -> abs(value!!) < DEG_15 }
-        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime
-                && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
+                value: Double? ->
+            abs(value!!) < DEG_15
+        }
+        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
+            repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
         results.add(QualityFeature("freeStar", freeStar, listOf(freeStar)))
         results.add(QualityFeature("noKipping", noKipping, legsAndTorsoStraightMoreOrLess))
         results.add(QualityFeature("chinAboveTheBar", chinAboveTheBar, mouthAboveWrist))
-        results.add(QualityFeature("elbowsStraightAtTheBottom", elbowsStraightAtTheBottom,
-                movementDescription.leftElbowAngle))
+        results.add(
+            QualityFeature(
+                "elbowsStraightAtTheBottom",
+                elbowsStraightAtTheBottom,
+                movementDescription.leftElbowAngle
+            )
+        )
         return RepetitionQuality("pullups", results)
     }
 
@@ -203,30 +258,48 @@ object QualityDetector {
         val repTime = getRepTime(posesTimestamps)
         for (i in poseList.indices) {
             wristsToHeadDistanceIsGreaterThanToAnkles.add(
-                    getDistanceBetween3dPoints(
-                            movementDescription.mouthMovement[i],
-                            movementDescription.leftWristMovement[i]!!.position3D
-                    ) < getDistanceBetween3dPoints(
-                            movementDescription.leftAnkleMovement[i]!!.position3D,
-                            movementDescription.leftWristMovement[i]!!.position3D))
+                getDistanceBetween3dPoints(
+                    movementDescription.mouthMovement[i],
+                    movementDescription.leftWristMovement[i]!!.position3D
+                ) < getDistanceBetween3dPoints(
+                    movementDescription.leftAnkleMovement[i]!!.position3D,
+                    movementDescription.leftWristMovement[i]!!.position3D
+                )
+            )
             anklesMoreOrLessLevelWithHeap.add(
-                    movementDescription.rightAnkleMovement[i]!!.position3D.y
-                            - DISTANCE_MULTIPLIER
-                            * movementDescription.rightHipMovement[i]!!.position3D.y < ZERO)
+                movementDescription.rightAnkleMovement[i]!!.position3D.y -
+                    DISTANCE_MULTIPLIER
+                    * movementDescription.rightHipMovement[i]!!.position3D.y < ZERO
+            )
         }
         kneesInStablePosition = calculateSD(movementDescription.rightKneeAngle) < DEG_15
-        wristsNearHead = wristsToHeadDistanceIsGreaterThanToAnkles.stream().allMatch{ i -> i }
-        anklesLevelWithHip = anklesMoreOrLessLevelWithHeap.stream().allMatch{ i -> i }
-        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime
-                && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
+        wristsNearHead = wristsToHeadDistanceIsGreaterThanToAnkles.stream().allMatch { i -> i }
+        anklesLevelWithHip = anklesMoreOrLessLevelWithHeap.stream().allMatch { i -> i }
+        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
+            repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
         results.add(QualityFeature("freeStar", freeStar, listOf(freeStar)))
-        results.add(QualityFeature("kneesInStablePosition", kneesInStablePosition,
-                movementDescription.rightKneeAngle))
-        results.add(QualityFeature("wristsNearHead", wristsNearHead,
-                wristsToHeadDistanceIsGreaterThanToAnkles))
-        results.add(QualityFeature("anklesLevelWithHip", anklesLevelWithHip,
-                anklesMoreOrLessLevelWithHeap))
+        results.add(
+            QualityFeature(
+                "kneesInStablePosition",
+                kneesInStablePosition,
+                movementDescription.rightKneeAngle
+            )
+        )
+        results.add(
+            QualityFeature(
+                "wristsNearHead",
+                wristsNearHead,
+                wristsToHeadDistanceIsGreaterThanToAnkles
+            )
+        )
+        results.add(
+            QualityFeature(
+                "anklesLevelWithHip",
+                anklesLevelWithHip,
+                anklesMoreOrLessLevelWithHeap
+            )
+        )
         return RepetitionQuality("situps", results)
     }
 
@@ -238,8 +311,8 @@ object QualityDetector {
         val results: MutableList<QualityFeature> = ArrayList()
         val movementSpeedOk: Boolean
         val repTime = getRepTime(posesTimestamps)
-        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime
-                && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
+        movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
+            repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
         return RepetitionQuality("all", results)
     }
@@ -256,18 +329,20 @@ object QualityDetector {
         val y2 = p2.y
         val z2 = p2.z
         return (
-                (x2 - x1).toDouble().pow(SQUARE)
-                        + (y2 - y1).toDouble().pow(SQUARE)
-                        + (z2 - z1).toDouble().pow(SQUARE)
-                ).pow(HALF)
+            (x2 - x1).toDouble().pow(SQUARE) +
+                (y2 - y1).toDouble().pow(SQUARE) +
+                (z2 - z1).toDouble().pow(SQUARE)
+            ).pow(HALF)
     }
 
     private fun calculateSD(numArray: ArrayList<Double?>): Double {
-        val sum = numArray.reduce {acc, num -> num?.let { acc?.plus(it) } }
+        val sum = numArray.reduce { acc, num -> num?.let { acc?.plus(it) } }
         val length = numArray.size
-        val mean = sum?.times(UNIT/length)
+        val mean = sum?.times(UNIT / length)
         val standardDeviation = numArray.reduce {
-            acc, num -> acc?.plus(((num?.minus(mean!!) ?: ZERO) as Double).pow(SQUARE))}
+                acc, num ->
+            acc?.plus(((num?.minus(mean!!) ?: ZERO) as Double).pow(SQUARE))
+        }
 
         return if (standardDeviation != null) {
             sqrt(standardDeviation / length)
@@ -275,5 +350,4 @@ object QualityDetector {
             ZERO.toDouble()
         }
     }
-
 }

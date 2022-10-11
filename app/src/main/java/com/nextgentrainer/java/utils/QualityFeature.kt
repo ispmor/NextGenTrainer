@@ -4,10 +4,10 @@ class QualityFeature(var name: String, var isValid: Boolean, var decisionBase: L
 
     override fun toString(): String {
         return "{" +
-                "\"name\":" + "\"" + name + "\"" +
-                ", \"isValid\":" + isValid +
-                // ", \"decisionBase\": " + decisionBase.toString()
-                // + narazie wykomentowane, ponieważ eksplozja rozmiaru, powinno lecieć do bazki
-                "}"
+            "\"name\":" + "\"" + name + "\"" +
+            ", \"isValid\":" + isValid +
+            // ", \"decisionBase\": " + decisionBase.toString()
+            // + narazie wykomentowane, ponieważ eksplozja rozmiaru, powinno lecieć do bazki
+            "}"
     }
 }
