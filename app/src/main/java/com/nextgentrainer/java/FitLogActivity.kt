@@ -98,7 +98,8 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         // pieChart.invalidate(); // refresh
     }
 
-    private fun readHistoryFromFile(context: Context, cacheFilename: String): MutableList<Map<String?, MutableList<ExerciseSet>>> {
+    private fun readHistoryFromFile(context: Context, cacheFilename: String):
+            MutableList<Map<String?, MutableList<ExerciseSet>>> {
         var whatShouldBeSessionSize = 0
         var setsAppearedSoFarForExercise: MutableMap<String?, MutableList<ExerciseSet>> = HashMap()
         val allSessions: MutableList<Map<String?, MutableList<ExerciseSet>>> = ArrayList()
