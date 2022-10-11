@@ -34,7 +34,8 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.stream.Collectors
 
 @RequiresApi(VERSION_CODES.O)
@@ -74,7 +75,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun fillPieChartWithData(repsOfEachExercise: Map<String?, Float>) {
         val entries = repsOfEachExercise.entries.stream().map {
-                (key, value): Map.Entry<String?, Float> ->
+            (key, value): Map.Entry<String?, Float> ->
             PieEntry(value, key!!.split("_").toTypedArray()[0].uppercase())
         }.collect(Collectors.toList())
         val set = PieDataSet(entries, "")
@@ -99,7 +100,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun readHistoryFromFile(context: Context, cacheFilename: String):
-            MutableList<Map<String?, MutableList<ExerciseSet>>> {
+        MutableList<Map<String?, MutableList<ExerciseSet>>> {
         var whatShouldBeSessionSize = 0
         var setsAppearedSoFarForExercise: MutableMap<String?, MutableList<ExerciseSet>> = HashMap()
         val allSessions: MutableList<Map<String?, MutableList<ExerciseSet>>> = ArrayList()
@@ -212,7 +213,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
                 val format = formatter.format(firstSessionSet.get().value[0].repetitions[0].timestamp)
                 (view!!.findViewById<View>(android.R.id.text1) as TextView).text = format
                 val sessionTotalSets = objects[position].values.stream().mapToLong {
-                        obj: List<ExerciseSet> ->
+                    obj: List<ExerciseSet> ->
                     obj.size.toLong()
                 }.sum()
                 (view.findViewById<View>(android.R.id.text2) as TextView)

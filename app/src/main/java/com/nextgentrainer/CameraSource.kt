@@ -18,7 +18,7 @@ import com.google.android.gms.common.images.Size
 import com.nextgentrainer.preference.PreferenceUtils
 import java.io.IOException
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.IdentityHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.math.abs

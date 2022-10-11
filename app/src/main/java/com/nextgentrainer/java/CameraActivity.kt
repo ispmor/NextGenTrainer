@@ -47,7 +47,7 @@ import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import java.util.stream.Collectors
 
 /**
@@ -125,7 +125,7 @@ class CameraActivity :
             assert(imageProcessor != null)
             val counters = (imageProcessor as ExerciseProcessor?)!!.repetitionCounters
             countersAsString = counters!!.stream().map {
-                    obj: RepetitionCounter? ->
+                obj: RepetitionCounter? ->
                 obj.toString()
             }.collect(Collectors.joining("\n"))
             saveDataToCache(countersAsString, "", this)
@@ -169,8 +169,8 @@ class CameraActivity :
         }
         val newLensFacing =
             if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-                CameraSelector.LENS_FACING_BACK 
-            }else CameraSelector.LENS_FACING_FRONT
+                CameraSelector.LENS_FACING_BACK
+            } else CameraSelector.LENS_FACING_FRONT
         val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
         try {
             if (cameraProvider!!.hasCamera(newCameraSelector)) {
