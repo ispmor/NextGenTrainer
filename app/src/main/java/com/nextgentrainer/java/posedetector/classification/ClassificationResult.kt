@@ -1,14 +1,8 @@
 package com.nextgentrainer.java.posedetector.classification
 
-import java.util.*
+import java.util.Collections
 
-/**
- * Represents Pose classification result as outputted by [PoseClassifier]. Can be manipulated.
- */
 class ClassificationResult {
-    // For an entry in this map, the key is the class name, and the value is how many times this class
-    // appears in the top K nearest neighbors. The value is in range [0, K] and could be a float after
-    // EMA smoothing. We use this number to represent the confidence of a pose being in this class.
     private val classConfidences: MutableMap<String?, Float>
 
     init {
@@ -31,8 +25,8 @@ class ClassificationResult {
     fun incrementClassConfidence(className: String?) {
         classConfidences[className] =
             if (classConfidences.containsKey(className)) {
-                classConfidences[className]!! + 1F 
-            }else 0F
+                classConfidences[className]!! + 1F
+            } else 0F
     }
 
     fun putClassConfidence(className: String?, confidence: Float) {

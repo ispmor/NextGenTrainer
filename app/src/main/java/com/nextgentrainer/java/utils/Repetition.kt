@@ -1,7 +1,8 @@
 package com.nextgentrainer.java.utils
 
 import com.nextgentrainer.java.posedetector.classification.RepetitionCounter
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 class Repetition {
     var id: UUID

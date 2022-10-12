@@ -42,8 +42,8 @@ class PoseClassifier @JvmOverloads constructor(
         val maxDistances = PriorityQueue(
             maxDistanceTopK
         ) {
-                o1: Pair<PoseSample, Float?>,
-                o2: Pair<PoseSample, Float?> ->
+            o1: Pair<PoseSample, Float?>,
+            o2: Pair<PoseSample, Float?> ->
             -(o1.second!!).compareTo(o2.second!!)
         }
         for (poseSample in poseSamples) {
@@ -81,7 +81,7 @@ class PoseClassifier @JvmOverloads constructor(
         val meanDistances = PriorityQueue(
             meanDistanceTopK
         ) {
-                o1: Pair<PoseSample, Float?>, o2: Pair<PoseSample, Float?> ->
+            o1: Pair<PoseSample, Float?>, o2: Pair<PoseSample, Float?> ->
             -java.lang.Float.compare(o1.second!!, o2.second!!)
         }
         // Retrive top K poseSamples by least mean distance to remove outliers.

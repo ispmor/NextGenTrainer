@@ -6,7 +6,7 @@ import android.graphics.Paint
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.GraphicOverlay.Graphic
 import com.nextgentrainer.java.utils.Repetition
-import java.util.*
+import java.util.Locale
 
 class QualityGraphics(
     overlay: GraphicOverlay,

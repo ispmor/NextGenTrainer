@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.camera.core.CameraSelector
 import com.nextgentrainer.R
-import java.util.*
 
 /**
  * Configures CameraX live preview demo settings.

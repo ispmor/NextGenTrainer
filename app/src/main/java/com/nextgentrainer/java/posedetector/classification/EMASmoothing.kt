@@ -1,7 +1,7 @@
 package com.nextgentrainer.java.posedetector.classification
 
 import android.os.SystemClock
-import java.util.*
+import java.util.Deque
 import java.util.concurrent.LinkedBlockingDeque
 
 class EMASmoothing @JvmOverloads constructor(

@@ -29,7 +29,8 @@ import com.nextgentrainer.VisionImageProcessor
 import com.nextgentrainer.java.posedetector.classification.RepetitionCounter
 import com.nextgentrainer.preference.PreferenceUtils
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 abstract class VisionProcessorBase<T> protected constructor(context: Context) :
     VisionImageProcessor {
@@ -142,8 +143,8 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context) :
         val frameStartMs = SystemClock.elapsedRealtime()
 
         val bitmap = if (PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context)) {
-            null 
-        }else BitmapUtils.getBitmap(data, frameMetadata)
+            null
+        } else BitmapUtils.getBitmap(data, frameMetadata)
         if (isMlImageEnabled(graphicOverlay.context)) {
             val mlImage = ByteBufferMlImageBuilder(
                 data,

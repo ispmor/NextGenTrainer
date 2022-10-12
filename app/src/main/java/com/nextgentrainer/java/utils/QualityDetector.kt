@@ -3,7 +3,7 @@ package com.nextgentrainer.java.utils
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.java.posedetector.MovementDescription
-import java.util.*
+import java.util.Date
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -155,11 +155,11 @@ object QualityDetector {
         legsAreStraight = areLegsStraight.stream().allMatch { i -> i }
         bodyIsStraight = isBodyProperlyAligned.stream().allMatch { i -> i }
         elbowsBentBelow90deg = elbowsBentTo90.stream().anyMatch {
-                value: Double ->
+            value: Double ->
             value > DEG_90 - DEG_15
         }
         elbowsPositionRelativeToTorsoOk = avgAngleBetweenTorsoAndElbows.stream().allMatch {
-                value: Double ->
+            value: Double ->
             value > DEG_15 && value < DEG_90
         }
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
@@ -219,7 +219,7 @@ object QualityDetector {
         noKipping = legsAndTorsoStraightMoreOrLess.stream().allMatch { i -> i }
         chinAboveTheBar = mouthAboveWrist.stream().anyMatch { i -> i }
         elbowsStraightAtTheBottom = movementDescription.leftElbowAngle.stream().anyMatch {
-                value: Double? ->
+            value: Double? ->
             abs(value!!) < DEG_15
         }
         movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
@@ -340,7 +340,7 @@ object QualityDetector {
         val length = numArray.size
         val mean = sum?.times(UNIT / length)
         val standardDeviation = numArray.reduce {
-                acc, num ->
+            acc, num ->
             acc?.plus(((num?.minus(mean!!) ?: ZERO) as Double).pow(SQUARE))
         }
 
