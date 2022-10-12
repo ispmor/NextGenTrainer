@@ -3,6 +3,7 @@ package com.nextgentrainer.java.utils
 import android.content.Context
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
+import com.nextgentrainer.R
 import com.nextgentrainer.java.posedetector.MovementDescription
 import com.nextgentrainer.java.utils.CameraActivityHelper.saveDataToCache
 import java.util.Date
@@ -111,7 +112,11 @@ object QualityDetector {
                 shoulderHipDistance
             )
         )
-        saveDataToCache(movementDescription.getAsJson() + "\n", "squatsCache.csv", context)
+        saveDataToCache(
+            movementDescription.getAsJson() + "\n",
+            context.getString(R.string.squats_cache_filename),
+            context
+        )
         return RepetitionQuality("squats", results)
     }
 
