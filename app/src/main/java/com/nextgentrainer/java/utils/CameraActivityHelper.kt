@@ -2,7 +2,6 @@ package com.nextgentrainer.java.utils
 
 import android.content.Context
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import com.nextgentrainer.R
 import com.nextgentrainer.java.posedetector.ExerciseProcessor
 import com.nextgentrainer.java.utils.Constants.PULL_UPS_TRAINER
@@ -75,7 +74,7 @@ object CameraActivityHelper {
 
     fun saveDataToCache(data: String?, uri: String = "", context: Context) {
         val finalCacheFileName = if (uri == "") context.getString(R.string.cache_filename) else uri
-        context.openFileOutput(finalCacheFileName, AppCompatActivity.MODE_APPEND)
+        context.openFileOutput(finalCacheFileName, Context.MODE_APPEND)
             .use { fos -> fos.write(data!!.toByteArray(StandardCharsets.UTF_8)) }
     }
 }

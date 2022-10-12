@@ -210,7 +210,8 @@ class PoseClassifierProcessor @WorkerThread constructor(
             )
             "squats" -> QualityDetector.squatQuality(
                 posesFromLastRep,
-                posesTimestampsFromLastRep
+                posesTimestampsFromLastRep,
+                context
             )
             "situps" -> QualityDetector.situpsQuality(
                 posesFromLastRep,
