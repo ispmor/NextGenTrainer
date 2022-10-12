@@ -25,21 +25,28 @@ open class LivePreviewPreferenceFragment : PreferenceFragment() {
     open fun setUpCameraPreferences() {
         val cameraPreference = findPreference(getString(R.string.pref_category_key_camera)) as PreferenceCategory
         cameraPreference.removePreference(
-                findPreference(getString(R.string.pref_key_camerax_rear_camera_target_resolution)))
+            findPreference(getString(R.string.pref_key_camerax_rear_camera_target_resolution))
+        )
         cameraPreference.removePreference(
-                findPreference(getString(R.string.pref_key_camerax_front_camera_target_resolution)))
+            findPreference(getString(R.string.pref_key_camerax_front_camera_target_resolution))
+        )
         setUpCameraPreviewSizePreference(
-                R.string.pref_key_rear_camera_preview_size,
-                R.string.pref_key_rear_camera_picture_size,
-                CameraSource.Companion.CAMERA_FACING_BACK)
+            R.string.pref_key_rear_camera_preview_size,
+            R.string.pref_key_rear_camera_picture_size,
+            CameraSource.Companion.CAMERA_FACING_BACK
+        )
         setUpCameraPreviewSizePreference(
-                R.string.pref_key_front_camera_preview_size,
-                R.string.pref_key_front_camera_picture_size,
-                CameraSource.Companion.CAMERA_FACING_FRONT)
+            R.string.pref_key_front_camera_preview_size,
+            R.string.pref_key_front_camera_picture_size,
+            CameraSource.Companion.CAMERA_FACING_FRONT
+        )
     }
 
     private fun setUpCameraPreviewSizePreference(
-            @StringRes previewSizePrefKeyId: Int, @StringRes pictureSizePrefKeyId: Int, cameraId: Int) {
+        @StringRes previewSizePrefKeyId: Int,
+        @StringRes pictureSizePrefKeyId: Int,
+        cameraId: Int
+    ) {
         val previewSizePreference = findPreference(getString(previewSizePrefKeyId)) as ListPreference
         var camera: Camera? = null
         try {
@@ -59,34 +66,38 @@ open class LivePreviewPreferenceFragment : PreferenceFragment() {
             if (previewSizePreference.entry == null) {
                 // First time of opening the Settings page.
                 val sizePair: SizePair? = CameraSource.Companion.selectSizePair(
-                        camera,
-                        CameraSource.Companion.DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH,
-                        CameraSource.Companion.DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
+                    camera,
+                    CameraSource.Companion.DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH,
+                    CameraSource.Companion.DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT
+                )
                 val previewSizeString = sizePair?.preview.toString()
                 previewSizePreference.value = previewSizeString
                 previewSizePreference.summary = previewSizeString
                 if (sizePair != null) {
                     PreferenceUtils.saveString(
-                            activity,
-                            pictureSizePrefKeyId,
-                            if (sizePair.picture != null) sizePair.picture.toString() else null)
+                        activity,
+                        pictureSizePrefKeyId,
+                        if (sizePair.picture != null) sizePair.picture.toString() else null
+                    )
                 }
             } else {
                 previewSizePreference.summary = previewSizePreference.entry
             }
-            previewSizePreference.onPreferenceChangeListener = OnPreferenceChangeListener { preference: Preference?, newValue: Any ->
+            previewSizePreference.onPreferenceChangeListener = OnPreferenceChangeListener {
+                preference: Preference?, newValue: Any ->
                 val newPreviewSizeStringValue = newValue as String
                 previewSizePreference.summary = newPreviewSizeStringValue
                 PreferenceUtils.saveString(
-                        activity,
-                        pictureSizePrefKeyId,
-                        previewToPictureSizeStringMap[newPreviewSizeStringValue])
+                    activity,
+                    pictureSizePrefKeyId,
+                    previewToPictureSizeStringMap[newPreviewSizeStringValue]
+                )
                 true
             }
         } catch (e: RuntimeException) {
             // If there's no camera for the given camera id, hide the corresponding preference.
             (findPreference(getString(R.string.pref_category_key_camera)) as PreferenceCategory)
-                    .removePreference(previewSizePreference)
+                .removePreference(previewSizePreference)
         } finally {
             camera?.release()
         }

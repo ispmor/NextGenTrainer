@@ -14,10 +14,11 @@ import com.nextgentrainer.java.utils.Repetition
  * Draw the detected pose in preview.
  */
 class CustomPoseGraphics(
-        overlay: GraphicOverlay,
-        private val pose: Pose,
-        private val poseClassification: List<String>,
-        repetition: Repetition?) : Graphic(overlay) {
+    overlay: GraphicOverlay,
+    private val pose: Pose,
+    private val poseClassification: List<String>,
+    repetition: Repetition?
+) : Graphic(overlay) {
     private var zMin = Float.MAX_VALUE
     private var zMax = Float.MIN_VALUE
     private val classificationTextPaint: Paint = Paint()
@@ -29,7 +30,7 @@ class CustomPoseGraphics(
     init {
         classificationTextPaint.color = Color.WHITE
         classificationTextPaint.textSize = POSE_CLASSIFICATION_TEXT_SIZE
-        classificationTextPaint.setShadowLayer(5.0f, 0f, 0f, Color.BLACK)
+        classificationTextPaint.setShadowLayer(DOT_RADIUS, ZERO_F, ZERO_F, Color.BLACK)
         whitePaint = Paint()
         whitePaint.strokeWidth = STROKE_WIDTH
         whitePaint.color = Color.WHITE
@@ -42,31 +43,31 @@ class CustomPoseGraphics(
         if (landmarks.isEmpty()) {
             return
         }
-        if (repetition != null && repetition.repetitionCounter != null) {
-        }
 
         // Draw pose classification text.
-        val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f
+        val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * HALF
         for (i in poseClassification.indices) {
-            val classificationY = canvas.height - (POSE_CLASSIFICATION_TEXT_SIZE * 1.5f
-                    * (poseClassification.size - i))
+            val classificationY = canvas.height - (
+                POSE_CLASSIFICATION_TEXT_SIZE * ONE_AND_A_HALF
+                    * (poseClassification.size - i)
+                )
             canvas.drawText(
-                    poseClassification[i],
-                    classificationX,
-                    classificationY,
-                    classificationTextPaint)
+                poseClassification[i],
+                classificationX,
+                classificationY,
+                classificationTextPaint
+            )
         }
 
         // Draw all the points
-        for (landmark in landmarks) {
-            if (landmark.landmarkType > 10) { //skipping face
-                drawPoint(canvas, landmark, whitePaint)
-                if (visualizeZ && rescaleZForVisualization) {
-                    zMin = Math.min(zMin, landmark.position3D.z)
-                    zMax = Math.max(zMax, landmark.position3D.z)
-                }
+        landmarks.filter { it.landmarkType > FACE_LANDMARKS_LAST_INDEX }.forEach {
+            drawPoint(canvas, it, whitePaint)
+            if (visualizeZ && rescaleZForVisualization) {
+                zMin = zMin.coerceAtMost(it.position3D.z)
+                zMax = zMax.coerceAtLeast(it.position3D.z)
             }
         }
+
         val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
         val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
         val leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
@@ -111,11 +112,12 @@ class CustomPoseGraphics(
         val avgZInImagePixel = (start.z + end.z) / 2
         maybeUpdatePaintColor(paint, canvas, avgZInImagePixel)
         canvas.drawLine(
-                translateX(start.x),
-                translateY(start.y),
-                translateX(end.x),
-                translateY(end.y),
-                paint)
+            translateX(start.x),
+            translateY(start.y),
+            translateX(end.x),
+            translateY(end.y),
+            paint
+        )
     }
 
     private fun maybeUpdatePaintColor(paint: Paint, canvas: Canvas, zInImagePixel: Float) {
@@ -128,8 +130,8 @@ class CustomPoseGraphics(
         val zLowerBoundInScreenPixel: Float
         val zUpperBoundInScreenPixel: Float
         if (rescaleZForVisualization) {
-            zLowerBoundInScreenPixel = Math.min(-0.001f, scale(zMin))
-            zUpperBoundInScreenPixel = Math.max(0.001f, scale(zMax))
+            zLowerBoundInScreenPixel = (-MINIMAL_VALUE).coerceAtMost(scale(zMin))
+            zUpperBoundInScreenPixel = MINIMAL_VALUE.coerceAtLeast(scale(zMax))
         } else {
             // By default, assume the range of z value in screen pixel is [-canvasWidth, canvasWidth].
             val defaultRangeFactor = 1f
@@ -141,24 +143,29 @@ class CustomPoseGraphics(
             // Sets up the paint to draw the body line in red if it is in front of the z origin.
             // Maps values within [zLowerBoundInScreenPixel, 0) to [255, 0) and use it to control the
             // color. The larger the value is, the more red it will be.
-            var v = (zInScreenPixel / zLowerBoundInScreenPixel * 255).toInt()
-            v = Ints.constrainToRange(v, 0, 255)
-            paint.setARGB(255, 255, 255 - v, 255 - v)
+            var v = (zInScreenPixel / zLowerBoundInScreenPixel * MAX_255_VAL).toInt()
+            v = Ints.constrainToRange(v, 0, MAX_255_VAL)
+            paint.setARGB(MAX_255_VAL, MAX_255_VAL, MAX_255_VAL - v, MAX_255_VAL - v)
         } else {
             // Sets up the paint to draw the body line in blue if it is behind the z origin.
             // Maps values within [0, zUpperBoundInScreenPixel] to [0, 255] and use it to control the
             // color. The larger the value is, the more blue it will be.
-            var v = (zInScreenPixel / zUpperBoundInScreenPixel * 255).toInt()
-            v = Ints.constrainToRange(v, 0, 255)
-            paint.setARGB(255, 255 - v, 255 - v, 255)
+            var v = (zInScreenPixel / zUpperBoundInScreenPixel * MAX_255_VAL).toInt()
+            v = Ints.constrainToRange(v, 0, MAX_255_VAL)
+            paint.setARGB(MAX_255_VAL, MAX_255_VAL - v, MAX_255_VAL - v, MAX_255_VAL)
         }
     }
 
     companion object {
-        private const val TAG = "CustomPoseGraphics"
         private const val DOT_RADIUS = 8.0f
         private const val IN_FRAME_LIKELIHOOD_TEXT_SIZE = 30.0f
         private const val STROKE_WIDTH = 10.0f
         private const val POSE_CLASSIFICATION_TEXT_SIZE = 60.0f
+        private const val MAX_255_VAL = 255
+        private const val MINIMAL_VALUE = 0.001f
+        private const val FACE_LANDMARKS_LAST_INDEX = 10
+        private const val ONE_AND_A_HALF = 1.5f
+        private const val ZERO_F = 0f
+        private const val HALF = 0.5f
     }
 }

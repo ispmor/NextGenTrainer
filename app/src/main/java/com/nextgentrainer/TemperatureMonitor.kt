@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import java.util.*
+import java.util.Locale
 
 /**
  * Monitors device temperature.
@@ -45,7 +45,7 @@ class TemperatureMonitor(context: Context) : SensorEventListener {
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
     override fun onSensorChanged(sensorEvent: SensorEvent) {
         sensorReadingsCelsius[sensorEvent.sensor.name] = sensorEvent.values[0]
     }

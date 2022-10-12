@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.camera.core.CameraSelector
 import com.nextgentrainer.R
-import java.util.*
 
 /**
  * Configures CameraX live preview demo settings.
@@ -24,17 +23,25 @@ class CameraXLivePreviewPreferenceFragment : LivePreviewPreferenceFragment() {
     public override fun setUpCameraPreferences() {
         val cameraPreference = findPreference(getString(R.string.pref_category_key_camera)) as PreferenceCategory
         cameraPreference.removePreference(
-                findPreference(getString(R.string.pref_key_rear_camera_preview_size)))
+            findPreference(getString(R.string.pref_key_rear_camera_preview_size))
+        )
         cameraPreference.removePreference(
-                findPreference(getString(R.string.pref_key_front_camera_preview_size)))
+            findPreference(getString(R.string.pref_key_front_camera_preview_size))
+        )
         setUpCameraXTargetAnalysisSizePreference(
-                R.string.pref_key_camerax_rear_camera_target_resolution, CameraSelector.LENS_FACING_BACK)
+            R.string.pref_key_camerax_rear_camera_target_resolution,
+            CameraSelector.LENS_FACING_BACK
+        )
         setUpCameraXTargetAnalysisSizePreference(
-                R.string.pref_key_camerax_front_camera_target_resolution, CameraSelector.LENS_FACING_FRONT)
+            R.string.pref_key_camerax_front_camera_target_resolution,
+            CameraSelector.LENS_FACING_FRONT
+        )
     }
 
     private fun setUpCameraXTargetAnalysisSizePreference(
-            @StringRes previewSizePrefKeyId: Int, lensFacing: Int) {
+        @StringRes previewSizePrefKeyId: Int,
+        lensFacing: Int
+    ) {
         val pref = findPreference(getString(previewSizePrefKeyId)) as ListPreference
         val cameraCharacteristics = getCameraCharacteristics(activity, lensFacing)
         val entries: Array<String?>
@@ -47,15 +54,16 @@ class CameraXLivePreviewPreferenceFragment : LivePreviewPreferenceFragment() {
             }
         } else {
             entries = arrayOf(
-                    "2000x2000",
-                    "1600x1600",
-                    "1200x1200",
-                    "1000x1000",
-                    "800x800",
-                    "600x600",
-                    "400x400",
-                    "200x200",
-                    "100x100")
+                "2000x2000",
+                "1600x1600",
+                "1200x1200",
+                "1000x1000",
+                "800x800",
+                "600x600",
+                "400x400",
+                "200x200",
+                "100x100"
+            )
         }
         pref.entries = entries
         pref.entryValues = entries
@@ -70,14 +78,16 @@ class CameraXLivePreviewPreferenceFragment : LivePreviewPreferenceFragment() {
 
     companion object {
         fun getCameraCharacteristics(
-                context: Context, lensFacing: Int): CameraCharacteristics? {
+            context: Context,
+            lensFacing: Int
+        ): CameraCharacteristics? {
             val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
             try {
-                val cameraList = Arrays.asList(*cameraManager.cameraIdList)
+                val cameraList = listOf(*cameraManager.cameraIdList)
                 for (availableCameraId in cameraList) {
                     val availableCameraCharacteristics = cameraManager.getCameraCharacteristics(availableCameraId!!)
                     val availableLensFacing = availableCameraCharacteristics.get(CameraCharacteristics.LENS_FACING)
-                            ?: continue
+                        ?: continue
                     if (availableLensFacing == lensFacing) {
                         return availableCameraCharacteristics
                     }

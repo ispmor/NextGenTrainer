@@ -23,11 +23,12 @@ import java.util.concurrent.Executors
  * A processor to run pose detector.
  */
 class ExerciseProcessor(
-        context: Context,
-        options: PoseDetectorOptionsBase?,
-        runClassification: Boolean,
-        isStreamMode: Boolean,
-        private val baseExercise: String) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
+    context: Context,
+    options: PoseDetectorOptionsBase?,
+    runClassification: Boolean,
+    isStreamMode: Boolean,
+    private val baseExercise: String
+) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     private val detector: PoseDetector
     private val runClassification: Boolean
     private val isStreamMode: Boolean
@@ -56,74 +57,84 @@ class ExerciseProcessor(
 
     override fun detectInImage(image: InputImage?): Task<PoseWithClassification> {
         return detector
-                .process(image!!)
-                .continueWith(
-                        classificationExecutor
-                ) { task: Task<Pose> ->
-                    val pose = task.result
-                    var classificationResult: Repetition? = Repetition()
-                    if (runClassification) {
-                        if (poseClassifierProcessor == null) {
-                            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
-                        }
-                        classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
+            .process(image!!)
+            .continueWith(
+                classificationExecutor
+            ) { task: Task<Pose> ->
+                val pose = task.result
+                var classificationResult: Repetition? = Repetition()
+                if (runClassification) {
+                    if (poseClassifierProcessor == null) {
+                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
                     }
-                    PoseWithClassification(pose, classificationResult)
+                    classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
                 }
+                PoseWithClassification(pose, classificationResult)
+            }
     }
 
     override fun detectInImage(image: MlImage?): Task<PoseWithClassification> {
         return detector
-                .process(image!!)
-                .continueWith(
-                        classificationExecutor
-                ) { task: Task<Pose> ->
-                    val pose = task.result
-                    var classificationResult: Repetition? = Repetition()
-                    if (runClassification) {
-                        if (poseClassifierProcessor == null) {
-                            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
-                        }
-                        classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
+            .process(image!!)
+            .continueWith(
+                classificationExecutor
+            ) { task: Task<Pose> ->
+                val pose = task.result
+                var classificationResult: Repetition? = Repetition()
+                if (runClassification) {
+                    if (poseClassifierProcessor == null) {
+                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
                     }
-                    PoseWithClassification(pose, classificationResult)
+                    classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
                 }
+                PoseWithClassification(pose, classificationResult)
+            }
     }
 
     override fun onSuccess(
-            poseWithClassification: PoseWithClassification,
-            graphicOverlay: GraphicOverlay) {
+        poseWithClassification: PoseWithClassification,
+        graphicOverlay: GraphicOverlay
+    ) {
         val oldClassificationResults: MutableList<String> = ArrayList()
         if (poseWithClassification.classificationResult?.repetitionCounter != null) {
-            oldClassificationResults.add(poseWithClassification.classificationResult.poseName + " " + poseWithClassification.classificationResult.repetitionCounter.numRepeats)
+            oldClassificationResults.add(
+                poseWithClassification.classificationResult.poseName + " " +
+                    poseWithClassification.classificationResult.repetitionCounter.numRepeats
+            )
         } else {
-            oldClassificationResults.add(poseWithClassification.classificationResult?.poseName + "No repetitions.")
+            oldClassificationResults.add(
+                poseWithClassification.classificationResult?.poseName +
+                    "No repetitions."
+            )
         }
-        oldClassificationResults.add(poseWithClassification.classificationResult?.confidence.toString())
+        oldClassificationResults.add(
+            poseWithClassification.classificationResult?.confidence
+                .toString()
+        )
         graphicOverlay.add(
-                CustomPoseGraphics(
-                        graphicOverlay,
-                        poseWithClassification.pose,
-                        oldClassificationResults,
-                        poseWithClassification.classificationResult))
+            CustomPoseGraphics(
+                graphicOverlay,
+                poseWithClassification.pose,
+                oldClassificationResults,
+                poseWithClassification.classificationResult
+            )
+        )
         if (poseWithClassification.classificationResult?.repetitionCounter != null) {
-            graphicOverlay.add(QualityGraphics(graphicOverlay, poseWithClassification.classificationResult))
+            graphicOverlay.add(
+                QualityGraphics(
+                    graphicOverlay,
+                    poseWithClassification.classificationResult
+                )
+            )
             lastQualifiedRepetition = poseWithClassification.classificationResult
-
-//            String repsNumber = String.valueOf(poseWithClassification.classificationResult.getRepetitionCounter().getNumRepeats());
-//
-//            try {
-//                int repsNumberAsInt = Integer.parseInt(repsNumber);
-//                if (repsNumberAsInt != 0) {
-//                    //graphicOverlay.add(new QualityScaleGraphics(graphicOverlay, repsNumberAsInt));
-//                }
-//            } catch (Exception e) {
-//                Log.d(TAG, "Failed to draw scale...", e);
-//            }
         } else {
-//            graphicOverlay.add(new QualityScaleGraphics(graphicOverlay));
             if (lastQualifiedRepetition != null) {
-                graphicOverlay.add(QualityGraphics(graphicOverlay, poseWithClassification.classificationResult))
+                graphicOverlay.add(
+                    QualityGraphics(
+                        graphicOverlay,
+                        poseWithClassification.classificationResult
+                    )
+                )
             }
         }
     }

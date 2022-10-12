@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.preference.PreferenceFragment
 import androidx.appcompat.app.AppCompatActivity
 import com.nextgentrainer.R
-import com.nextgentrainer.preference.CameraXLivePreviewPreferenceFragment
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
 
 /**
@@ -18,8 +17,9 @@ class SettingsActivity : AppCompatActivity() {
     // CameraX is only available on API 21+
     enum class LaunchSource(val titleResId: Int, val prefFragmentClass: Class<out PreferenceFragment>) {
         CAMERAX_LIVE_PREVIEW(
-                R.string.pref_screen_title_camerax_live_preview,
-                CameraXLivePreviewPreferenceFragment::class.java);
+            R.string.pref_screen_title_camerax_live_preview,
+            CameraXLivePreviewPreferenceFragment::class.java
+        );
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,16 +28,13 @@ class SettingsActivity : AppCompatActivity() {
         val launchSource = intent.getSerializableExtra(EXTRA_LAUNCH_SOURCE) as LaunchSource?
         val actionBar = supportActionBar
         actionBar?.setTitle(launchSource!!.titleResId)
-        try {
-            fragmentManager
-                    .beginTransaction()
-                    .replace(
-                            R.id.settings_container,
-                            launchSource!!.prefFragmentClass.getDeclaredConstructor().newInstance())
-                    .commit()
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
+        fragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.settings_container,
+                launchSource!!.prefFragmentClass.getDeclaredConstructor().newInstance()
+            )
+            .commit()
     }
 
     companion object {

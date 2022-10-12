@@ -8,6 +8,7 @@ import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
 import android.hardware.Camera.PreviewCallback
+import android.hardware.camera2.CameraManager
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -17,9 +18,11 @@ import com.google.android.gms.common.images.Size
 import com.nextgentrainer.preference.PreferenceUtils
 import java.io.IOException
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.IdentityHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.math.abs
+import kotlin.math.ceil
 
 /**
  * Manages the camera and allows UI updates on top of it (e.g. overlaying extra Graphics or
@@ -27,6 +30,7 @@ import kotlin.concurrent.withLock
  * sending those frames to child classes' detectors / classifiers as fast as it is able to process.
  */
 class CameraSource(protected var activity: Activity, private val graphicOverlay: GraphicOverlay) {
+    private var cameraManager: CameraManager
     private var camera: Camera? = null
 
     /**
@@ -75,6 +79,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
     init {
         graphicOverlay.clear()
         processingRunnable = FrameProcessingRunnable()
+        cameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     }
     // ==============================================================================================
     // Public
@@ -169,7 +174,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 camera!!.setPreviewTexture(null)
                 dummySurfaceTexture = null
                 camera!!.setPreviewDisplay(null)
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "Failed to clear camera preview: $e")
             }
             camera!!.release()
@@ -198,6 +203,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
     @Throws(IOException::class)
     private fun createCamera(): Camera {
         val requestedCameraId = getIdForRequestedCamera(cameraFacing)
+
         if (requestedCameraId == -1) {
             throw IOException("Could not find requested camera.")
         }
@@ -205,9 +211,10 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         var sizePair = PreferenceUtils.getCameraPreviewSizePair(activity, requestedCameraId)
         if (sizePair == null) {
             sizePair = selectSizePair(
-                    camera,
-                    DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH,
-                    DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
+                camera,
+                DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH,
+                DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT
+            )
         }
         if (sizePair == null) {
             throw IOException("Could not find suitable preview size.")
@@ -215,7 +222,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         previewSize = sizePair.preview
         Log.v(TAG, "Camera preview size: $previewSize")
         val previewFpsRange = selectPreviewFpsRange(camera, REQUESTED_FPS)
-                ?: throw IOException("Could not find suitable preview frames per second range.")
+            ?: throw IOException("Could not find suitable preview frames per second range.")
         val parameters = camera.parameters
         val pictureSize = sizePair.picture
         if (pictureSize != null) {
@@ -224,15 +231,17 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         }
         parameters.setPreviewSize(previewSize!!.width, previewSize!!.height)
         parameters.setPreviewFpsRange(
-                previewFpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
-                previewFpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX])
+            previewFpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
+            previewFpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]
+        )
         // Use YV12 so that we can exercise YV12->NV21 auto-conversion logic for OCR detection
         parameters.previewFormat = IMAGE_FORMAT
         setRotation(camera, parameters, requestedCameraId)
         if (REQUESTED_AUTO_FOCUS) {
             if (parameters
-                            .supportedFocusModes
-                            .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                .supportedFocusModes
+                .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)
+            ) {
                 parameters.focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
             } else {
                 Log.i(TAG, "Camera auto focus is not supported on this device.")
@@ -302,10 +311,12 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         Camera.getCameraInfo(cameraId, cameraInfo)
         val displayAngle: Int
         if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            rotationDegrees = (cameraInfo.orientation + degrees) % 360
-            displayAngle = (360 - rotationDegrees) % 360 // compensate for it being mirrored
+            rotationDegrees = (cameraInfo.orientation + degrees) % ROTATION_ANGLE_360
+            displayAngle = (ROTATION_ANGLE_360 - rotationDegrees) % ROTATION_ANGLE_360
+            // compensate for it being mirrored
         } else { // back-facing
-            rotationDegrees = (cameraInfo.orientation - degrees + 360) % 360
+            rotationDegrees =
+                (cameraInfo.orientation - degrees + ROTATION_ANGLE_360) % ROTATION_ANGLE_360
             displayAngle = rotationDegrees
         }
         Log.d(TAG, "Display rotation is: $rotation")
@@ -318,7 +329,8 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
     }
 
     /**
-     * Creates one buffer for the camera preview callback. The size of the buffer is based off of the
+     * Creates one buffer for the camera preview callback. The size of the buffer is based off
+     * of the
      * camera preview size and the format of the camera image.
      *
      * @return a new preview buffer of the appropriate size for the current camera settings
@@ -327,7 +339,7 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
     private fun createPreviewBuffer(previewSize: Size?): ByteArray {
         val bitsPerPixel = ImageFormat.getBitsPerPixel(IMAGE_FORMAT)
         val sizeInBits = previewSize!!.height.toLong() * previewSize.width * bitsPerPixel
-        val bufferSize = Math.ceil(sizeInBits / 8.0).toInt() + 1
+        val bufferSize = ceil(sizeInBits / NUMBER_OF_BITS_IN_BYTE).toInt() + 1
 
         // Creating the byte array this way and wrapping it, as opposed to using .allocate(),
         // should guarantee that there will be an array to work with.
@@ -341,9 +353,9 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         bytesToByteBuffer[byteArray] = buffer
         return byteArray
     }
-    // ==============================================================================================
+    // ============================================================================================
     // Frame processing
-    // ==============================================================================================
+    // ============================================================================================
     /**
      * Called when the camera has a new preview frame.
      */
@@ -371,7 +383,8 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
      *
      * While detection is running on a frame, new frames may be received from the camera. As these
      * frames come in, the most recent frame is held onto as pending. As soon as detection and its
-     * associated processing is done for the previous frame, detection on the mostly recently received
+     * associated processing is done for the previous frame, detection on the mostly recently
+     * received
      * frame will immediately start on the same thread.
      */
     internal inner class FrameProcessingRunnable internal constructor() : Runnable {
@@ -394,8 +407,10 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         }
 
         /**
-         * Sets the frame data received from the camera. This adds the previous unused frame buffer (if
-         * present) back to the camera, and keeps a pending reference to the frame data for future use.
+         * Sets the frame data received from the camera. This adds the previous unused frame buffer
+         * (if
+         * present) back to the camera, and keeps a pending reference to the frame data for future
+         * use.
          */
         fun setNextFrame(data: ByteArray, camera: Camera) {
             lock.withLock {
@@ -405,8 +420,11 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 }
                 if (!bytesToByteBuffer.containsKey(data)) {
                     Log.d(
-                            TAG, "Skipping frame. Could not find ByteBuffer associated with the image "
-                            + "data from the camera.")
+                        TAG,
+                        "Skipping frame. Could not find ByteBuffer associated " +
+                            "with the image " +
+                            "data from the camera."
+                    )
                     return
                 }
                 pendingFrameData = bytesToByteBuffer[data]
@@ -417,18 +435,24 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         }
 
         /**
-         * As long as the processing thread is active, this executes detection on frames continuously.
-         * The next pending frame is either immediately available or hasn't been received yet. Once it
-         * is available, we transfer the frame info to local variables and run detection on that frame.
+         * As long as the processing thread is active, this executes detection on frame
+         * s continuously.
+         * The next pending frame is either immediately available or hasn't been received yet.
+         * Once it
+         * is available, we transfer the frame info to local variables and run detection on that
+         * frame.
          * It immediately loops back for the next frame without pausing.
          *
          *
-         * If detection takes longer than the time in between new frames from the camera, this will
-         * mean that this loop will run without ever waiting on a frame, avoiding any context switching
+         * If detection takes longer than the time in between new frames from the camera, this
+         * will
+         * mean that this loop will run without ever waiting on a frame, avoiding any context
+         * switching
          * or frame acquisition time latency.
          *
          *
-         * If you find that this is using more CPU than you'd like, you should probably decrease the
+         * If you find that this is using more CPU than you'd like, you should probably decrease
+         * the
          * FPS setting above to allow for some idle time in between frames.
          */
         @SuppressLint("InlinedApi")
@@ -467,13 +491,14 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 try {
                     lock.withLock {
                         frameProcessor!!.processByteBuffer(
-                                data,
-                                FrameMetadata.Builder()
-                                        .setWidth(previewSize!!.width)
-                                        .setHeight(previewSize!!.height)
-                                        .setRotation(rotationDegrees)
-                                        .build(),
-                                graphicOverlay)
+                            data,
+                            FrameMetadata.Builder()
+                                .setWidth(previewSize!!.width)
+                                .setHeight(previewSize!!.height)
+                                .setRotation(rotationDegrees)
+                                .build(),
+                            graphicOverlay
+                        )
                     }
                 } catch (t: Exception) {
                     Log.e(TAG, "Exception thrown from receiver.", t)
@@ -501,16 +526,20 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         const val DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH = 480
         const val DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT = 360
         private const val TAG = "MIDemoApp:CameraSource"
+        private const val ROTATION_ANGLE_360 = 360
+        const val NUMBER_OF_BITS_IN_BYTE = 8.0
 
         /**
-         * The dummy surface texture must be assigned a chosen name. Since we never use an OpenGL context,
+         * The dummy surface texture must be assigned a chosen name. Since we never use an OpenGL
+         * context,
          * we can choose any ID we want here. The dummy surface texture is not a crazy hack - it is
          * actually how the camera team recommends using the camera without a preview.
          */
         private const val DUMMY_TEXTURE_NAME = 100
 
         /**
-         * If the absolute difference between a preview size aspect ratio and a picture size aspect ratio
+         * If the absolute difference between a preview size aspect ratio and a picture size
+         * aspect ratio
          * is less than this tolerance, they are considered to be the same aspect ratio.
          */
         private const val ASPECT_RATIO_TOLERANCE = 0.01f
@@ -518,7 +547,8 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         private const val REQUESTED_AUTO_FOCUS = true
 
         /**
-         * Gets the id for the camera specified by the direction it is facing. Returns -1 if no such
+         * Gets the id for the camera specified by the direction it is facing.
+         * Returns -1 if no such
          * camera was found.
          *
          * @param facing the desired camera (front-facing or rear-facing)
@@ -538,9 +568,12 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
          * Selects the most suitable preview and picture size, given the desired width and height.
          *
          *
-         * Even though we only need to find the preview size, it's necessary to find both the preview
-         * size and the picture size of the camera together, because these need to have the same aspect
-         * ratio. On some hardware, if you would only set the preview size, you will get a distorted
+         * Even though we only need to find the preview size,
+         * it's necessary to find both the preview
+         * size and the picture size of the camera together,
+         * because these need to have the same aspect
+         * ratio. On some hardware, if you would only set the preview size,
+         * you will get a distorted
          * image.
          *
          * @param camera        the camera to select a preview size from
@@ -569,13 +602,17 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         }
 
         /**
-         * Generates a list of acceptable preview sizes. Preview sizes are not acceptable if there is not
-         * a corresponding picture size of the same aspect ratio. If there is a corresponding picture size
+         * Generates a list of acceptable preview sizes.
+         * Preview sizes are not acceptable if there is not
+         * a corresponding picture size of the same aspect ratio.
+         * If there is a corresponding picture size
          * of the same aspect ratio, the picture size is paired up with the preview size.
          *
          *
-         * This is necessary because even if we don't use still pictures, the still picture size must
-         * be set to a size that is the same aspect ratio as the preview size we choose. Otherwise, the
+         * This is necessary because even if we don't use still pictures,
+         * the still picture size must
+         * be set to a size that is the same aspect ratio as the preview size we choose.
+         * Otherwise, the
          * preview images may be distorted on some devices.
          */
         fun generateValidPreviewSizeList(camera: Camera?): List<SizePair> {
@@ -590,19 +627,25 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
                 // We choose the highest resolution in order to support taking the full resolution
                 // picture later.
                 for (pictureSize in supportedPictureSizes) {
-                    val pictureAspectRatio = pictureSize.width.toFloat() / pictureSize.height.toFloat()
-                    if (Math.abs(previewAspectRatio - pictureAspectRatio) < ASPECT_RATIO_TOLERANCE) {
+                    val pictureAspectRatio =
+                        pictureSize.width.toFloat() / pictureSize.height.toFloat()
+                    if (abs(previewAspectRatio - pictureAspectRatio) < ASPECT_RATIO_TOLERANCE) {
                         validPreviewSizes.add(SizePair(previewSize, pictureSize))
                         break
                     }
                 }
             }
 
-            // If there are no picture sizes with the same aspect ratio as any preview sizes, allow all
-            // of the preview sizes and hope that the camera can handle it.  Probably unlikely, but we
+            // If there are no picture sizes with the same aspect ratio as any preview sizes,
+            // allow all
+            // of the preview sizes and hope that the camera can handle it.
+            // Probably unlikely, but we
             // still account for it.
             if (validPreviewSizes.size == 0) {
-                Log.w(TAG, "No preview sizes have a corresponding same-aspect-ratio picture size")
+                Log.w(
+                    TAG,
+                    "No preview sizes have a corresponding same-aspect-ratio picture size"
+                )
                 for (previewSize in supportedPreviewSizes) {
                     // The null picture size will let us know that we shouldn't set a picture size.
                     validPreviewSizes.add(SizePair(previewSize, null))
@@ -612,7 +655,8 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
         }
 
         /**
-         * Selects the most suitable preview frames per second range, given the desired frames per second.
+         * Selects the most suitable preview frames per second range, given
+         * the desired frames per second.
          *
          * @param camera            the camera to select a frames per second range from
          * @param desiredPreviewFps the desired frames per second for the camera preview frames
@@ -620,20 +664,27 @@ class CameraSource(protected var activity: Activity, private val graphicOverlay:
          */
         @SuppressLint("InlinedApi")
         private fun selectPreviewFpsRange(camera: Camera, desiredPreviewFps: Float): IntArray? {
-            // The camera API uses integers scaled by a factor of 1000 instead of floating-point frame
+            // The camera API uses integers scaled by a factor of 1000 instead of
+            // floating-point frame
             // rates.
             val desiredPreviewFpsScaled = (desiredPreviewFps * 1000.0f).toInt()
 
-            // Selects a range with whose upper bound is as close as possible to the desired fps while its
-            // lower bound is as small as possible to properly expose frames in low light conditions. Note
-            // that this may select a range that the desired value is outside of. For example, if the
-            // desired frame rate is 30.5, the range (30, 30) is probably more desirable than (30, 40).
+            // Selects a range with whose upper bound is as close as possible to the desired
+            // fps while its
+            // lower bound is as small as possible to properly expose frames in low
+            // light conditions. Note
+            // that this may select a range that the desired value is outside of.
+            // For example, if the
+            // desired frame rate is 30.5, the range (30, 30) is probably more
+            // desirable than (30, 40).
             var selectedFpsRange: IntArray? = null
             var minUpperBoundDiff = Int.MAX_VALUE
             var minLowerBound = Int.MAX_VALUE
             val previewFpsRangeList = camera.parameters.supportedPreviewFpsRange
             for (range in previewFpsRangeList) {
-                val upperBoundDiff = Math.abs(desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX])
+                val upperBoundDiff = abs(
+                    desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]
+                )
                 val lowerBound = range[Camera.Parameters.PREVIEW_FPS_MIN_INDEX]
                 if (upperBoundDiff <= minUpperBoundDiff && lowerBound <= minLowerBound) {
                     selectedFpsRange = range

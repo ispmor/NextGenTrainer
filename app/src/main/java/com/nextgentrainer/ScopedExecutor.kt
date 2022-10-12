@@ -15,7 +15,6 @@ class ScopedExecutor(private val executor: Executor) : Executor {
             return
         }
         executor.execute {
-
             // Check again in case it has been shut down in the mean time.
             if (shutdown.get()) {
                 return@execute

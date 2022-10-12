@@ -17,12 +17,18 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import kotlin.collections.set
 
 /**
  * Accepts a stream of [Pose] for classification and Rep counting.
  */
-class PoseClassifierProcessor @WorkerThread constructor(context: Context, isStreamMode: Boolean, baseExercise: String) {
+class PoseClassifierProcessor @WorkerThread constructor(
+    context: Context,
+    isStreamMode: Boolean,
+    baseExercise: String
+) {
     private val isStreamMode: Boolean
     private var lastDetectedClass: String? = ""
     private var emaSmoothing: EMASmoothing? = null
@@ -32,7 +38,6 @@ class PoseClassifierProcessor @WorkerThread constructor(context: Context, isStre
     private val context: Context
     private var baseExercise: String? = null
     private var lastRep: Repetition
-    private val lastQualifiedRepetitionTime: Date? = null
     private val sets: MutableMap<String, List<ExerciseSet>> = HashMap()
     private var posesFromLastRep: MutableList<Pose> = ArrayList()
     private var posesTimestampsFromLastRep: MutableList<Date> = ArrayList()
@@ -57,22 +62,18 @@ class PoseClassifierProcessor @WorkerThread constructor(context: Context, isStre
 
     private fun loadPoseSamples(context: Context, baseExercise: String) {
         val poseSamples: MutableList<PoseSample> = ArrayList()
-        try {
-            BufferedReader(
-                    InputStreamReader(context.assets.open(BASE_DIR + "/" + baseExercise + "/" + SAMPLES_FILE))).use { reader ->
-                var csvLine = reader.readLine()
-                while (csvLine != null) {
-                    // If line is not a valid {@link PoseSample}, we'll get null and skip adding to the list.
-                    val poseSample: PoseSample? = PoseSample.getPoseSample(csvLine, ",")
-                    if (poseSample != null) {
-                        poseSamples.add(poseSample)
-                    }
-                    csvLine = reader.readLine()
+        BufferedReader(
+            InputStreamReader(
+                context.assets.open("$BASE_DIR/$baseExercise/$SAMPLES_FILE")
+            )
+        )
+            .use { reader ->
+                reader.lines().forEach { line ->
+                    val poseSample: PoseSample? = PoseSample.getPoseSample(line, ",")
+                    poseSample?.let { poseSamples.add(it) }
                 }
             }
-        } catch (e: IOException) {
-            Log.e(TAG, "Error when loading pose samples.\n$e")
-        }
+
         poseClassifier = PoseClassifier(poseSamples)
         if (isStreamMode) {
             for (className in POSE_CLASSES) {
@@ -119,10 +120,12 @@ class PoseClassifierProcessor @WorkerThread constructor(context: Context, isStre
         if (!pose.allPoseLandmarks.isEmpty()) {
             val maxConfidenceClass = classification.maxConfidenceClass
             val maxConfidenceClassResult = String.format(
-                    Locale.US,
-                    "%s : %.2f confidence",
-                    maxConfidenceClass, classification!!.getClassConfidence(maxConfidenceClass)
-                    / poseClassifier!!.confidenceRange())
+                Locale.US,
+                "%s : %.2f confidence",
+                maxConfidenceClass,
+                classification!!.getClassConfidence(maxConfidenceClass) /
+                    poseClassifier!!.confidenceRange()
+            )
             lastRep!!.poseName = maxConfidenceClass
             lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
             result.add(maxConfidenceClassResult)
@@ -135,76 +138,85 @@ class PoseClassifierProcessor @WorkerThread constructor(context: Context, isStre
         val detectionResultHasChanged = lastDetectedClass != maxConfidenceClass
         if (detectionResultHasChanged) {
             lastDetectedClass = maxConfidenceClass
-            if (maxConfidenceClass != "" && repCounters!!.containsKey(maxConfidenceClass) && detectionResultHasChanged) {
+            if (maxConfidenceClass != "" && repCounters!!.containsKey(maxConfidenceClass) &&
+                detectionResultHasChanged
+            ) {
                 lastDetectedClass = maxConfidenceClass
                 val repCounter = repCounters!![maxConfidenceClass]
                 val repsBefore = repCounter!!.numRepeats
-                //int repsAfter = repCounter.addClassificationResult(classification);
-                val repsAfter = repCounter!!.increaseCount(classification)
+                // int repsAfter = repCounter.addClassificationResult(classification);
+                val repsAfter = repCounter.increaseCount(classification)
                 Log.d(TAG, "RepsBefore: $repsBefore Reps after: $repsAfter")
-                //                if (repsAfter > repsBefore) {
-//                    if (lastQualifiedRepetitionTime == null) {
-//                        lastQualifiedRepetitionTime = new Date();
-//                    }
-//                    if (sets.containsKey(maxConfidenceClass)) {
-//                        if (sets.get(maxConfidenceClass).size() == 0) {
-//                            sets.get(maxConfidenceClass).add(new ExerciseSet(1));
-//                        }
-//                        if (new Date().getTime() - lastQualifiedRepetitionTime.getTime() > 20000) {
-//                            /* Między tym a ostatnim repem minęło 20 sekund, czas zacząc nowy set*/
-//                            sets.get(maxConfidenceClass).add(new ExerciseSet(sets.get(maxConfidenceClass).size() + 1));
-//                        }
-//                    }
-//
+
                 val repetitionQuality = gradeQuality(posesFromLastRep, posesTimestampsFromLastRep)
-                if (repetitionQuality != null) {
-                    for (qualityFeature in repetitionQuality.qualityFeatures) {
-                        Log.d(TAG, qualityFeature.name)
-                        Log.d(TAG, qualityFeature.decisionBase.toString())
-                    }
+                repetitionQuality.qualityFeatures.forEach {
+                    Log.d(TAG, it.name)
+                    Log.d(TAG, it.decisionBase.toString())
                 }
                 MediaPlayer.create(context, R.raw.notification).start()
                 lastRepResult = String.format(
-                        Locale.US, "%s : %d reps", repCounter.className, repsAfter)
+                    Locale.US,
+                    "%s : %d reps",
+                    repCounter.className,
+                    repsAfter
+                )
                 lastRep = Repetition(repCounter, repetitionQuality, maxConfidenceClass)
-                Log.d(TAG, String.format("QUALITY: %s", repetitionQuality!!.quality))
-                saveRepetitionToCache(lastRep!!, posesFromLastRep)
+                Log.d(
+                    TAG,
+                    String.format(Locale.getDefault(), "QUALITY: %s", repetitionQuality.quality)
+                )
+                saveRepetitionToCache(lastRep) // .posesFromLastRep
 
-                //sets.get(maxConfidenceClass).get(sets.get(maxConfidenceClass).size() - 1).addRepetition(lastRep);
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
                 repCounters!![maxConfidenceClass] = repCounter
                 return lastRep
             }
         }
-        //        }
-        return if (lastRep == null) Repetition() else lastRep!!
+
+        return lastRep
     }
 
-    private fun saveRepetitionToCache(rep: Repetition, repPoses: List<Pose>) {
+    private fun saveRepetitionToCache(rep: Repetition) {
         val jsonbuilder = Gson()
         val result = """
             ${jsonbuilder.toJson(rep)}
             
-            """.trimIndent()
+        """.trimIndent()
         val finalCacheFileName = context.getString(R.string.cache_filename)
         try {
-            context.openFileOutput(finalCacheFileName, Context.MODE_APPEND).use { fos -> fos.write(result.toByteArray(StandardCharsets.UTF_8)) }
+            context.openFileOutput(finalCacheFileName, Context.MODE_APPEND)
+                .use { fos -> fos.write(result.toByteArray(StandardCharsets.UTF_8)) }
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.d(TAG, e.message!!)
         }
     }
 
     val repetitionCounters: Map<String?, RepetitionCounter?>?
         get() = repCounters
 
-    private fun gradeQuality(posesFromLastRep: List<Pose>, posesTimestampsFromLastRep: List<Date>): RepetitionQuality? {
+    private fun gradeQuality(
+        posesFromLastRep: List<Pose>,
+        posesTimestampsFromLastRep: List<Date>
+    ): RepetitionQuality {
         return when (baseExercise) {
-            "pushups" -> QualityDetector.pushupsQuality(posesFromLastRep, posesTimestampsFromLastRep)
-            "pullups" -> QualityDetector.pullupsQuality(posesFromLastRep, posesTimestampsFromLastRep)
-            "squats" -> QualityDetector.squatQuality(posesFromLastRep, posesTimestampsFromLastRep)
-            "situps" -> QualityDetector.situpsQuality(posesFromLastRep, posesTimestampsFromLastRep)
-            else -> QualityDetector.allExcerciseQuality(posesFromLastRep, posesTimestampsFromLastRep)
+            "pushups" -> QualityDetector.pushupsQuality(
+                posesFromLastRep,
+                posesTimestampsFromLastRep
+            )
+            "pullups" -> QualityDetector.pullupsQuality(
+                posesFromLastRep,
+                posesTimestampsFromLastRep
+            )
+            "squats" -> QualityDetector.squatQuality(
+                posesFromLastRep,
+                posesTimestampsFromLastRep
+            )
+            "situps" -> QualityDetector.situpsQuality(
+                posesFromLastRep,
+                posesTimestampsFromLastRep
+            )
+            else -> QualityDetector.allExcerciseQuality(posesTimestampsFromLastRep)
         }
     }
 
@@ -220,7 +232,10 @@ class PoseClassifierProcessor @WorkerThread constructor(context: Context, isStre
         private const val SITUPS_CLASS = "situps_down"
         private const val PULLUPS_CLASS = "pullups_down"
         private val POSE_CLASSES = arrayOf(
-                PUSHUPS_CLASS, SQUATS_CLASS, SITUPS_CLASS, PULLUPS_CLASS
+            PUSHUPS_CLASS,
+            SQUATS_CLASS,
+            SITUPS_CLASS,
+            PULLUPS_CLASS
         )
     }
 }

@@ -1,8 +1,6 @@
 package com.nextgentrainer
 
 import android.graphics.Bitmap
-import android.os.Build.VERSION_CODES
-import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.common.MlKitException
 import java.nio.ByteBuffer
@@ -21,12 +19,14 @@ interface VisionImageProcessor {
      */
     @Throws(MlKitException::class)
     fun processByteBuffer(
-            data: ByteBuffer?, frameMetadata: FrameMetadata?, graphicOverlay: GraphicOverlay)
+        data: ByteBuffer?,
+        frameMetadata: FrameMetadata?,
+        graphicOverlay: GraphicOverlay
+    )
 
     /**
      * Processes ImageProxy image data, e.g. used for CameraX live preview case.
      */
-    @RequiresApi(VERSION_CODES.KITKAT)
     @Throws(MlKitException::class)
     fun processImageProxy(image: ImageProxy, graphicOverlay: GraphicOverlay)
 

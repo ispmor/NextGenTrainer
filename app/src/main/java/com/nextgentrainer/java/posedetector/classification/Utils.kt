@@ -23,12 +23,18 @@ object Utils {
 
     fun multiply(a: PointF3D?, multiple: PointF3D): PointF3D {
         return PointF3D.from(
-                a!!.x * multiple.x, a.y * multiple.y, a.z * multiple.z)
+            a!!.x * multiple.x,
+            a.y * multiple.y,
+            a.z * multiple.z
+        )
     }
 
     fun average(a: PointF3D, b: PointF3D): PointF3D {
         return PointF3D.from(
-                (a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f, (a.z + b.z) * 0.5f)
+            (a.x + b.x) * 0.5f,
+            (a.y + b.y) * 0.5f,
+            (a.z + b.z) * 0.5f
+        )
     }
 
     fun l2Norm2D(point: PointF3D?): Float {
@@ -42,7 +48,6 @@ object Utils {
     fun sumAbs(point: PointF3D?): Float {
         return abs(point!!.x) + abs(point.y) + abs(point.z)
     }
-
 
     fun subtractAll(p: PointF3D?, pointsList: MutableList<PointF3D>) {
         val iterator = pointsList.listIterator()

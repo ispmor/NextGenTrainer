@@ -1,163 +1,63 @@
 package com.nextgentrainer.java
 
-import com.nextgentrainer.java.posedetector.classification.RepetitionCounter
-import com.nextgentrainer.java.utils.RepetitionQuality
-import com.nextgentrainer.java.utils.Repetition
-import com.google.mlkit.vision.common.PointF3D
-import com.nextgentrainer.java.utils.LineEquation
-import com.google.mlkit.vision.pose.Pose
-import com.nextgentrainer.java.utils.QualityFeature
-import com.nextgentrainer.java.posedetector.MovementDescription
-import com.nextgentrainer.java.utils.QualityDetector
-import com.nextgentrainer.GraphicOverlay
-import com.nextgentrainer.GraphicOverlay.Graphic
-import com.nextgentrainer.java.graphics.QualityGraphics
-import com.google.common.primitives.Floats
-import com.nextgentrainer.java.posedetector.classification.PoseEmbedding
-import com.nextgentrainer.java.posedetector.classification.PoseSample
-import kotlin.jvm.JvmOverloads
-import com.nextgentrainer.java.posedetector.classification.EMASmoothing
-import com.nextgentrainer.java.posedetector.classification.ClassificationResult
-import com.google.mlkit.vision.pose.PoseLandmark
-import com.nextgentrainer.java.posedetector.classification.PoseClassifier
-import android.media.MediaPlayer
-import com.nextgentrainer.java.utils.ExerciseSet
-import android.os.Looper
-import com.nextgentrainer.R
-import com.nextgentrainer.java.posedetector.classification.PoseClassifierProcessor
-import com.google.gson.Gson
-import com.nextgentrainer.java.posedetector.PoseGraphic
-import com.google.common.primitives.Ints
-import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
-import com.nextgentrainer.java.VisionProcessorBase
-import com.google.mlkit.vision.pose.PoseDetector
-import com.google.mlkit.vision.pose.PoseDetection
-import com.google.mlkit.vision.common.InputImage
-import com.google.android.odml.image.MlImage
-import com.nextgentrainer.java.graphics.CustomPoseGraphics
-import com.nextgentrainer.java.posedetector.ExerciseProcessor
-import com.nextgentrainer.java.posedetector.PoseDetectorProcessor
-import com.google.android.gms.common.annotation.KeepName
-import androidx.annotation.RequiresApi
-import android.os.Build.VERSION_CODES
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.AdapterView.OnItemSelectedListener
-import androidx.camera.view.PreviewView
-import androidx.camera.lifecycle.ProcessCameraProvider
-import com.nextgentrainer.VisionImageProcessor
-import com.nextgentrainer.java.CameraActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.CompoundButton
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.Toast
+import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraInfoUnavailableException
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
+import com.google.android.gms.common.annotation.KeepName
+import com.google.mlkit.common.MlKitException
 import com.nextgentrainer.CameraXViewModel
-import android.content.Intent
+import com.nextgentrainer.GraphicOverlay
+import com.nextgentrainer.R
+import com.nextgentrainer.VisionImageProcessor
+import com.nextgentrainer.java.posedetector.ExerciseProcessor
+import com.nextgentrainer.java.posedetector.classification.RepetitionCounter
+import com.nextgentrainer.java.utils.CameraActivityHelper.saveDataToCache
+import com.nextgentrainer.java.utils.CameraActivityHelper.saveDataToFileInExternalStorage
+import com.nextgentrainer.java.utils.CameraActivityHelper.selectModel
+import com.nextgentrainer.java.utils.Constants.CREATE_FILE
+import com.nextgentrainer.java.utils.Constants.PULL_UPS_TRAINER
+import com.nextgentrainer.java.utils.Constants.PUSH_UPS_TRAINER
+import com.nextgentrainer.java.utils.Constants.REP_COUNTER
+import com.nextgentrainer.java.utils.Constants.SIT_UPS_TRAINER
+import com.nextgentrainer.java.utils.Constants.SQUATS_TRAINER
+import com.nextgentrainer.java.utils.Constants.STATE_SELECTED_MODEL
+import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
-import com.google.mlkit.common.MlKitException
-import android.app.Activity
-import android.os.Build
-import com.nextgentrainer.java.FitLogActivity
-import com.nextgentrainer.java.FitLogActivity.MyArrayAdapter
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.utils.ColorTemplate
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.components.Legend
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonStreamParser
-import com.google.gson.JsonElement
-import com.google.gson.JsonSyntaxException
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.components.XAxis
-import android.widget.AdapterView.OnItemClickListener
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
-import android.os.StrictMode.VmPolicy
-import com.nextgentrainer.java.ChooserActivity
-import android.app.ActivityManager
-import com.nextgentrainer.ScopedExecutor
-import com.nextgentrainer.TemperatureMonitor
-import com.nextgentrainer.FrameMetadata
-import com.google.android.gms.tasks.TaskExecutors
-import android.graphics.Bitmap
-import com.google.android.odml.image.BitmapMlImageBuilder
-import com.nextgentrainer.BitmapUtils
-import com.google.android.odml.image.ByteBufferMlImageBuilder
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.odml.image.MediaMlImageBuilder
-import com.google.android.gms.tasks.OnCompleteListener
-import com.nextgentrainer.CameraImageGraphic
-import com.nextgentrainer.InferenceInfoGraphic
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.Tasks
-import androidx.annotation.StringRes
-import android.preference.PreferenceManager
-import com.nextgentrainer.CameraSource.SizePair
-import com.nextgentrainer.CameraSource
-import android.content.SharedPreferences
-import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
-import com.google.mlkit.vision.objects.ObjectDetectorOptionsBase
-import com.google.mlkit.common.model.LocalModel
-import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
-import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions
-import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions
-import android.preference.PreferenceFragment
-import com.nextgentrainer.preference.CameraXLivePreviewPreferenceFragment
-import android.preference.PreferenceCategory
-import android.preference.ListPreference
-import android.preference.Preference.OnPreferenceChangeListener
-import com.nextgentrainer.preference.LivePreviewPreferenceFragment
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.params.StreamConfigurationMap
-import android.graphics.SurfaceTexture
-import android.hardware.camera2.CameraManager
-import android.hardware.camera2.CameraAccessException
-import android.graphics.YuvImage
-import android.graphics.BitmapFactory
-import kotlin.Throws
-import android.content.ContentResolver
-import android.provider.MediaStore
-import android.media.Image.Plane
-import android.annotation.TargetApi
-import com.nextgentrainer.CameraSource.FrameProcessingRunnable
-import androidx.annotation.RequiresPermission
-import android.annotation.SuppressLint
-import com.nextgentrainer.CameraSource.CameraPreviewCallback
-import android.hardware.Camera.PreviewCallback
-import android.view.View.OnLayoutChangeListener
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.LiveData
-import com.google.common.util.concurrent.ListenableFuture
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import android.hardware.SensorEvent
-import android.net.Uri
-import android.util.Log
-import android.view.*
-import android.widget.*
-import androidx.camera.core.*
-import androidx.core.content.ContextCompat
-import com.nextgentrainer.preference.PreferenceUtils
-import java.io.FileOutputStream
-import java.io.IOException
-import java.lang.Exception
-import java.lang.IllegalStateException
-import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import java.util.stream.Collectors
 
 /**
  * Live preview demo app for ML Kit APIs using CameraX.
  */
 @KeepName
-@RequiresApi(VERSION_CODES.O)
-class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
+class CameraActivity :
+    AppCompatActivity(),
+    OnItemSelectedListener,
+    CompoundButton.OnCheckedChangeListener {
     private var previewView: PreviewView? = null
     private var graphicOverlay: GraphicOverlay? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -193,7 +93,6 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
         options.add(SQUATS_TRAINER)
         options.add(SIT_UPS_TRAINER)
 
-
         // Creating adapter for spinner
         val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
         // Drop down layout style - list view with radio button
@@ -204,28 +103,32 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
         val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
         facingSwitch.setOnCheckedChangeListener(this)
         ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
-                .get(CameraXViewModel::class.java)
-                .processCameraProvider
-                .observe(
-                        this
-                ) { provider: ProcessCameraProvider? ->
-                    cameraProvider = provider
-                    bindAllCameraUseCases()
-                }
+            .get(CameraXViewModel::class.java)
+            .processCameraProvider
+            .observe(
+                this
+            ) { provider: ProcessCameraProvider? ->
+                cameraProvider = provider
+                bindAllCameraUseCases()
+            }
         val settingsButton = findViewById<ImageView>(R.id.settings_button)
         settingsButton.setOnClickListener { v: View? ->
             val intent = Intent(applicationContext, SettingsActivity::class.java)
             intent.putExtra(
-                    SettingsActivity.Companion.EXTRA_LAUNCH_SOURCE,
-                    LaunchSource.CAMERAX_LIVE_PREVIEW)
+                SettingsActivity.Companion.EXTRA_LAUNCH_SOURCE,
+                LaunchSource.CAMERAX_LIVE_PREVIEW
+            )
             startActivity(intent)
         }
         val saveButton = findViewById<Button>(R.id.save_button)
         saveButton.setOnClickListener {
             assert(imageProcessor != null)
             val counters = (imageProcessor as ExerciseProcessor?)!!.repetitionCounters
-            countersAsString = counters!!.stream().map { obj: RepetitionCounter? -> obj.toString() }.collect(Collectors.joining("\n"))
-            saveDataToCache(countersAsString)
+            countersAsString = counters!!.stream().map {
+                obj: RepetitionCounter? ->
+                obj.toString()
+            }.collect(Collectors.joining("\n"))
+            saveDataToCache(countersAsString, "", this)
             createCSVDocumentPicker()
         }
     }
@@ -264,7 +167,10 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
         if (cameraProvider == null) {
             return
         }
-        val newLensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT
+        val newLensFacing =
+            if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                CameraSelector.LENS_FACING_BACK
+            } else CameraSelector.LENS_FACING_FRONT
         val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
         try {
             if (cameraProvider!!.hasCamera(newCameraSelector)) {
@@ -278,10 +184,11 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
             // Falls through
         }
         Toast.makeText(
-                applicationContext,
-                "This device does not have lens with facing: $newLensFacing",
-                Toast.LENGTH_SHORT)
-                .show()
+            applicationContext,
+            "This device does not have lens with facing: $newLensFacing",
+            Toast.LENGTH_SHORT
+        )
+            .show()
     }
 
     public override fun onResume() {
@@ -305,7 +212,8 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
 
     private fun bindAllCameraUseCases() {
         if (cameraProvider != null) {
-            // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
+            // As required by CameraX API, unbinds all use cases before trying to
+            // re-bind any of them.
             cameraProvider!!.unbindAll()
             bindPreviewUseCase()
             bindAnalysisUseCase()
@@ -329,7 +237,11 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
         }
         previewUseCase = builder.build()
         previewUseCase!!.setSurfaceProvider(previewView!!.surfaceProvider)
-        cameraProvider!!.bindToLifecycle( /* lifecycleOwner= */this, cameraSelector!!, previewUseCase)
+        cameraProvider!!.bindToLifecycle(
+            /* lifecycleOwner = */this,
+            cameraSelector!!,
+            previewUseCase
+        )
     }
 
     private fun bindAnalysisUseCase() {
@@ -342,56 +254,9 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
         if (imageProcessor != null) {
             imageProcessor!!.stop()
         }
-        imageProcessor = try {
-            when (selectedModel) {
-                REP_COUNTER -> {
-                    val poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
-                    val shouldShowInFrameLikelihood = PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
-                    val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
-                    val rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
-                    val runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this)
-                    ExerciseProcessor(
-                            this,
-                            poseDetectorOptions,
-                            true,  /* isStreamMode = */
-                            true,
-                            "all")
-                }
-                PUSH_UPS_TRAINER -> ExerciseProcessor(
-                        this,
-                        PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                        true,
-                        true,
-                        "pushups")
-                PULL_UPS_TRAINER -> ExerciseProcessor(
-                        this,
-                        PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                        true,
-                        true,
-                        "pullups")
-                SIT_UPS_TRAINER -> ExerciseProcessor(
-                        this,
-                        PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                        true,
-                        true,
-                        "situps")
-                SQUATS_TRAINER -> ExerciseProcessor(
-                        this,
-                        PreferenceUtils.getPoseDetectorOptionsForLivePreview(this),
-                        true,
-                        true,
-                        "squats")
-                else -> throw IllegalStateException("Invalid model name")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Can not create image processor: $selectedModel", e)
-            Toast.makeText(
-                    applicationContext,
-                    "Can not create image processor: " + e.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            return
-        }
+
+        imageProcessor = selectModel(selectedModel, this)
+
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
         if (targetResolution != null) {
@@ -399,19 +264,27 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
         }
         analysisUseCase = builder.build()
         needUpdateGraphicOverlayImageSourceInfo = true
-        analysisUseCase!!.setAnalyzer( // imageProcessor.processImageProxy will use another thread to run the detection underneath,
-                // thus we can just runs the analyzer itself on main thread.
-                ContextCompat.getMainExecutor(this)
+        analysisUseCase!!.setAnalyzer(
+            // imageProcessor.processImageProxy will use another thread to run the
+            // detection underneath,
+            // thus we can just runs the analyzer itself on main thread.
+            ContextCompat.getMainExecutor(this)
         ) { imageProxy: ImageProxy ->
             if (needUpdateGraphicOverlayImageSourceInfo) {
                 val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
                 val rotationDegrees = imageProxy.imageInfo.rotationDegrees
                 if (rotationDegrees == 0 || rotationDegrees == 180) {
                     graphicOverlay!!.setImageSourceInfo(
-                            imageProxy.width, imageProxy.height, isImageFlipped)
+                        imageProxy.width,
+                        imageProxy.height,
+                        isImageFlipped
+                    )
                 } else {
                     graphicOverlay!!.setImageSourceInfo(
-                            imageProxy.height, imageProxy.width, isImageFlipped)
+                        imageProxy.height,
+                        imageProxy.width,
+                        isImageFlipped
+                    )
                 }
                 needUpdateGraphicOverlayImageSourceInfo = false
             }
@@ -420,10 +293,10 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
             } catch (e: MlKitException) {
                 Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
                 Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT)
-                        .show()
+                    .show()
             }
         }
-        cameraProvider!!.bindToLifecycle( /* lifecycleOwner= */this, cameraSelector!!, analysisUseCase)
+        cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -432,37 +305,12 @@ class CameraActivity : AppCompatActivity(), OnItemSelectedListener, CompoundButt
             val uri: Uri?
             if (data != null) {
                 uri = data.data
-                saveDataToFileInExternalStorage(countersAsString, uri)
+                saveDataToFileInExternalStorage(countersAsString, uri, this)
             }
         }
     }
 
-    @JvmOverloads
-    fun saveDataToCache(data: String?, uri: String = "") {
-        val finalCacheFileName = if (uri == "") getString(R.string.cache_filename) else uri
-        try {
-            openFileOutput(finalCacheFileName, MODE_APPEND).use { fos -> fos.write(data!!.toByteArray(StandardCharsets.UTF_8)) }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    fun saveDataToFileInExternalStorage(data: String?, uri: Uri?) {
-        try {
-            contentResolver.openFileDescriptor(uri!!, "w").use { csv -> FileOutputStream(csv!!.fileDescriptor).use { fileOutputStream -> fileOutputStream.write(data!!.toByteArray(StandardCharsets.UTF_8)) } }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
     companion object {
-        private const val CREATE_FILE = 1
         private const val TAG = "CameraActivity"
-        private const val REP_COUNTER = "Repetition Counter"
-        private const val PUSH_UPS_TRAINER = "Push-ups Trainer"
-        private const val SIT_UPS_TRAINER = "Sit-ups Trainer"
-        private const val SQUATS_TRAINER = "Squats Trainer"
-        private const val PULL_UPS_TRAINER = "Pull-ups Trainer"
-        private const val STATE_SELECTED_MODEL = "selected_model"
     }
 }
