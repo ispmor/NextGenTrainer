@@ -73,7 +73,7 @@ object QualityDetector {
                         movementDescription.leftHipMovement[it]!!.y +
                             movementDescription.rightHipMovement[it]!!.y
                         ) * HALF
-                    ) > ZERO
+                    ) < ZERO
             )
         }
         val repTime = getRepTime(posesTimestamps)

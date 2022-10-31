@@ -79,7 +79,7 @@ class QualityGraphics(
                     qualityLocationY,
                     whitePaint
                 )
-                if (!it.isValid) {
+                if (it.isValid) {
                     canvas.drawCircle(75f, qualityLocationY - TEXT_SIZE / 2, 30f, greenPaint)
                 }
                 qualityLocationY += QUALITY_Y_INTERVAL
