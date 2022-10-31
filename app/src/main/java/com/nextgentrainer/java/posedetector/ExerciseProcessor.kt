@@ -118,7 +118,6 @@ class ExerciseProcessor(
                 CustomPoseGraphics(
                     graphicOverlay,
                     results.pose,
-                    oldClassificationResults,
                     results.classificationResult
                 )
             )

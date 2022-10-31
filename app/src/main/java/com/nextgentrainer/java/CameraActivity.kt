@@ -47,7 +47,8 @@ import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.stream.Collectors
 import kotlin.collections.ArrayList
 
@@ -123,15 +124,6 @@ class CameraActivity :
 
         val countdownTextView = findViewById<TextView>(R.id.counterTextView)
 
-        val timerToStop = object : CountDownTimer(10000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-            }
-
-            override fun onFinish() {
-                imageProcessor.isStarted = false
-            }
-        }
-
         val timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 countdownTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
@@ -140,7 +132,7 @@ class CameraActivity :
             override fun onFinish() {
                 countdownTextView.visibility = View.INVISIBLE
                 imageProcessor.isStarted = true
-                //timerToStop.start()
+                // timerToStop.start()
             }
         }
 

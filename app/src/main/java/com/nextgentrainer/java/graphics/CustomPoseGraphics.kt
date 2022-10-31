@@ -16,7 +16,6 @@ import com.nextgentrainer.java.utils.Repetition
 class CustomPoseGraphics(
     overlay: GraphicOverlay,
     private val pose: Pose,
-    private val poseClassification: List<String>,
     repetition: Repetition?
 ) : Graphic(overlay) {
     private var zMin = Float.MAX_VALUE
@@ -45,7 +44,7 @@ class CustomPoseGraphics(
         }
 
         // Draw pose classification text.
-        val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * HALF
+//        val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * HALF
 //        for (i in poseClassification.indices) {
 //            val classificationY = canvas.height - (
 //                POSE_CLASSIFICATION_TEXT_SIZE * ONE_AND_A_HALF
@@ -164,8 +163,6 @@ class CustomPoseGraphics(
         private const val MAX_255_VAL = 255
         private const val MINIMAL_VALUE = 0.001f
         private const val FACE_LANDMARKS_LAST_INDEX = 10
-        private const val ONE_AND_A_HALF = 1.5f
         private const val ZERO_F = 0f
-        private const val HALF = 0.5f
     }
 }

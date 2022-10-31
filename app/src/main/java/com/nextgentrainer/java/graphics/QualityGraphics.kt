@@ -5,11 +5,10 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
-import android.util.DisplayMetrics
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.GraphicOverlay.Graphic
 import com.nextgentrainer.java.utils.Repetition
-import java.util.*
+import java.util.Locale
 
 class QualityGraphics(
     overlay: GraphicOverlay,
@@ -37,7 +36,7 @@ class QualityGraphics(
             canvas.height * 0.20f,
             whitePaint
         )
-         drawQuality(canvas)
+        drawQuality(canvas)
     }
 
     private fun drawQuality(canvas: Canvas) {
@@ -54,36 +53,41 @@ class QualityGraphics(
         )
 
         val path = Path()
-        path.addRoundRect(RectF(0f, canvas.height * 0.70f, canvas.width.toFloat(), canvas.height.toFloat() * 0.975f), corners, Path.Direction.CW)
+        path.addRoundRect(
+            RectF(
+                0f,
+                canvas.height * 0.70f,
+                canvas.width.toFloat(),
+                canvas.height.toFloat() * 0.975f
+            ),
+            corners,
+            Path.Direction.CW
+        )
         canvas.drawPath(path, backgroundPaint)
 
         repetition?.quality?.qualityFeatures!!
             .forEach {
-            canvas.drawText(
-                String.format(
-                    Locale.getDefault(),
-                    "%s",
-                    it.name
-                ),
-                ZER0_F + 150,
-                qualityLocationY,
-                whitePaint
-            )
-            if (!it.isValid) {
-                canvas.drawCircle(75f, qualityLocationY - TEXT_SIZE / 2, 30f, whitePaint)
+                canvas.drawText(
+                    String.format(
+                        Locale.getDefault(),
+                        "%s",
+                        it.name
+                    ),
+                    ZER0_F + 150,
+                    qualityLocationY,
+                    whitePaint
+                )
+                if (!it.isValid) {
+                    canvas.drawCircle(75f, qualityLocationY - TEXT_SIZE / 2, 30f, whitePaint)
+                }
+                qualityLocationY += QUALITY_Y_INTERVAL
             }
-            qualityLocationY += QUALITY_Y_INTERVAL
-        }
     }
 
     companion object {
-        val displayMetrics = DisplayMetrics()
         private const val TEXT_SIZE = 30.0f
         private const val QUALITY_Y_INTERVAL = 100
         private const val BIG_TEXT = 96.0f
         private const val ZER0_F = 0f
-        private const val HALF_2F = 2f
-        private const val QUARTER = 4f
-        private const val QUALITY_STARTING_LOCATION = 600f
     }
 }
