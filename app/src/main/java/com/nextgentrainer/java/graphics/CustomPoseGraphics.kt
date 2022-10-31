@@ -46,18 +46,18 @@ class CustomPoseGraphics(
 
         // Draw pose classification text.
         val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * HALF
-        for (i in poseClassification.indices) {
-            val classificationY = canvas.height - (
-                POSE_CLASSIFICATION_TEXT_SIZE * ONE_AND_A_HALF
-                    * (poseClassification.size - i)
-                )
-            canvas.drawText(
-                poseClassification[i],
-                classificationX,
-                classificationY,
-                classificationTextPaint
-            )
-        }
+//        for (i in poseClassification.indices) {
+//            val classificationY = canvas.height - (
+//                POSE_CLASSIFICATION_TEXT_SIZE * ONE_AND_A_HALF
+//                    * (poseClassification.size - i)
+//                )
+//            canvas.drawText(
+//                poseClassification[i],
+//                classificationX,
+//                classificationY,
+//                classificationTextPaint
+//            )
+//        }
 
         // Draw all the points
         landmarks.filter { it.landmarkType > FACE_LANDMARKS_LAST_INDEX }.forEach {

@@ -22,15 +22,13 @@ import com.nextgentrainer.BitmapUtils
 import com.nextgentrainer.CameraImageGraphic
 import com.nextgentrainer.FrameMetadata
 import com.nextgentrainer.GraphicOverlay
-import com.nextgentrainer.InferenceInfoGraphic
 import com.nextgentrainer.ScopedExecutor
 import com.nextgentrainer.TemperatureMonitor
 import com.nextgentrainer.VisionImageProcessor
 import com.nextgentrainer.java.posedetector.classification.RepetitionCounter
 import com.nextgentrainer.preference.PreferenceUtils
 import java.nio.ByteBuffer
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 
 abstract class VisionProcessorBase<T> protected constructor(context: Context) :
     VisionImageProcessor {
@@ -299,16 +297,16 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context) :
                 graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
             }
             this@VisionProcessorBase.onSuccess(results, graphicOverlay)
-            if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
-                graphicOverlay.add(
-                    InferenceInfoGraphic(
-                        graphicOverlay,
-                        currentFrameLatencyMs,
-                        currentDetectorLatencyMs,
-                        if (shouldShowFps) framesPerSecond else null
-                    )
-                )
-            }
+//            if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
+//                graphicOverlay.add(
+//                    InferenceInfoGraphic(
+//                        graphicOverlay,
+//                        currentFrameLatencyMs,
+//                        currentDetectorLatencyMs,
+//                        if (shouldShowFps) framesPerSecond else null
+//                    )
+//                )
+//            }
             graphicOverlay.postInvalidate()
         }
             .addOnFailureListener(

@@ -29,6 +29,7 @@ class ExerciseProcessor(
     isStreamMode: Boolean,
     private val baseExercise: String
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
+    var isStarted: Boolean = false
     private val detector: PoseDetector
     private val runClassification: Boolean
     private val isStreamMode: Boolean
@@ -63,7 +64,7 @@ class ExerciseProcessor(
             ) { task: Task<Pose> ->
                 val pose = task.result
                 var classificationResult: Repetition? = Repetition()
-                if (runClassification) {
+                if (isStarted) {
                     if (poseClassifierProcessor == null) {
                         poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
                     }
@@ -81,7 +82,7 @@ class ExerciseProcessor(
             ) { task: Task<Pose> ->
                 val pose = task.result
                 var classificationResult: Repetition? = Repetition()
-                if (runClassification) {
+                if (isStarted) {
                     if (poseClassifierProcessor == null) {
                         poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
                     }
@@ -92,49 +93,52 @@ class ExerciseProcessor(
     }
 
     override fun onSuccess(
-        poseWithClassification: PoseWithClassification,
+        results: PoseWithClassification,
         graphicOverlay: GraphicOverlay
     ) {
         val oldClassificationResults: MutableList<String> = ArrayList()
-        if (poseWithClassification.classificationResult?.repetitionCounter != null) {
+        if (results.classificationResult?.repetitionCounter != null) {
             oldClassificationResults.add(
-                poseWithClassification.classificationResult.poseName + " " +
-                    poseWithClassification.classificationResult.repetitionCounter.numRepeats
+                results.classificationResult.poseName + " " +
+                    results.classificationResult.repetitionCounter.numRepeats
             )
         } else {
             oldClassificationResults.add(
-                poseWithClassification.classificationResult?.poseName +
+                results.classificationResult?.poseName +
                     "No repetitions."
             )
         }
         oldClassificationResults.add(
-            poseWithClassification.classificationResult?.confidence
+            results.classificationResult?.confidence
                 .toString()
         )
-        graphicOverlay.add(
-            CustomPoseGraphics(
-                graphicOverlay,
-                poseWithClassification.pose,
-                oldClassificationResults,
-                poseWithClassification.classificationResult
-            )
-        )
-        if (poseWithClassification.classificationResult?.repetitionCounter != null) {
+
+        if (isStarted) {
             graphicOverlay.add(
-                QualityGraphics(
+                CustomPoseGraphics(
                     graphicOverlay,
-                    poseWithClassification.classificationResult
+                    results.pose,
+                    oldClassificationResults,
+                    results.classificationResult
                 )
             )
-            lastQualifiedRepetition = poseWithClassification.classificationResult
-        } else {
-            if (lastQualifiedRepetition != null) {
+            if (results.classificationResult?.repetitionCounter != null) {
                 graphicOverlay.add(
                     QualityGraphics(
                         graphicOverlay,
-                        poseWithClassification.classificationResult
+                        results.classificationResult
                     )
                 )
+                lastQualifiedRepetition = results.classificationResult
+            } else {
+                if (lastQualifiedRepetition != null) {
+                    graphicOverlay.add(
+                        QualityGraphics(
+                            graphicOverlay,
+                            results.classificationResult
+                        )
+                    )
+                }
             }
         }
     }

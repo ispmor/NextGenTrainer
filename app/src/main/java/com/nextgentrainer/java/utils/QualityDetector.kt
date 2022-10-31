@@ -12,7 +12,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object QualityDetector {
-    private const val MOVEMENT_SPEED_OK = "movementSpeedOk"
+    private const val MOVEMENT_SPEED_OK = "pace"
     private const val SQUARE = 2.0
     private const val HALF = 0.5
     private const val MOVEMENT_SPEED_LOWER_THRESHOLD = 1.5
@@ -85,14 +85,14 @@ object QualityDetector {
         shoulderHipDistanceOk = shoulderHipDistance.stream().allMatch { i -> i }
         results.add(
             QualityFeature(
-                "kneesTrajectoryOk",
+                "knees",
                 kneesTrajectoryOk,
                 distanceBetweenAnklesAndKneesDiff
             )
         )
         results.add(
             QualityFeature(
-                "squatDeepEnough",
+                "depth",
                 squatDeepEnough,
                 squatDepthDeeperThan90deg
             )
@@ -100,14 +100,14 @@ object QualityDetector {
         results.add(QualityFeature(MOVEMENT_SPEED_OK, movementSpeedOk, listOf(repTime)))
         results.add(
             QualityFeature(
-                "tightsTorsoAngleOkWhenSquatNotDeepEnough",
+                "back",
                 tightsTorsoAngleOkWhenSquatNotDeepEnough,
                 postureIsOk
             )
         )
         results.add(
             QualityFeature(
-                "shoulderHipDistanceOk",
+                "shift",
                 shoulderHipDistanceOk,
                 shoulderHipDistance
             )
