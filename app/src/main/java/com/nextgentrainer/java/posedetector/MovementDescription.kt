@@ -149,16 +149,16 @@ class MovementDescription(val poseList: List<Pose>) {
             )
             hipsAngle.add(
                 (
-                        getAngle(
-                            pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)!!,
-                            pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!,
-                            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!
-                        ) + getAngle(
-                            pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)!!,
-                            pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!,
-                            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!
-                        )
-                        ) / 2
+                    getAngle(
+                        pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)!!,
+                        pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!,
+                        pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!
+                    ) + getAngle(
+                        pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)!!,
+                        pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!,
+                        pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!
+                    )
+                    ) / 2
             )
             leftElbowAngle.add(
                 getAngle(
@@ -213,14 +213,13 @@ class MovementDescription(val poseList: List<Pose>) {
         var result = Math.toDegrees(
             (
                 kotlin.math.atan2(
-                lastPoint.getPosition().y - midPoint.getPosition().y,
-                lastPoint.getPosition().x - midPoint.getPosition().x
-            ) -
-                    kotlin.math.atan2(
-                firstPoint.getPosition().y - midPoint.getPosition().y,
-                firstPoint.getPosition().x - midPoint.getPosition().x
-            )
-            ).toDouble()
+                    lastPoint.position.y - midPoint.position.y,
+                    lastPoint.position.x - midPoint.position.x
+                ) - kotlin.math.atan2(
+                    firstPoint.position.y - midPoint.position.y,
+                    firstPoint.position.x - midPoint.position.x
+                )
+                ).toDouble()
         )
         result = abs(result) // Angle should never be negative
         if (result > 180) {
