@@ -1,15 +1,18 @@
 package com.nextgentrainer.java.utils
 
+import android.content.Context
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
+import com.nextgentrainer.R
 import com.nextgentrainer.java.posedetector.MovementDescription
+import com.nextgentrainer.java.utils.CameraActivityHelper.saveDataToCache
 import java.util.Date
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 object QualityDetector {
-    private const val MOVEMENT_SPEED_OK = "movementSpeedOk"
+    private const val MOVEMENT_SPEED_OK = "pace"
     private const val SQUARE = 2.0
     private const val HALF = 0.5
     private const val MOVEMENT_SPEED_LOWER_THRESHOLD = 1.5
@@ -22,7 +25,7 @@ object QualityDetector {
     private const val DISTANCE_MULTIPLIER = 1.2
     private const val UNIT = 1
 
-    fun squatQuality(poseList: List<Pose>, posesTimestamps: List<Date>): RepetitionQuality {
+    fun squatQuality(poseList: List<Pose>, posesTimestamps: List<Date>, context: Context): RepetitionQuality {
         /*
         What are the scoring rules for now:
         1) Movement should last 2-3s. Therefore poseList.size() / avgFPS = <2.0; 3.0>.
@@ -64,11 +67,11 @@ object QualityDetector {
             shoulderHipDistance.add(
                 (
                     (
-                        movementDescription.leftHipMovement[it]!!.position3D.y +
-                            movementDescription.rightHipMovement[it]!!.position3D.y
+                        movementDescription.leftHipMovement[it]!!.y +
+                            movementDescription.rightHipMovement[it]!!.y
                         ) * HALF - (
-                        movementDescription.leftShoulderMovement[it]!!.position3D.y +
-                            movementDescription.rightShoulderMovement[it]!!.position3D.y
+                        movementDescription.leftShoulderMovement[it]!!.y +
+                            movementDescription.rightShoulderMovement[it]!!.y
                         ) * HALF
                     ) > ZERO
             )
@@ -82,14 +85,14 @@ object QualityDetector {
         shoulderHipDistanceOk = shoulderHipDistance.stream().allMatch { i -> i }
         results.add(
             QualityFeature(
-                "kneesTrajectoryOk",
+                "knees",
                 kneesTrajectoryOk,
                 distanceBetweenAnklesAndKneesDiff
             )
         )
         results.add(
             QualityFeature(
-                "squatDeepEnough",
+                "depth",
                 squatDeepEnough,
                 squatDepthDeeperThan90deg
             )
@@ -97,17 +100,22 @@ object QualityDetector {
         results.add(QualityFeature(MOVEMENT_SPEED_OK, movementSpeedOk, listOf(repTime)))
         results.add(
             QualityFeature(
-                "tightsTorsoAngleOkWhenSquatNotDeepEnough",
+                "back",
                 tightsTorsoAngleOkWhenSquatNotDeepEnough,
                 postureIsOk
             )
         )
         results.add(
             QualityFeature(
-                "shoulderHipDistanceOk",
+                "shift",
                 shoulderHipDistanceOk,
                 shoulderHipDistance
             )
+        )
+        saveDataToCache(
+            movementDescription.getAsJson() + "\n",
+            context.getString(R.string.squats_cache_filename),
+            context
         )
         return RepetitionQuality("squats", results)
     }
@@ -213,7 +221,7 @@ object QualityDetector {
             )
             mouthAboveWrist.add(
                 movementDescription.mouthMovement[i]!!.y -
-                    movementDescription.rightWristMovement[i]!!.position3D.y < ZERO
+                    movementDescription.rightWristMovement[i]!!.y < ZERO
             )
         }
         noKipping = legsAndTorsoStraightMoreOrLess.stream().allMatch { i -> i }
@@ -260,16 +268,16 @@ object QualityDetector {
             wristsToHeadDistanceIsGreaterThanToAnkles.add(
                 getDistanceBetween3dPoints(
                     movementDescription.mouthMovement[i],
-                    movementDescription.leftWristMovement[i]!!.position3D
+                    movementDescription.leftWristMovement[i]!!
                 ) < getDistanceBetween3dPoints(
-                    movementDescription.leftAnkleMovement[i]!!.position3D,
-                    movementDescription.leftWristMovement[i]!!.position3D
+                    movementDescription.leftAnkleMovement[i]!!,
+                    movementDescription.leftWristMovement[i]!!
                 )
             )
             anklesMoreOrLessLevelWithHeap.add(
-                movementDescription.rightAnkleMovement[i]!!.position3D.y -
+                movementDescription.rightAnkleMovement[i]!!.y -
                     DISTANCE_MULTIPLIER
-                    * movementDescription.rightHipMovement[i]!!.position3D.y < ZERO
+                    * movementDescription.rightHipMovement[i]!!.y < ZERO
             )
         }
         kneesInStablePosition = calculateSD(movementDescription.rightKneeAngle) < DEG_15

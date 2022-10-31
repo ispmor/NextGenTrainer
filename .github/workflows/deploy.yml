@@ -15,7 +15,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: gradle
-          
+
       - name: Create file
         run: cat ./app/google-servicecs.json | base64
 

@@ -299,7 +299,7 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context) :
                 graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
             }
             this@VisionProcessorBase.onSuccess(results, graphicOverlay)
-            if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
+            if (false) {
                 graphicOverlay.add(
                     InferenceInfoGraphic(
                         graphicOverlay,
