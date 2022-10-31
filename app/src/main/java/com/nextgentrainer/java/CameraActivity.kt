@@ -64,7 +64,7 @@ class CameraActivity :
     private var analysisUseCase: ImageAnalysis? = null
     private var needUpdateGraphicOverlayImageSourceInfo = false
     private var selectedModel = SQUATS_TRAINER
-    private var lensFacing = CameraSelector.LENS_FACING_BACK
+    private var lensFacing = CameraSelector.LENS_FACING_FRONT
     private var cameraSelector: CameraSelector? = null
     private var countersAsString: String? = null
     private lateinit var imageProcessor: ExerciseProcessor

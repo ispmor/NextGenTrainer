@@ -20,18 +20,15 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.nextgentrainer.java.ChooserActivity
 import com.nextgentrainer.java.FitLogActivity
 
-@RequiresApi(Build.VERSION_CODES.O)
 class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +44,8 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
             val intent = Intent(this@EntryChoiceActivity, FitLogActivity::class.java)
             startActivity(intent)
         }
+
+        findViewById<TextView>(R.id.versionTextView).text = BuildConfig.VERSION_NAME
 
         if (!allRuntimePermissionsGranted()) {
             getRuntimePermissions()
