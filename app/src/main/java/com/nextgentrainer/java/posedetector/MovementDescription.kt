@@ -7,6 +7,7 @@ import com.google.mlkit.vision.pose.PoseLandmark
 import com.nextgentrainer.java.posedetector.classification.Utils
 import com.nextgentrainer.java.utils.LineEquation
 import com.nextgentrainer.java.utils.QualityDetector
+import kotlin.math.abs
 
 class MovementDescription(val poseList: List<Pose>) {
     val leftHipMovement = ArrayList<PointF3D?>()
@@ -21,6 +22,10 @@ class MovementDescription(val poseList: List<Pose>) {
     val rightElbowMovement = ArrayList<PointF3D?>()
     val leftWristMovement = ArrayList<PointF3D?>()
     val rightWristMovement = ArrayList<PointF3D?>()
+    val leftToeMovement = ArrayList<PointF3D?>()
+    val rightToeMovement = ArrayList<PointF3D?>()
+    val leftHeelMovement = ArrayList<PointF3D?>()
+    val rightHeelMovement = ArrayList<PointF3D?>()
     val mouthMovement = ArrayList<PointF3D?>()
     val leftCalfLine = ArrayList<LineEquation>()
     val rightCalfLine = ArrayList<LineEquation>()
@@ -34,7 +39,7 @@ class MovementDescription(val poseList: List<Pose>) {
     val rightForearmLine = ArrayList<LineEquation>()
     val leftKneeAngle = ArrayList<Double?>()
     val rightKneeAngle = ArrayList<Double?>()
-    val torsoAngle = ArrayList<Double?>()
+    val hipsAngle = ArrayList<Double?>()
     val leftElbowAngle = ArrayList<Double?>()
     val rightElbowAngle = ArrayList<Double>()
     val leftElbowToTorsoAngle = ArrayList<Double?>()
@@ -57,6 +62,10 @@ class MovementDescription(val poseList: List<Pose>) {
             rightElbowMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.position3D)
             leftWristMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)?.position3D)
             rightWristMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.position3D)
+            leftToeMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)?.position3D)
+            rightToeMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX)?.position3D)
+            leftHeelMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_HEEL)?.position3D)
+            rightHeelMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL)?.position3D)
             mouthMovement.add(
                 Utils.average(
                     pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)!!
@@ -125,31 +134,59 @@ class MovementDescription(val poseList: List<Pose>) {
                 )
             )
             leftKneeAngle.add(
-                LineEquation.getAngleBetweenTwoLines(leftCalfLine[i], leftTightLine[i])
+                getAngle(
+                    pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)!!,
+                    pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)!!,
+                    pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!
+                )
             )
             rightKneeAngle.add(
-                LineEquation.getAngleBetweenTwoLines(rightCalfLine[i], rightTightLine[i])
+                getAngle(
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)!!,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)!!,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!
+                )
             )
-            torsoAngle.add(
+            hipsAngle.add(
                 (
-                    LineEquation.getAngleBetweenTwoLines(rightTightLine[i], rightTorsoLine[i]) +
-                        LineEquation.getAngleBetweenTwoLines(
-                            leftTightLine[i],
-                            leftTorsoLine[i]
+                        getAngle(
+                            pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)!!,
+                            pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!,
+                            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!
+                        ) + getAngle(
+                            pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)!!,
+                            pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!,
+                            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!
                         )
-                    ) / 2
+                        ) / 2
             )
             leftElbowAngle.add(
-                LineEquation.getAngleBetweenTwoLines(leftShoulderLine[i], leftForearmLine[i])
+                getAngle(
+                    pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!,
+                    pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)!!,
+                    pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)!!
+                )
             )
             rightElbowAngle.add(
-                LineEquation.getAngleBetweenTwoLines(rightShoulderLine[i], rightForearmLine[i])
+                getAngle(
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)!!,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)!!
+                )
             )
             leftElbowToTorsoAngle.add(
-                LineEquation.getAngleBetweenTwoLines(leftShoulderLine[i], leftTorsoLine[i])
+                getAngle(
+                    pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!,
+                    pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!,
+                    pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)!!
+                )
             )
             rightElbowToTorsoAngle.add(
-                LineEquation.getAngleBetweenTwoLines(rightShoulderLine[i], rightTorsoLine[i])
+                getAngle(
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!,
+                    pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)!!
+                )
             )
             distanceBetweenKnees.add(
                 QualityDetector.getDistanceBetween3dPoints(
@@ -170,5 +207,25 @@ class MovementDescription(val poseList: List<Pose>) {
     fun getAsJson(): String {
         val gson = Gson()
         return gson.toJson(this)
+    }
+
+    fun getAngle(firstPoint: PoseLandmark, midPoint: PoseLandmark, lastPoint: PoseLandmark): Double {
+        var result = Math.toDegrees(
+            (
+                kotlin.math.atan2(
+                lastPoint.getPosition().y - midPoint.getPosition().y,
+                lastPoint.getPosition().x - midPoint.getPosition().x
+            ) -
+                    kotlin.math.atan2(
+                firstPoint.getPosition().y - midPoint.getPosition().y,
+                firstPoint.getPosition().x - midPoint.getPosition().x
+            )
+            ).toDouble()
+        )
+        result = abs(result) // Angle should never be negative
+        if (result > 180) {
+            result = 360.0 - result // Always get the acute representation of the angle
+        }
+        return result
     }
 }

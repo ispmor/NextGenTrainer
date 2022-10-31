@@ -56,22 +56,22 @@ object QualityDetector {
             )
             distanceBetweenAnklesAndKneesIsOk.add(distanceBetweenAnklesAndKneesDiff[it] > ZERO)
             squatDepthDeeperThan90deg.add(
-                movementDescription.leftKneeAngle[it]!! < ZERO &&
-                    movementDescription.rightKneeAngle[it]!! < ZERO
+                movementDescription.leftKneeAngle[it]!! < 90 &&
+                    movementDescription.rightKneeAngle[it]!! < 90
             )
             postureIsOk.add(
                 if (!squatDepthDeeperThan90deg[it]) {
-                    movementDescription.torsoAngle[it]!! > DEG_45
+                    movementDescription.hipsAngle[it]!! > DEG_45
                 } else true
             )
             shoulderHipDistance.add(
                 (
                     (
-                        movementDescription.leftHipMovement[it]!!.y +
-                            movementDescription.rightHipMovement[it]!!.y
-                        ) * HALF - (
                         movementDescription.leftShoulderMovement[it]!!.y +
                             movementDescription.rightShoulderMovement[it]!!.y
+                        ) * HALF - (
+                        movementDescription.leftHipMovement[it]!!.y +
+                            movementDescription.rightHipMovement[it]!!.y
                         ) * HALF
                     ) > ZERO
             )
@@ -107,7 +107,7 @@ object QualityDetector {
         )
         results.add(
             QualityFeature(
-                "shift",
+                "forward tilt",
                 shoulderHipDistanceOk,
                 shoulderHipDistance
             )
@@ -149,7 +149,7 @@ object QualityDetector {
                         ) * HALF
                 ) > ZERO
             )
-            isBodyProperlyAligned.add(abs(movementDescription.torsoAngle[it]!!) < DEG_15)
+            isBodyProperlyAligned.add(abs(movementDescription.hipsAngle[it]!!) < DEG_15)
             elbowsBentTo90.add(abs(movementDescription.leftElbowAngle[it]!!))
             avgAngleBetweenTorsoAndElbows.add(
                 (
@@ -176,7 +176,7 @@ object QualityDetector {
             QualityFeature(
                 "bodyIsStraight",
                 bodyIsStraight,
-                movementDescription.torsoAngle
+                movementDescription.hipsAngle
             )
         )
         results.add(
@@ -208,7 +208,7 @@ object QualityDetector {
         val chinAboveTheBar: Boolean
         val elbowsStraightAtTheBottom: Boolean
         val movementDescription = MovementDescription(poseList)
-        val torsoAngle = movementDescription.torsoAngle
+        val torsoAngle = movementDescription.hipsAngle
         val leftKneeAngle = movementDescription.leftKneeAngle
         val rightKneeAngle = movementDescription.rightKneeAngle
         val legsAndTorsoStraightMoreOrLess: MutableList<Boolean> = ArrayList()
@@ -325,7 +325,7 @@ object QualityDetector {
         return RepetitionQuality("all", results)
     }
 
-    fun getRepTime(posesTimestamps: List<Date>): Float {
+    private fun getRepTime(posesTimestamps: List<Date>): Float {
         return (posesTimestamps[posesTimestamps.size - UNIT].time - posesTimestamps[ZERO].time) / MILL
     }
 

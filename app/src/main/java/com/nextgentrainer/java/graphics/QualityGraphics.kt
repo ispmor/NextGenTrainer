@@ -16,6 +16,7 @@ class QualityGraphics(
 ) : Graphic(overlay) {
     private val whitePaint: Paint = Paint()
     private val backgroundPaint: Paint = Paint()
+    private val greenPaint: Paint = Paint()
     val height = overlay.imageHeight
     val width = overlay.imageWidth
 
@@ -24,6 +25,7 @@ class QualityGraphics(
         whitePaint.textSize = TEXT_SIZE
         backgroundPaint.color = Color.BLACK
         backgroundPaint.alpha = 50
+        greenPaint.color = Color.rgb(43,255,0)
     }
 
     override fun draw(canvas: Canvas) {
@@ -78,7 +80,7 @@ class QualityGraphics(
                     whitePaint
                 )
                 if (!it.isValid) {
-                    canvas.drawCircle(75f, qualityLocationY - TEXT_SIZE / 2, 30f, whitePaint)
+                    canvas.drawCircle(75f, qualityLocationY - TEXT_SIZE / 2, 30f, greenPaint)
                 }
                 qualityLocationY += QUALITY_Y_INTERVAL
             }
