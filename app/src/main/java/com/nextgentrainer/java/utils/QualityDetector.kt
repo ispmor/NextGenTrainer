@@ -48,7 +48,7 @@ object QualityDetector {
         val distanceBetweenAnklesAndKneesIsOk: MutableList<Boolean> = ArrayList()
         val squatDepthDeeperThan90deg: MutableList<Boolean> = ArrayList()
         val postureIsOk: MutableList<Boolean> = ArrayList()
-        val shoulderHipDistance: MutableList<Boolean> = ArrayList()
+        val shoulderHipDistance: MutableList<Double> = ArrayList()
         poseList.indices.forEach {
             distanceBetweenAnklesAndKneesDiff.add(
                 abs(movementDescription.distanceBetweenKnees[it]!!) -
@@ -66,23 +66,24 @@ object QualityDetector {
             )
             shoulderHipDistance.add(
                 (
-                    (
-                        movementDescription.leftShoulderMovement[it]!!.y +
-                            movementDescription.rightShoulderMovement[it]!!.y
-                        ) * HALF - (
+
                         movementDescription.leftHipMovement[it]!!.y +
-                            movementDescription.rightHipMovement[it]!!.y
-                        ) * HALF
-                    ) < ZERO
+                                movementDescription.rightHipMovement[it]!!.y
+                        ) * HALF -
+                        ( movementDescription.leftShoulderMovement[it]!!.y +
+                        movementDescription.rightShoulderMovement[it]!!.y
+                    ) * HALF
             )
         }
+
+        val shoulderHipDistanceThresholds = shoulderHipDistance.max() * 0.5
         val repTime = getRepTime(posesTimestamps)
         movementSpeedOk =
             MOVEMENT_SPEED_LOWER_THRESHOLD < repTime && repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         kneesTrajectoryOk = distanceBetweenAnklesAndKneesIsOk.stream().allMatch { i -> i }
         squatDeepEnough = squatDepthDeeperThan90deg.stream().anyMatch { i -> i }
         tightsTorsoAngleOkWhenSquatNotDeepEnough = postureIsOk.stream().allMatch { i -> i }
-        shoulderHipDistanceOk = shoulderHipDistance.stream().allMatch { i -> i }
+        shoulderHipDistanceOk = shoulderHipDistance.stream().allMatch { i -> i > shoulderHipDistanceThresholds }
         results.add(
             QualityFeature(
                 "knees",
