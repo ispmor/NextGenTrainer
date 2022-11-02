@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+
+    <TextView
+        android:id="@+id/challengeTextView"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:background="#80000000"
+        android:text="@string/challenge"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/challenge_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/challengePreveiw" />
+
+    <TextView
+        android:id="@+id/textViewAgainst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/challengeGraphicOverlay"
+        app:layout_constraintEnd_toEndOf="@+id/challengeGraphicOverlay"
+        app:layout_constraintStart_toEndOf="@+id/challengeCounterTextView"
+        app:layout_constraintTop_toBottomOf="@+id/challengeTextView" />
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/challengePreveiw"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.camera.view.PreviewView>
+
+    <com.nextgentrainer.GraphicOverlay
+        android:id="@+id/challengeGraphicOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/challengePreveiw"
+        app:layout_constraintLeft_toLeftOf="@id/challengePreveiw"
+        app:layout_constraintRight_toRightOf="@id/challengePreveiw"
+        app:layout_constraintTop_toTopOf="@id/challengePreveiw" />
+
+    <TextView
+        android:id="@+id/challengeCounterTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="96sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/challenge_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:backgroundTint="#2BFF00"
+        app:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_play_arrow_24" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

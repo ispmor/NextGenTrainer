@@ -6,6 +6,8 @@
     <string name="rep_counter" translatable="false">Rep Counter</string>
     <string name="improve" translatable="false">Improve</string>
     <string name="workout_plan" translatable="false">Plan</string>
+    <string name="compete" translatable="false">Compete</string>
+    <string name="challenge" translatable="false">Perform more squats in 30s. than your opponent and win!</string>
     <string name="ok" translatable="false">OK</string>
     <string name="permission_camera_rationale" translatable="false">Access to the camera is needed for detection</string>
     <string name="no_camera_permission" translatable="false">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
@@ -158,5 +160,8 @@
 
     <string name="all_exercises" translatable="false">all</string>
     <string name="total_reps_done">Total reps done:</string>
+
+    <string name="database_url">https://nextgentrainer-c380e-default-rtdb.europe-west1.firebasedatabase.app/</string>
+    <string name="waiting">Waiting!</string>
 
 </resources>

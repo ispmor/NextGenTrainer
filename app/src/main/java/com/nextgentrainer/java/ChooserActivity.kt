@@ -36,7 +36,12 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_chooser_training)
         val repCounter = findViewById<Button>(R.id.rep_counter_button)
-        repCounter.setOnClickListener(this)
+        repCounter.setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
+        findViewById<Button>(R.id.compete_button).setOnClickListener {
+            startActivity(Intent(this, CompeteActivity::class.java))
+        }
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
