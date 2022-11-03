@@ -34,7 +34,7 @@ import com.nextgentrainer.java.posedetector.ExerciseProcessor
 import com.nextgentrainer.java.utils.CameraActivityHelper
 import com.nextgentrainer.java.utils.Constants
 import com.nextgentrainer.preference.PreferenceUtils
-import java.util.Date
+import java.util.*
 
 @KeepName
 class CompeteActivity :
@@ -52,21 +52,25 @@ class CompeteActivity :
     private lateinit var imageProcessor: ExerciseProcessor
     private lateinit var database: DatabaseReference
     private var session: CompetitionSession? = null
-    private var key: String? = "x"
+    private var key: String? = null
     private var whoAmI: String? = null
+    private lateinit var challengeRuleTextView: TextView
+    private lateinit var challengeTimer: CountDownTimer
+    private lateinit var countdownTextView: TextView
+    private lateinit var againstTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
 
-        val countdownTextView = findViewById<TextView>(R.id.challengeCounterTextView)
+        countdownTextView = findViewById<TextView>(R.id.challengeCounterTextView)
 
-        val againstTextView = findViewById<TextView>(R.id.textViewAgainst)
+        againstTextView = findViewById<TextView>(R.id.textViewAgainst)
         againstTextView.text = getString(R.string.waiting)
 
-        val challengeRuleTextView = findViewById<TextView>(R.id.challengeTextView)
-        val challengeTimer = object : CountDownTimer(30000, 1000) {
+        challengeRuleTextView = findViewById<TextView>(R.id.challengeTextView)
+        challengeTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 challengeRuleTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
             }
@@ -100,7 +104,7 @@ class CompeteActivity :
                 bindAllCameraUseCases()
             }
 
-            val timer = object : CountDownTimer(3000, 1000) {
+        val timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 countdownTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
             }
@@ -112,64 +116,67 @@ class CompeteActivity :
             }
         }
 
-        database.orderByChild("finished").equalTo(false).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val value = dataSnapshot.getValue<HashMap<String, Any>>()
-
-                if (key.isNullOrEmpty() && value != null) {
-                    key = value.keys.first()
-                    session = dataSnapshot.child(key!!).getValue<CompetitionSession>()
-                    session!!.user2 = "test-2USER"
-                    whoAmI = "test-2USER"
-                    updateSession(session!!)
-                    Log.d(TAG, "New key is: $key")
-                    Log.d(TAG, "Value is: $session")
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException())
-            }
-        })
-
         val startButton = findViewById<FloatingActionButton>(R.id.challenge_start)
         startButton.setOnClickListener {
             if (session == null) {
-                whoAmI = "Test-USER1"
-                createNewSession("squats", "Test-USER1")
+                database.orderByChild("finished").equalTo(false).limitToFirst(1).get().addOnSuccessListener {
+                    val value = it.getValue<HashMap<String, Any>>()
+
+                    if (key.isNullOrEmpty() && value != null) {
+                        key = value.keys.first()
+                        val tmpSession = it.child(key!!).getValue<CompetitionSession>()
+                        tmpSession!!.user2 = "test-2USER"
+                        whoAmI = "test-2USER"
+
+                        updateSession(tmpSession)
+                        Log.d(TAG, "New key is: $key")
+                        Log.d(TAG, "Value is: $session")
+                    } else if (key.isNullOrEmpty() && value == null) {
+                        whoAmI = "Test-USER1"
+                        key = createNewSession("squats", "Test-USER1")
+                    }
+                    bindSessionToKey(key!!)
+                }.addOnFailureListener {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", it)
+                }
+//
+//                if(session == null) {
+//                    whoAmI = "Test-USER1"
+//                    key = createNewSession("squats", "Test-USER1")
+//                } else {
+//                    bindSessionToKey(key!!)
+//                }
             }
-//            session = sessionReference.orderBy('genre')
-//                .equalTo('comedy')
             startButton.visibility = View.INVISIBLE
             countdownTextView.visibility = View.VISIBLE
             timer.start()
         }
-
-        database.child(key!!).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val sessionTmp = dataSnapshot.child(key!!).getValue<CompetitionSession>()
-                if (sessionTmp != null) {
-                    if (!session?.user1.isNullOrEmpty() && !session?.user2.isNullOrEmpty()) {
-                        countdownTextView.visibility = View.VISIBLE
-                        challengeTimer.start()
-                        againstTextView.text = "GO!!!!!"
-                    }
-
-                    if (session!!.finished) {
-                        updateFinished()
-                    }
-                    Log.d(TAG, "Value is: $session")
-                }
-                Log.d(TAG, "Empty TMP session")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException())
-            }
-        })
     }
+
+//    suspend fun initDatabaseQueryOnNotFinishedSessions(): CompetitionSession {
+//
+//        var resultSession: CompetitionSession? = null
+//
+//        database.orderByChild("finished").equalTo(false).limitToFirst(1).get().addOnSuccessListener {
+//            val value = it.getValue<HashMap<String, Any>>()
+//
+//            if (key.isNullOrEmpty() && value != null) {
+//                key = value.keys.first()
+//                val tmpSession = it.child(key!!).getValue<CompetitionSession>()
+//                tmpSession!!.user2 = "test-2USER"
+//                whoAmI = "test-2USER"
+//
+//                updateSession(tmpSession)
+//                Log.d(TAG, "New key is: $key")
+//                Log.d(TAG, "Value is: $session")
+//            }
+//        }.addOnFailureListener {
+//                // Failed to read value
+//                Log.w(TAG, "Failed to read value.", it)
+//            }.await()
+//        return resultSession
+//    }
 
     public override fun onResume() {
         super.onResume()
@@ -268,14 +275,44 @@ class CompeteActivity :
         cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase)
     }
 
-    fun createNewSession(exercise: String?, user1: String?) {
-        key = database.push().key
-        if (key == null) {
+    fun createNewSession(exercise: String?, user1: String?): String {
+        val keyTmp = database.push().key
+        if (keyTmp == null) {
             Log.w(TAG, "Couldn't get push key for competitionsession")
-            return
+            return ""
         }
-        session = CompetitionSession(key, exercise, user1, startDateMillis = Date().time)
-        database.child(key!!).setValue(session)
+        session = CompetitionSession(keyTmp, exercise, user1, startDateMillis = Date().time)
+        database.child(keyTmp).setValue(session)
+
+        bindSessionToKey(keyTmp)
+        return keyTmp
+    }
+
+    fun bindSessionToKey(bindingKey: String) {
+        database.child(bindingKey).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val sessionTmp = dataSnapshot.getValue<CompetitionSession>()
+                if (sessionTmp != null) {
+                    if (!session?.user1.isNullOrEmpty() && !session?.user2.isNullOrEmpty()) {
+                        countdownTextView.visibility = View.VISIBLE
+                        challengeTimer.start()
+                        againstTextView.text = "GO!!!!!"
+                    }
+
+                    if (sessionTmp.finished) {
+                        updateFinished()
+                    }
+                    session = sessionTmp
+                    Log.d(TAG, "Value is: $session")
+                }
+                Log.d(TAG, "Empty TMP session")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
     }
 
     fun updateSession(
