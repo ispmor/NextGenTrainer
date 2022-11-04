@@ -34,7 +34,7 @@ import com.nextgentrainer.java.posedetector.ExerciseProcessor
 import com.nextgentrainer.java.utils.CameraActivityHelper
 import com.nextgentrainer.java.utils.Constants
 import com.nextgentrainer.preference.PreferenceUtils
-import java.util.*
+import java.util.Date
 
 @KeepName
 class CompeteActivity :
@@ -262,17 +262,22 @@ class CompeteActivity :
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val sessionTmp = dataSnapshot.getValue<CompetitionSession>()
                 if (sessionTmp != null) {
-                    if (!sessionTmp.user1.isNullOrEmpty() && !sessionTmp.user2.isNullOrEmpty() && sessionTmp.endDateMillis == null) {
+                    if (
+                        !sessionTmp.user1.isNullOrEmpty() &&
+                        !sessionTmp.user2.isNullOrEmpty() &&
+                        sessionTmp.endDateMillis == null
+                    ) {
                         countdownTextView.visibility = View.VISIBLE
                         timer.start()
                         // challengeTimer.start()
                         againstTextView.text = "GO!!!!!"
                     }
 
+                    session = sessionTmp
+
                     if (sessionTmp.finished) {
                         updateFinished()
                     }
-                    session = sessionTmp
                     Log.d(TAG, "Value is: $session")
                 }
                 Log.d(TAG, "Empty TMP session")
@@ -316,9 +321,33 @@ class CompeteActivity :
     }
 
     fun updateUIBaseOnSession() {
+        var iWon: Boolean
+        iWon = if (whoAmI == session!!.user1) {
+            session!!.reps1!! > session!!.reps2!!
+        } else {
+            session!!.reps1!! < session!!.reps2!!
+        }
+
+        if (iWon) {
+            againstTextView.text = "YOU WON!"
+        } else {
+            againstTextView.text = "YOU LOST"
+        }
     }
 
     fun updateFinished() {
+        var iWon: Boolean
+        iWon = if (whoAmI == session!!.user1) {
+            session!!.reps1!! > session!!.reps2!!
+        } else {
+            session!!.reps1!! < session!!.reps2!!
+        }
+
+        if (iWon) {
+            againstTextView.text = "YOU WON!"
+        } else {
+            againstTextView.text = "YOU LOST"
+        }
     }
 
     companion object {
