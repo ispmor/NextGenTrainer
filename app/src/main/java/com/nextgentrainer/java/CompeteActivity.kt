@@ -78,7 +78,7 @@ class CompeteActivity :
 
             override fun onFinish() {
                 updateSessionHasEnded()
-                updateUIBaseOnSession()
+                // updateUIBaseOnSession()
                 imageProcessor.isStarted = false
             }
         }
@@ -320,20 +320,20 @@ class CompeteActivity :
         return imageProcessor.lastQualifiedRepetition!!.repetitionCounter!!.numRepeats
     }
 
-    fun updateUIBaseOnSession() {
-        var iWon: Boolean
-        iWon = if (whoAmI == session!!.user1) {
-            session!!.reps1!! > session!!.reps2!!
-        } else {
-            session!!.reps1!! < session!!.reps2!!
-        }
-
-        if (iWon) {
-            againstTextView.text = "YOU WON!"
-        } else {
-            againstTextView.text = "YOU LOST"
-        }
-    }
+//    fun updateUIBaseOnSession() {
+//        var iWon: Boolean
+//        iWon = if (whoAmI == session!!.user1) {
+//            session!!.reps1!! > session!!.reps2!!
+//        } else {
+//            session!!.reps1!! < session!!.reps2!!
+//        }
+//
+//        if (iWon) {
+//            againstTextView.text = "YOU WON!"
+//        } else {
+//            againstTextView.text = "YOU LOST"
+//        }
+//    }
 
     fun updateFinished() {
         var iWon: Boolean
