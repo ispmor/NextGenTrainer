@@ -35,7 +35,7 @@ class ExerciseProcessor(
     private val isStreamMode: Boolean
     private val context: Context
     private val classificationExecutor: Executor
-    private var lastQualifiedRepetition: Repetition? = null
+    var lastQualifiedRepetition: Repetition? = null
     private var poseClassifierProcessor: PoseClassifierProcessor? = null
 
     /**

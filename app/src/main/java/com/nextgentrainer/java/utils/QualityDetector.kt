@@ -67,10 +67,11 @@ object QualityDetector {
             shoulderHipDistance.add(
                 (
 
-                        movementDescription.leftHipMovement[it]!!.y +
-                                movementDescription.rightHipMovement[it]!!.y
-                        ) * HALF -
-                        ( movementDescription.leftShoulderMovement[it]!!.y +
+                    movementDescription.leftHipMovement[it]!!.y +
+                        movementDescription.rightHipMovement[it]!!.y
+                    ) * HALF -
+                    (
+                    movementDescription.leftShoulderMovement[it]!!.y +
                         movementDescription.rightShoulderMovement[it]!!.y
                     ) * HALF
             )

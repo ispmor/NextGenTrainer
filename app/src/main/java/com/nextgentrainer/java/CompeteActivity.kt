@@ -58,6 +58,7 @@ class CompeteActivity :
     private lateinit var challengeTimer: CountDownTimer
     private lateinit var countdownTextView: TextView
     private lateinit var againstTextView: TextView
+    private lateinit var timer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,9 +77,9 @@ class CompeteActivity :
             }
 
             override fun onFinish() {
-                imageProcessor.isStarted = false
                 updateSessionHasEnded()
                 updateUIBaseOnSession()
+                imageProcessor.isStarted = false
             }
         }
 
@@ -104,7 +105,7 @@ class CompeteActivity :
                 bindAllCameraUseCases()
             }
 
-        val timer = object : CountDownTimer(3000, 1000) {
+        timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 countdownTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
             }
@@ -140,43 +141,11 @@ class CompeteActivity :
                     // Failed to read value
                     Log.w(TAG, "Failed to read value.", it)
                 }
-//
-//                if(session == null) {
-//                    whoAmI = "Test-USER1"
-//                    key = createNewSession("squats", "Test-USER1")
-//                } else {
-//                    bindSessionToKey(key!!)
-//                }
             }
             startButton.visibility = View.INVISIBLE
             countdownTextView.visibility = View.VISIBLE
-            timer.start()
         }
     }
-
-//    suspend fun initDatabaseQueryOnNotFinishedSessions(): CompetitionSession {
-//
-//        var resultSession: CompetitionSession? = null
-//
-//        database.orderByChild("finished").equalTo(false).limitToFirst(1).get().addOnSuccessListener {
-//            val value = it.getValue<HashMap<String, Any>>()
-//
-//            if (key.isNullOrEmpty() && value != null) {
-//                key = value.keys.first()
-//                val tmpSession = it.child(key!!).getValue<CompetitionSession>()
-//                tmpSession!!.user2 = "test-2USER"
-//                whoAmI = "test-2USER"
-//
-//                updateSession(tmpSession)
-//                Log.d(TAG, "New key is: $key")
-//                Log.d(TAG, "Value is: $session")
-//            }
-//        }.addOnFailureListener {
-//                // Failed to read value
-//                Log.w(TAG, "Failed to read value.", it)
-//            }.await()
-//        return resultSession
-//    }
 
     public override fun onResume() {
         super.onResume()
@@ -293,9 +262,10 @@ class CompeteActivity :
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val sessionTmp = dataSnapshot.getValue<CompetitionSession>()
                 if (sessionTmp != null) {
-                    if (!session?.user1.isNullOrEmpty() && !session?.user2.isNullOrEmpty()) {
+                    if (!sessionTmp.user1.isNullOrEmpty() && !sessionTmp.user2.isNullOrEmpty() && sessionTmp.endDateMillis == null) {
                         countdownTextView.visibility = View.VISIBLE
-                        challengeTimer.start()
+                        timer.start()
+                        // challengeTimer.start()
                         againstTextView.text = "GO!!!!!"
                     }
 
@@ -342,7 +312,7 @@ class CompeteActivity :
     }
 
     fun getReps(): Int {
-        return 10
+        return imageProcessor.lastQualifiedRepetition!!.repetitionCounter!!.numRepeats
     }
 
     fun updateUIBaseOnSession() {
