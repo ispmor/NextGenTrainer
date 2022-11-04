@@ -8,12 +8,12 @@
     android:background="@drawable/ic_task_selection_vectornator">
 
     <Button
-        android:id="@+id/plan_button"
+        android:id="@+id/compete_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/ic_button_vectornator"
         android:elevation="10dp"
-        android:text="@string/workout_plan"
+        android:text="@string/compete"
         android:textColor="#5E35B1"
         app:layout_constraintBottom_toTopOf="@+id/guideline_chooser_bottom"
         app:layout_constraintEnd_toStartOf="@+id/guideline_chooser_right"
