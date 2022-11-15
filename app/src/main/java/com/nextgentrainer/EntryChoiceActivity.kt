@@ -26,8 +26,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.nextgentrainer.java.ChooserActivity
-import com.nextgentrainer.java.FitLogActivity
+import com.nextgentrainer.kotlin.ChooserActivity
+import com.nextgentrainer.kotlin.FitLogActivity
 
 class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 

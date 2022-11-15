@@ -46,19 +46,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".java.ChooserActivity"
+            android:name=".kotlin.ChooserActivity"
             android:exported="false"
             android:theme="@style/AppTheme"></activity>
         <activity
-            android:name=".java.CameraActivity"
+            android:name=".kotlin.CameraActivity"
             android:exported="false"
             android:theme="@style/AppTheme"></activity>
         <activity
-            android:name=".java.FitLogActivity"
+            android:name=".kotlin.FitLogActivity"
             android:exported="false"
             android:theme="@style/AppTheme"></activity>
         <activity
-            android:name=".java.CompeteActivity"
+            android:name=".kotlin.CompeteActivity"
             android:exported="false"
             android:theme="@style/AppTheme"></activity>
         <activity
