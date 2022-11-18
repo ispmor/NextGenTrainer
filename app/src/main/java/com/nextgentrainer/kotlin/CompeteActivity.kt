@@ -30,7 +30,8 @@ import com.google.mlkit.common.MlKitException
 import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.CompetitionSession
+import com.nextgentrainer.kotlin.data.models.CompeteSession
+import com.nextgentrainer.kotlin.data.repositories.MovementRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper
 import com.nextgentrainer.kotlin.utils.Constants
@@ -52,7 +53,7 @@ class CompeteActivity :
     private var cameraSelector: CameraSelector? = null
     private lateinit var imageProcessor: ExerciseProcessor
     private lateinit var database: DatabaseReference
-    private var session: CompetitionSession? = null
+    private var session: CompeteSession? = null
     private var key: String? = null
     private var whoAmI: String? = null
     private lateinit var challengeRuleTextView: TextView
@@ -61,12 +62,13 @@ class CompeteActivity :
     private lateinit var againstTextView: TextView
     private lateinit var timer: CountDownTimer
     private var notStartedYet = true
+    private lateinit var movementRepository: MovementRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
-
+        movementRepository = MovementRepository(this)
         countdownTextView = findViewById(R.id.challengeCounterTextView)
 
         againstTextView = findViewById(R.id.textViewAgainst)
@@ -88,7 +90,7 @@ class CompeteActivity :
         database = Firebase.database(getString(R.string.database_url))
             .getReference(getString(R.string.competitionSession))
 
-        imageProcessor = CameraActivityHelper.selectModel(selectedModel, this)
+        imageProcessor = CameraActivityHelper.selectModel(selectedModel, this, movementRepository)
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(
                 Constants.STATE_SELECTED_MODEL,
@@ -133,7 +135,7 @@ class CompeteActivity :
 
                     if (key.isNullOrEmpty() && value != null) {
                         key = value.keys.first()
-                        val tmpSession = it.child(key!!).getValue<CompetitionSession>()
+                        val tmpSession = it.child(key!!).getValue<CompeteSession>()
                         tmpSession!!.user2 = "test-2USER"
                         whoAmI = "test-2USER"
 
@@ -210,7 +212,7 @@ class CompeteActivity :
         }
         imageProcessor.stop()
 
-        imageProcessor = CameraActivityHelper.selectModel(selectedModel, this)
+        imageProcessor = CameraActivityHelper.selectModel(selectedModel, this, movementRepository)
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
@@ -258,7 +260,7 @@ class CompeteActivity :
             Log.w(TAG, "Couldn't get push key for competitionsession")
             return ""
         }
-        session = CompetitionSession(keyTmp, exercise, user1, startDateMillis = Date().time)
+        session = CompeteSession(keyTmp, exercise, user1, startDateMillis = Date().time)
         database.child(keyTmp).setValue(session)
 
         bindSessionToKey(keyTmp)
@@ -268,7 +270,7 @@ class CompeteActivity :
     private fun bindSessionToKey(bindingKey: String) {
         database.child(bindingKey).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val sessionTmp = dataSnapshot.getValue<CompetitionSession>()
+                val sessionTmp = dataSnapshot.getValue<CompeteSession>()
                 if (sessionTmp != null) {
                     if (
                         bothUsersExist(sessionTmp) &&
@@ -297,12 +299,12 @@ class CompeteActivity :
         })
     }
 
-    private fun bothUsersExist(tmpSession: CompetitionSession): Boolean {
+    private fun bothUsersExist(tmpSession: CompeteSession): Boolean {
         return !tmpSession.user1.isNullOrEmpty() && !tmpSession.user2.isNullOrEmpty()
     }
 
     private fun updateSession(
-        session: CompetitionSession
+        session: CompeteSession
     ) {
         database.child(session.uid!!).setValue(session)
     }

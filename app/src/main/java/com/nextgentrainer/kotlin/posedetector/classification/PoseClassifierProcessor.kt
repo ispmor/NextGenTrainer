@@ -9,10 +9,11 @@ import com.google.common.base.Preconditions
 import com.google.gson.Gson
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.utils.ExerciseSet
-import com.nextgentrainer.kotlin.utils.QualityDetector
 import com.nextgentrainer.kotlin.data.models.Repetition
 import com.nextgentrainer.kotlin.data.models.RepetitionQuality
+import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.utils.ExerciseSet
+import com.nextgentrainer.kotlin.utils.QualityDetector
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -27,7 +28,8 @@ import kotlin.collections.set
 class PoseClassifierProcessor @WorkerThread constructor(
     context: Context,
     isStreamMode: Boolean,
-    baseExercise: String
+    baseExercise: String,
+    movementRepository: MovementRepository
 ) {
     private val isStreamMode: Boolean
     private var lastDetectedClass: String? = ""
@@ -41,6 +43,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private val sets: MutableMap<String, List<ExerciseSet>> = HashMap()
     private var posesFromLastRep: MutableList<Pose> = ArrayList()
     private var posesTimestampsFromLastRep: MutableList<Date> = ArrayList()
+    private val qualityDetector = QualityDetector(movementRepository)
 
     init {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
@@ -200,24 +203,24 @@ class PoseClassifierProcessor @WorkerThread constructor(
         posesTimestampsFromLastRep: List<Date>
     ): RepetitionQuality {
         return when (baseExercise) {
-            "pushups" -> QualityDetector.pushupsQuality(
+            "pushups" -> qualityDetector.pushupsQuality(
                 posesFromLastRep,
                 posesTimestampsFromLastRep
             )
-            "pullups" -> QualityDetector.pullupsQuality(
+            "pullups" -> qualityDetector.pullupsQuality(
                 posesFromLastRep,
                 posesTimestampsFromLastRep
             )
-            "squats" -> QualityDetector.squatQuality(
+            "squats" -> qualityDetector.squatQuality(
                 posesFromLastRep,
                 posesTimestampsFromLastRep,
                 context
             )
-            "situps" -> QualityDetector.situpsQuality(
+            "situps" -> qualityDetector.situpsQuality(
                 posesFromLastRep,
                 posesTimestampsFromLastRep
             )
-            else -> QualityDetector.allExcerciseQuality(posesTimestampsFromLastRep)
+            else -> qualityDetector.allExcerciseQuality(posesTimestampsFromLastRep)
         }
     }
 

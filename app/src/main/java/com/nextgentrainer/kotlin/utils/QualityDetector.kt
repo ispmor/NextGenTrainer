@@ -4,28 +4,16 @@ import android.content.Context
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.Movement
 import com.nextgentrainer.kotlin.data.models.QualityFeature
 import com.nextgentrainer.kotlin.data.models.RepetitionQuality
+import com.nextgentrainer.kotlin.data.repositories.MovementRepository
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToCache
 import java.util.Date
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-object QualityDetector {
-    private const val MOVEMENT_SPEED_OK = "pace"
-    private const val SQUARE = 2.0
-    private const val HALF = 0.5
-    private const val MOVEMENT_SPEED_LOWER_THRESHOLD = 1.5
-    private const val MOVEMENT_SPEED_UPPER_THRESHOLD = 3.0
-    private const val ZERO = 0
-    private const val MILL = 1000f
-    private const val DEG_45 = 45
-    private const val DEG_90 = 90
-    private const val DEG_15 = 15
-    private const val DISTANCE_MULTIPLIER = 1.2
-    private const val UNIT = 1
+class QualityDetector(private val movementRepository: MovementRepository) {
 
     fun squatQuality(poseList: List<Pose>, posesTimestamps: List<Date>, context: Context): RepetitionQuality {
         /*
@@ -45,7 +33,7 @@ object QualityDetector {
         val squatDeepEnough: Boolean
         val tightsTorsoAngleOkWhenSquatNotDeepEnough: Boolean
         val shoulderHipDistanceOk: Boolean
-        val movement = Movement(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList)
         val distanceBetweenAnklesAndKneesDiff: MutableList<Double> = ArrayList()
         val distanceBetweenAnklesAndKneesIsOk: MutableList<Boolean> = ArrayList()
         val squatDepthDeeperThan90deg: MutableList<Boolean> = ArrayList()
@@ -101,7 +89,7 @@ object QualityDetector {
                 squatDepthDeeperThan90deg
             )
         )
-        results.add(QualityFeature(MOVEMENT_SPEED_OK, movementSpeedOk, listOf(repTime)))
+        results.add(QualityFeature(Companion.MOVEMENT_SPEED_OK, movementSpeedOk, listOf(repTime)))
         results.add(
             QualityFeature(
                 "back",
@@ -117,10 +105,11 @@ object QualityDetector {
             )
         )
         saveDataToCache(
-            movement.getAsJson() + "\n",
+            movementRepository.getAsJson(movement) + "\n",
             context.getString(R.string.squats_cache_filename),
             context
         )
+        movementRepository.saveMovement(movement)
         return RepetitionQuality("squats", results)
     }
 
@@ -138,7 +127,7 @@ object QualityDetector {
         val bodyIsStraight: Boolean
         val elbowsBentBelow90deg: Boolean
         val elbowsPositionRelativeToTorsoOk: Boolean
-        val movement = Movement(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList)
         val repTime = getRepTime(posesTimestamps)
         val areLegsStraight: MutableList<Boolean> = ArrayList()
         val isBodyProperlyAligned: MutableList<Boolean> = ArrayList()
@@ -211,7 +200,7 @@ object QualityDetector {
         val noKipping: Boolean
         val chinAboveTheBar: Boolean
         val elbowsStraightAtTheBottom: Boolean
-        val movement = Movement(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList)
         val torsoAngle = movement.hipsAngle
         val leftKneeAngle = movement.leftKneeAngle
         val rightKneeAngle = movement.rightKneeAngle
@@ -264,16 +253,16 @@ object QualityDetector {
         val anklesLevelWithHip: Boolean
         val kneesInStablePosition: Boolean
         val freeStar = true
-        val movement = Movement(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList)
         val wristsToHeadDistanceIsGreaterThanToAnkles: MutableList<Boolean> = ArrayList()
         val anklesMoreOrLessLevelWithHeap: MutableList<Boolean> = ArrayList()
         val repTime = getRepTime(posesTimestamps)
         for (i in poseList.indices) {
             wristsToHeadDistanceIsGreaterThanToAnkles.add(
-                getDistanceBetween3dPoints(
+                Companion.getDistanceBetween3dPoints(
                     movement.mouthMovement[i],
                     movement.leftWristMovement[i]!!
-                ) < getDistanceBetween3dPoints(
+                ) < Companion.getDistanceBetween3dPoints(
                     movement.leftAnkleMovement[i]!!,
                     movement.leftWristMovement[i]!!
                 )
@@ -333,33 +322,48 @@ object QualityDetector {
         return (posesTimestamps[posesTimestamps.size - UNIT].time - posesTimestamps[ZERO].time) / MILL
     }
 
-    fun getDistanceBetween3dPoints(p1: PointF3D?, p2: PointF3D): Double {
-        val x1 = p1!!.x
-        val y1 = p1.y
-        val z1 = p1.z
-        val x2 = p2.x
-        val y2 = p2.y
-        val z2 = p2.z
-        return (
-            (x2 - x1).toDouble().pow(SQUARE) +
-                (y2 - y1).toDouble().pow(SQUARE) +
-                (z2 - z1).toDouble().pow(SQUARE)
-            ).pow(HALF)
-    }
-
     private fun calculateSD(numArray: ArrayList<Double?>): Double {
         val sum = numArray.reduce { acc, num -> num?.let { acc?.plus(it) } }
         val length = numArray.size
         val mean = sum?.times(UNIT / length)
         val standardDeviation = numArray.reduce {
             acc, num ->
-            acc?.plus(((num?.minus(mean!!) ?: ZERO) as Double).pow(SQUARE))
+            acc?.plus(((num?.minus(mean!!) ?: ZERO) as Double).pow(Companion.SQUARE))
         }
 
         return if (standardDeviation != null) {
             sqrt(standardDeviation / length)
         } else {
             ZERO.toDouble()
+        }
+    }
+
+    companion object {
+        private const val MOVEMENT_SPEED_OK = "pace"
+        private const val SQUARE = 2.0
+        private const val HALF = 0.5
+        private const val MOVEMENT_SPEED_LOWER_THRESHOLD = 1.5
+        private const val MOVEMENT_SPEED_UPPER_THRESHOLD = 3.0
+        private const val ZERO = 0
+        private const val MILL = 1000f
+        private const val DEG_45 = 45
+        private const val DEG_90 = 90
+        private const val DEG_15 = 15
+        private const val DISTANCE_MULTIPLIER = 1.2
+        private const val UNIT = 1
+
+        fun getDistanceBetween3dPoints(p1: PointF3D?, p2: PointF3D): Double {
+            val x1 = p1!!.x
+            val y1 = p1.y
+            val z1 = p1.z
+            val x2 = p2.x
+            val y2 = p2.y
+            val z2 = p2.z
+            return (
+                (x2 - x1).toDouble().pow(Companion.SQUARE) +
+                    (y2 - y1).toDouble().pow(Companion.SQUARE) +
+                    (z2 - z1).toDouble().pow(Companion.SQUARE)
+                ).pow(HALF)
         }
     }
 }

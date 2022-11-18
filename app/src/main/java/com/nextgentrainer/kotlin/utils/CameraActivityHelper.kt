@@ -3,6 +3,7 @@ package com.nextgentrainer.kotlin.utils
 import android.content.Context
 import android.net.Uri
 import com.nextgentrainer.R
+import com.nextgentrainer.kotlin.data.repositories.MovementRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.Constants.PULL_UPS_TRAINER
 import com.nextgentrainer.kotlin.utils.Constants.PUSH_UPS_TRAINER
@@ -14,7 +15,7 @@ import java.io.FileOutputStream
 import java.nio.charset.StandardCharsets
 
 object CameraActivityHelper {
-    fun selectModel(selectedModel: String, context: Context): ExerciseProcessor {
+    fun selectModel(selectedModel: String, context: Context, movementRepository: MovementRepository): ExerciseProcessor {
         return when (selectedModel) {
             REP_COUNTER -> {
                 val poseDetectorOptions =
@@ -25,7 +26,8 @@ object CameraActivityHelper {
                     poseDetectorOptions,
                     true, /* isStreamMode = */
                     true,
-                    "all"
+                    "all",
+                    movementRepository
                 )
             }
             PUSH_UPS_TRAINER -> ExerciseProcessor(
@@ -33,28 +35,32 @@ object CameraActivityHelper {
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "pushups"
+                "pushups",
+                movementRepository
             )
             PULL_UPS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "pullups"
+                "pullups",
+                movementRepository
             )
             SIT_UPS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "situps"
+                "situps",
+                movementRepository
             )
             SQUATS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
                 true,
                 true,
-                "squats"
+                "squats",
+                movementRepository
             )
             else -> throw IllegalStateException("Invalid model name")
         }

@@ -166,6 +166,7 @@
     <string name="you_won">WIN!</string>
     <string name="you_lost">LOSE</string>
     <string name="competitionSession">CompetitionSession</string>
+    <string name="movement">Movement</string>
     <string name="tie">TIE!</string>
     <string name="go">GO!!!!!</string>
 

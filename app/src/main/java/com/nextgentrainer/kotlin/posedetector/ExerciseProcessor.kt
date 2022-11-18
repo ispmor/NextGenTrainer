@@ -11,11 +11,12 @@ import com.google.mlkit.vision.pose.PoseDetector
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.kotlin.VisionProcessorBase
+import com.nextgentrainer.kotlin.data.models.Repetition
+import com.nextgentrainer.kotlin.data.repositories.MovementRepository
 import com.nextgentrainer.kotlin.graphics.CustomPoseGraphics
 import com.nextgentrainer.kotlin.graphics.QualityGraphics
 import com.nextgentrainer.kotlin.posedetector.classification.PoseClassifierProcessor
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
-import com.nextgentrainer.kotlin.data.models.Repetition
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -27,7 +28,8 @@ class ExerciseProcessor(
     options: PoseDetectorOptionsBase?,
     runClassification: Boolean,
     isStreamMode: Boolean,
-    private val baseExercise: String
+    private val baseExercise: String,
+    private val movementRepository: MovementRepository
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     var isStarted: Boolean = false
     private val detector: PoseDetector
@@ -66,7 +68,7 @@ class ExerciseProcessor(
                 var classificationResult: Repetition? = Repetition()
                 if (isStarted) {
                     if (poseClassifierProcessor == null) {
-                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
+                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise, movementRepository)
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
                 }
@@ -84,7 +86,7 @@ class ExerciseProcessor(
                 var classificationResult: Repetition? = Repetition()
                 if (isStarted) {
                     if (poseClassifierProcessor == null) {
-                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise)
+                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise, movementRepository)
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
                 }

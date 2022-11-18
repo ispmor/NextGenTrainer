@@ -34,6 +34,7 @@ import com.google.mlkit.common.MlKitException
 import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
+import com.nextgentrainer.kotlin.data.repositories.MovementRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToCache
@@ -68,11 +69,13 @@ class CameraActivity :
     private var cameraSelector: CameraSelector? = null
     private var countersAsString: String? = null
     private lateinit var imageProcessor: ExerciseProcessor
+    private lateinit var movementRepository: MovementRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        imageProcessor = selectModel(selectedModel, this)
+        movementRepository = MovementRepository(this)
+        imageProcessor = selectModel(selectedModel, this, movementRepository)
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
         }
@@ -272,7 +275,7 @@ class CameraActivity :
         }
         imageProcessor.stop()
 
-        imageProcessor = selectModel(selectedModel, this)
+        imageProcessor = selectModel(selectedModel, this, movementRepository)
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
@@ -282,9 +285,6 @@ class CameraActivity :
         analysisUseCase = builder.build()
         needUpdateGraphicOverlayImageSourceInfo = true
         analysisUseCase!!.setAnalyzer(
-            // imageProcessor.processImageProxy will use another thread to run the
-            // detection underneath,
-            // thus we can just runs the analyzer itself on main thread.
             ContextCompat.getMainExecutor(this)
         ) { imageProxy: ImageProxy ->
             if (needUpdateGraphicOverlayImageSourceInfo) {

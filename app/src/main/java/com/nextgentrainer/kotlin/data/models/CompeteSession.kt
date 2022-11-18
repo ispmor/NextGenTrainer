@@ -3,7 +3,7 @@ package com.nextgentrainer.kotlin.data.models
 import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
-data class CompetitionSession(
+data class CompeteSession(
     var uid: String? = "",
     var exercise: String? = null,
     var user1: String? = null,
