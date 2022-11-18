@@ -15,7 +15,11 @@ import java.io.FileOutputStream
 import java.nio.charset.StandardCharsets
 
 object CameraActivityHelper {
-    fun selectModel(selectedModel: String, context: Context, movementRepository: MovementRepository): ExerciseProcessor {
+    fun selectModel(
+        selectedModel: String,
+        context: Context,
+        movementRepository: MovementRepository
+    ): ExerciseProcessor {
         return when (selectedModel) {
             REP_COUNTER -> {
                 val poseDetectorOptions =

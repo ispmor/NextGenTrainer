@@ -7,12 +7,8 @@ import android.widget.Toast
 import com.nextgentrainer.kotlin.data.models.User
 import com.nextgentrainer.kotlin.data.sources.UsersDBSource
 
-
 class UsersDBRepository(val context: Context) {
-
-
-
-    private fun saveToDB(user: User) {
+    fun saveToDB(user: User) {
         val database: SQLiteDatabase = UsersDBSource(context).writableDatabase
         val values = ContentValues()
         values.put(

@@ -9,10 +9,10 @@ class UsersDBSource(context: Context) :
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
         sqLiteDatabase.execSQL(
             "CREATE TABLE IF NOT EXISTS " + USER_TABLE_NAME + " (" +
-                    USER_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    USER_COLUMN_NAME + " TEXT, " +
-                    USER_COLUMN_AGE + " INT UNSIGNED, " +
-                    USER_COLUMN_GENDER + " TEXT" + ")"
+                USER_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                USER_COLUMN_NAME + " TEXT, " +
+                USER_COLUMN_AGE + " INT UNSIGNED, " +
+                USER_COLUMN_GENDER + " TEXT" + ")"
         )
     }
 

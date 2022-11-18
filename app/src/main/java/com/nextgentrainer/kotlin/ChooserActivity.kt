@@ -43,7 +43,7 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
             startActivity(Intent(this, CompeteActivity::class.java))
         }
 
-        findViewById<Button>(R.id.master_button).setOnClickListener{
+        findViewById<Button>(R.id.master_button).setOnClickListener {
             startActivity(Intent(this, ImproveTestActivity::class.java))
         }
     }

@@ -68,7 +68,12 @@ class ExerciseProcessor(
                 var classificationResult: Repetition? = Repetition()
                 if (isStarted) {
                     if (poseClassifierProcessor == null) {
-                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise, movementRepository)
+                        poseClassifierProcessor = PoseClassifierProcessor(
+                            context,
+                            isStreamMode,
+                            baseExercise,
+                            movementRepository
+                        )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
                 }
@@ -86,7 +91,12 @@ class ExerciseProcessor(
                 var classificationResult: Repetition? = Repetition()
                 if (isStarted) {
                     if (poseClassifierProcessor == null) {
-                        poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode, baseExercise, movementRepository)
+                        poseClassifierProcessor = PoseClassifierProcessor(
+                            context,
+                            isStreamMode,
+                            baseExercise,
+                            movementRepository
+                        )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
                 }

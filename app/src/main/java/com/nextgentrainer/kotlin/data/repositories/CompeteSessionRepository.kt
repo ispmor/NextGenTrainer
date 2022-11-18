@@ -2,16 +2,11 @@ package com.nextgentrainer.kotlin.data.repositories
 
 import android.content.Context
 import android.util.Log
-import android.view.View
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.CompeteActivity
 import com.nextgentrainer.kotlin.data.models.CompeteSession
 import java.util.Date
 
@@ -19,8 +14,6 @@ class CompeteSessionRepository(private val context: Context) {
 
     private val database: DatabaseReference = Firebase.database(context.getString(R.string.database_url))
         .getReference(context.getString(R.string.movement))
-
-
 
     fun createNewSession(exercise: String?, user1: String?): String {
         val keyTmp = database.push().key
@@ -31,7 +24,7 @@ class CompeteSessionRepository(private val context: Context) {
         val session = CompeteSession(keyTmp, exercise, user1, startDateMillis = Date().time)
         database.child(keyTmp).setValue(session)
 
-        bindSessionToKey(keyTmp)
+//        bindSessionToKey(keyTmp)
         return keyTmp
     }
 
@@ -63,38 +56,38 @@ class CompeteSessionRepository(private val context: Context) {
         database.child(session.uid!!).setValue(session)
     }
 
-    private fun bindSessionToKey(bindingKey: String) {
-//        database.child(bindingKey).addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                val sessionTmp = dataSnapshot.getValue<CompeteSession>()
-//                if (sessionTmp != null) {
-//                    if (
-//                        bothUsersExist(sessionTmp) &&
-//                        sessionTmp.endDateMillis == null &&
-//                        notStartedYet
-//                    ) {
-//                        countdownTextView.visibility = View.VISIBLE
-//                        timer.start()
-//                        againstTextView.visibility = View.INVISIBLE
-//                    }
-//
-//                    session = sessionTmp
-//
-//                    if (sessionTmp.finished) {
-//                        updateFinished()
-//                    }
-//                    Log.d(CompeteActivity.TAG, "Value is: $session")
-//                }
-//                Log.d(CompeteActivity.TAG, "Empty TMP session")
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                // Failed to read value
-//                Log.w(CompeteActivity.TAG, "Failed to read value.", error.toException())
-//            }
-//        })
-    }
-
+//    private fun bindSessionToKey(bindingKey: String) {
+//        val c = bindingKey
+// //        database.child(bindingKey).addValueEventListener(object : ValueEventListener {
+// //            override fun onDataChange(dataSnapshot: DataSnapshot) {
+// //                val sessionTmp = dataSnapshot.getValue<CompeteSession>()
+// //                if (sessionTmp != null) {
+// //                    if (
+// //                        bothUsersExist(sessionTmp) &&
+// //                        sessionTmp.endDateMillis == null &&
+// //                        notStartedYet
+// //                    ) {
+// //                        countdownTextView.visibility = View.VISIBLE
+// //                        timer.start()
+// //                        againstTextView.visibility = View.INVISIBLE
+// //                    }
+// //
+// //                    session = sessionTmp
+// //
+// //                    if (sessionTmp.finished) {
+// //                        updateFinished()
+// //                    }
+// //                    Log.d(CompeteActivity.TAG, "Value is: $session")
+// //                }
+// //                Log.d(CompeteActivity.TAG, "Empty TMP session")
+// //            }
+// //
+// //            override fun onCancelled(error: DatabaseError) {
+// //                // Failed to read value
+// //                Log.w(CompeteActivity.TAG, "Failed to read value.", error.toException())
+// //            }
+// //        })
+//    }
 
     companion object {
         private const val TAG = "CompeteSessionRepository"

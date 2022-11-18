@@ -18,7 +18,7 @@ import kotlin.math.abs
 class MovementRepository(private val context: Context) {
 
     private val database = Firebase.database(context.getString(R.string.database_url))
-            .getReference(context.getString(R.string.movement))
+        .getReference(context.getString(R.string.movement))
 
     fun saveMovement(movement: Movement): String {
         val key = database.push().key!!
@@ -99,16 +99,16 @@ class MovementRepository(private val context: Context) {
             )
             hipsAngle.add(
                 (
-                        getAngle(
-                            pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)!!,
-                            pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!,
-                            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!
-                        ) + getAngle(
-                            pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)!!,
-                            pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!,
-                            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!
-                        )
-                        ) / 2
+                    getAngle(
+                        pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)!!,
+                        pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)!!,
+                        pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)!!
+                    ) + getAngle(
+                        pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)!!,
+                        pose.getPoseLandmark(PoseLandmark.LEFT_HIP)!!,
+                        pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)!!
+                    )
+                    ) / 2
             )
             leftElbowAngle.add(
                 getAngle(
@@ -185,14 +185,14 @@ class MovementRepository(private val context: Context) {
     fun getAngle(firstPoint: PoseLandmark, midPoint: PoseLandmark, lastPoint: PoseLandmark): Double {
         var result = Math.toDegrees(
             (
-                    kotlin.math.atan2(
-                        lastPoint.position.y - midPoint.position.y,
-                        lastPoint.position.x - midPoint.position.x
-                    ) - kotlin.math.atan2(
-                        firstPoint.position.y - midPoint.position.y,
-                        firstPoint.position.x - midPoint.position.x
-                    )
-                    ).toDouble()
+                kotlin.math.atan2(
+                    lastPoint.position.y - midPoint.position.y,
+                    lastPoint.position.x - midPoint.position.x
+                ) - kotlin.math.atan2(
+                    firstPoint.position.y - midPoint.position.y,
+                    firstPoint.position.x - midPoint.position.x
+                )
+                ).toDouble()
         )
         result = abs(result) // Angle should never be negative
         if (result > 180) {
