@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:installLocation="auto">
+    android:installLocation="auto" >
 
     <uses-sdk tools:overrideLibrary="           androidx.camera.camera2, androidx.camera.core,           androidx.camera.view, androidx.camera.lifecycle" />
 
@@ -22,7 +22,14 @@
         android:name="androidx.multidex.MultiDexApplication"
         android:icon="@drawable/ic_runner_logo"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat">
+        android:theme="@style/Theme.AppCompat" >
+        <activity
+            android:name=".kotlin.ImproveTestActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -31,14 +38,14 @@
  Optional: Add it to automatically download ML model to device after
           your app is installed.
         -->
-        <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode,face,ocr,ica,custom_ica" />
+<!--        <meta-data-->
+<!--            android:name="com.google.mlkit.vision.DEPENDENCIES"-->
+<!--            android:value="barcode,face,ocr,ica,custom_ica" />-->
 
         <activity
             android:name=".EntryChoiceActivity"
             android:exported="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,21 +53,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".java.ChooserActivity"
+            android:name=".kotlin.ChooserActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
-            android:name=".java.CameraActivity"
+            android:name=".kotlin.CameraActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
-            android:name=".java.FitLogActivity"
+            android:name=".kotlin.FitLogActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
-            android:name=".java.CompeteActivity"
+            android:name=".kotlin.CompeteActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".preference.SettingsActivity"
             android:exported="false" />
