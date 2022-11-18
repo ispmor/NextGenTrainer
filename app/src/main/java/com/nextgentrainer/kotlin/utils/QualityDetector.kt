@@ -109,8 +109,8 @@ class QualityDetector(private val movementRepository: MovementRepository) {
             context.getString(R.string.squats_cache_filename),
             context
         )
-        movementRepository.saveMovement(movement)
-        return RepetitionQuality("squats", results)
+        val movementId = movementRepository.saveMovement(movement)
+        return RepetitionQuality("squats", results, movementId)
     }
 
     fun pushupsQuality(poseList: List<Pose>, posesTimestamps: List<Date>): RepetitionQuality {
@@ -182,7 +182,9 @@ class QualityDetector(private val movementRepository: MovementRepository) {
                 avgAngleBetweenTorsoAndElbows
             )
         )
-        return RepetitionQuality("pushups", results)
+
+        val movementId = movementRepository.saveMovement(movement)
+        return RepetitionQuality("pushups", results, movementId)
     }
 
     fun pullupsQuality(poseList: List<Pose>, posesTimestamps: List<Date>): RepetitionQuality {
@@ -236,7 +238,9 @@ class QualityDetector(private val movementRepository: MovementRepository) {
                 movement.leftElbowAngle
             )
         )
-        return RepetitionQuality("pullups", results)
+
+        val movementId = movementRepository.saveMovement(movement)
+        return RepetitionQuality("pullups", results, movementId)
     }
 
     fun situpsQuality(poseList: List<Pose>, posesTimestamps: List<Date>): RepetitionQuality {
@@ -301,10 +305,11 @@ class QualityDetector(private val movementRepository: MovementRepository) {
                 anklesMoreOrLessLevelWithHeap
             )
         )
-        return RepetitionQuality("situps", results)
+        val movementId = movementRepository.saveMovement(movement)
+        return RepetitionQuality("situps", results, movementId)
     }
 
-    fun allExcerciseQuality(posesTimestamps: List<Date>): RepetitionQuality {
+    fun allExcerciseQuality(poseList: List<Pose>, posesTimestamps: List<Date>): RepetitionQuality {
         /*
         dummy for speed only
          */
@@ -315,7 +320,10 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
             repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
-        return RepetitionQuality("all", results)
+
+        val movement = movementRepository.getNewMovementFromPoseList(poseList)
+        val movementId = movementRepository.saveMovement(movement)
+        return RepetitionQuality("all", results, movementId)
     }
 
     private fun getRepTime(posesTimestamps: List<Date>): Float {

@@ -1,24 +1,20 @@
 package com.nextgentrainer.kotlin.data.repositories
 
 import android.content.Context
-import android.provider.Settings.Global.getString
-import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
-import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.models.Movement
+import com.nextgentrainer.kotlin.data.sources.MovementFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.Utils
 import com.nextgentrainer.kotlin.utils.QualityDetector
 import kotlin.math.abs
 
-class MovementRepository(private val context: Context) {
+class MovementRepository(context: Context) {
 
-    private val database = Firebase.database(context.getString(R.string.database_url))
-        .getReference(context.getString(R.string.movement))
+    private val database = MovementFirebaseSource(context).database
 
     fun saveMovement(movement: Movement): String {
         val key = database.push().key!!

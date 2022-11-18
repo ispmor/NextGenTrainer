@@ -32,6 +32,7 @@ import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.models.CompeteSession
 import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper
 import com.nextgentrainer.kotlin.utils.Constants
@@ -63,12 +64,14 @@ class CompeteActivity :
     private lateinit var timer: CountDownTimer
     private var notStartedYet = true
     private lateinit var movementRepository: MovementRepository
+    private lateinit var repetitionRepository: RepetitionRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
         movementRepository = MovementRepository(this)
+        repetitionRepository = RepetitionRepository(this)
         countdownTextView = findViewById(R.id.challengeCounterTextView)
 
         againstTextView = findViewById(R.id.textViewAgainst)
@@ -90,7 +93,12 @@ class CompeteActivity :
         database = Firebase.database(getString(R.string.database_url))
             .getReference(getString(R.string.competitionSession))
 
-        imageProcessor = CameraActivityHelper.selectModel(selectedModel, this, movementRepository)
+        imageProcessor = CameraActivityHelper.selectModel(
+            selectedModel,
+            this,
+            movementRepository,
+            repetitionRepository
+        )
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(
                 Constants.STATE_SELECTED_MODEL,
@@ -212,7 +220,12 @@ class CompeteActivity :
         }
         imageProcessor.stop()
 
-        imageProcessor = CameraActivityHelper.selectModel(selectedModel, this, movementRepository)
+        imageProcessor = CameraActivityHelper.selectModel(
+            selectedModel,
+            this,
+            movementRepository,
+            repetitionRepository
+        )
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)

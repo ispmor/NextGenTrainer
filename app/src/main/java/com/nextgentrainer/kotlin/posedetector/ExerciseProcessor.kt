@@ -13,6 +13,7 @@ import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.kotlin.VisionProcessorBase
 import com.nextgentrainer.kotlin.data.models.Repetition
 import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
 import com.nextgentrainer.kotlin.graphics.CustomPoseGraphics
 import com.nextgentrainer.kotlin.graphics.QualityGraphics
 import com.nextgentrainer.kotlin.posedetector.classification.PoseClassifierProcessor
@@ -29,7 +30,8 @@ class ExerciseProcessor(
     runClassification: Boolean,
     isStreamMode: Boolean,
     private val baseExercise: String,
-    private val movementRepository: MovementRepository
+    private val movementRepository: MovementRepository,
+    private val repetitionRepository: RepetitionRepository
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     var isStarted: Boolean = false
     private val detector: PoseDetector
@@ -65,14 +67,15 @@ class ExerciseProcessor(
                 classificationExecutor
             ) { task: Task<Pose> ->
                 val pose = task.result
-                var classificationResult: Repetition? = Repetition()
+                var classificationResult: Repetition? = repetitionRepository.getEmptyRepetition()
                 if (isStarted) {
                     if (poseClassifierProcessor == null) {
                         poseClassifierProcessor = PoseClassifierProcessor(
                             context,
                             isStreamMode,
                             baseExercise,
-                            movementRepository
+                            movementRepository,
+                            repetitionRepository
                         )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
@@ -88,14 +91,15 @@ class ExerciseProcessor(
                 classificationExecutor
             ) { task: Task<Pose> ->
                 val pose = task.result
-                var classificationResult: Repetition? = Repetition()
+                var classificationResult: Repetition? = repetitionRepository.getEmptyRepetition()
                 if (isStarted) {
                     if (poseClassifierProcessor == null) {
                         poseClassifierProcessor = PoseClassifierProcessor(
                             context,
                             isStreamMode,
                             baseExercise,
-                            movementRepository
+                            movementRepository,
+                            repetitionRepository
                         )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)

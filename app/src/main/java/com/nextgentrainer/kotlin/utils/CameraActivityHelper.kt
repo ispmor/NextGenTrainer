@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.Constants.PULL_UPS_TRAINER
 import com.nextgentrainer.kotlin.utils.Constants.PUSH_UPS_TRAINER
@@ -18,7 +19,8 @@ object CameraActivityHelper {
     fun selectModel(
         selectedModel: String,
         context: Context,
-        movementRepository: MovementRepository
+        movementRepository: MovementRepository,
+        repetitionRepository: RepetitionRepository
     ): ExerciseProcessor {
         return when (selectedModel) {
             REP_COUNTER -> {
@@ -31,7 +33,8 @@ object CameraActivityHelper {
                     true, /* isStreamMode = */
                     true,
                     "all",
-                    movementRepository
+                    movementRepository,
+                    repetitionRepository
                 )
             }
             PUSH_UPS_TRAINER -> ExerciseProcessor(
@@ -40,7 +43,8 @@ object CameraActivityHelper {
                 true,
                 true,
                 "pushups",
-                movementRepository
+                movementRepository,
+                repetitionRepository
             )
             PULL_UPS_TRAINER -> ExerciseProcessor(
                 context,
@@ -48,7 +52,8 @@ object CameraActivityHelper {
                 true,
                 true,
                 "pullups",
-                movementRepository
+                movementRepository,
+                repetitionRepository
             )
             SIT_UPS_TRAINER -> ExerciseProcessor(
                 context,
@@ -56,7 +61,8 @@ object CameraActivityHelper {
                 true,
                 true,
                 "situps",
-                movementRepository
+                movementRepository,
+                repetitionRepository
             )
             SQUATS_TRAINER -> ExerciseProcessor(
                 context,
@@ -64,7 +70,8 @@ object CameraActivityHelper {
                 true,
                 true,
                 "squats",
-                movementRepository
+                movementRepository,
+                repetitionRepository
             )
             else -> throw IllegalStateException("Invalid model name")
         }

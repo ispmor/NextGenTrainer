@@ -35,6 +35,7 @@ import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToCache
@@ -70,12 +71,14 @@ class CameraActivity :
     private var countersAsString: String? = null
     private lateinit var imageProcessor: ExerciseProcessor
     private lateinit var movementRepository: MovementRepository
+    private lateinit var repetitionRepository: RepetitionRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
         movementRepository = MovementRepository(this)
-        imageProcessor = selectModel(selectedModel, this, movementRepository)
+        repetitionRepository = RepetitionRepository(this)
+        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository)
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
         }
@@ -275,7 +278,7 @@ class CameraActivity :
         }
         imageProcessor.stop()
 
-        imageProcessor = selectModel(selectedModel, this, movementRepository)
+        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository)
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)

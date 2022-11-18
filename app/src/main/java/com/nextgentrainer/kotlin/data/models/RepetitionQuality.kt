@@ -2,7 +2,7 @@ package com.nextgentrainer.kotlin.data.models
 
 import java.util.stream.Collectors
 
-class RepetitionQuality(val exerciseName: String, val qualityFeatures: List<QualityFeature>) {
+class RepetitionQuality(val exerciseName: String, val qualityFeatures: List<QualityFeature>, val movementId: String) {
 
     val quality: Float
         get() {
@@ -19,7 +19,12 @@ class RepetitionQuality(val exerciseName: String, val qualityFeatures: List<Qual
             "\"" + exerciseName + "\"" +
             ", \"qualityScore\": " + quality +
             ", \"qualityFeatures\": " +
-            qualityFeatures.stream().map { obj: QualityFeature -> obj.toString() }.collect(Collectors.toList()) +
+            qualityFeatures
+                .stream()
+                .map { obj: QualityFeature ->
+                    obj.toString()
+                }.collect(Collectors.toList()) +
+            ", \"movementId\": " + movementId +
             "}"
     }
 }

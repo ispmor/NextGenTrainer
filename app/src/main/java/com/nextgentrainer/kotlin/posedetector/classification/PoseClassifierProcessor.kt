@@ -12,6 +12,7 @@ import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.models.Repetition
 import com.nextgentrainer.kotlin.data.models.RepetitionQuality
 import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
 import com.nextgentrainer.kotlin.utils.ExerciseSet
 import com.nextgentrainer.kotlin.utils.QualityDetector
 import java.io.BufferedReader
@@ -29,7 +30,8 @@ class PoseClassifierProcessor @WorkerThread constructor(
     context: Context,
     isStreamMode: Boolean,
     baseExercise: String,
-    movementRepository: MovementRepository
+    movementRepository: MovementRepository,
+    private val repetitionRepository: RepetitionRepository
 ) {
     private val isStreamMode: Boolean
     private var lastDetectedClass: String? = ""
@@ -59,7 +61,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
         } else {
             this.baseExercise = baseExercise
         }
-        lastRep = Repetition()
+        lastRep = repetitionRepository.getEmptyRepetition()
         loadPoseSamples(context, baseExercise)
     }
 
@@ -98,7 +100,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
      * @return
      */
     @WorkerThread
-    fun getPoseResult(pose: Pose): Repetition? {
+    fun getPoseResult(pose: Pose): Repetition {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
         val result: MutableList<String?> = ArrayList()
         var classification = poseClassifier!!.classify(pose)
@@ -120,7 +122,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
         }
 
         // Add maxConfidence class of current frame to result if pose is found.
-        if (!pose.allPoseLandmarks.isEmpty()) {
+        if (pose.allPoseLandmarks.isNotEmpty()) {
             val maxConfidenceClass = classification.maxConfidenceClass
             val maxConfidenceClassResult = String.format(
                 Locale.US,
@@ -129,8 +131,8 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 classification!!.getClassConfidence(maxConfidenceClass) /
                     poseClassifier!!.confidenceRange()
             )
-            lastRep!!.poseName = maxConfidenceClass
-            lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
+//            lastRep!!.poseName = maxConfidenceClass
+//            lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
             result.add(maxConfidenceClassResult)
         }
         return lastRep
@@ -163,12 +165,19 @@ class PoseClassifierProcessor @WorkerThread constructor(
                     repCounter.className,
                     repsAfter
                 )
-                lastRep = Repetition(repCounter, repetitionQuality, maxConfidenceClass)
+                lastRep = repetitionRepository.createRepetition(
+                    maxConfidenceClass!!,
+                    classification.getClassConfidence(maxConfidenceClass),
+                    repCounter,
+                    repetitionQuality,
+                    "MOCKUP-USER"
+                )
                 Log.d(
                     TAG,
                     String.format(Locale.getDefault(), "QUALITY: %s", repetitionQuality.quality)
                 )
                 saveRepetitionToCache(lastRep) // .posesFromLastRep
+                repetitionRepository.saveRepetition(lastRep)
 
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
@@ -220,7 +229,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 posesFromLastRep,
                 posesTimestampsFromLastRep
             )
-            else -> qualityDetector.allExcerciseQuality(posesTimestampsFromLastRep)
+            else -> qualityDetector.allExcerciseQuality(posesFromLastRep, posesTimestampsFromLastRep)
         }
     }
 
