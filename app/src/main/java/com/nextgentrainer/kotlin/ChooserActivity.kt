@@ -12,6 +12,8 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nextgentrainer.BuildConfig
 import com.nextgentrainer.R
@@ -34,17 +36,47 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         Log.d(TAG, "onCreate")
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        setContentView(R.layout.activity_chooser_training)
-        val repCounter = findViewById<Button>(R.id.rep_counter_button)
-        repCounter.setOnClickListener {
+
+        setContentView(R.layout.activity_chooser)
+
+        findViewById<Button>(R.id.trainingButton).setOnClickListener {
             startActivity(Intent(this, CameraActivity::class.java))
         }
-        findViewById<Button>(R.id.compete_button).setOnClickListener {
+
+        findViewById<TextView>(R.id.trainingTextView).setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
+
+        findViewById<TextView>(R.id.alreadyTextView).setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
+
+        findViewById<ImageView>(R.id.trainImageView).setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
+
+        findViewById<ImageView>(R.id.fitlogImageView).setOnClickListener {
+            startActivity(Intent(this, FitLogActivity::class.java))
+        }
+
+        findViewById<TextView>(R.id.fitlogTextVieww).setOnClickListener {
+            startActivity(Intent(this, FitLogActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.fitLogButton).setOnClickListener {
+            startActivity(Intent(this, FitLogActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.competeButton).setOnClickListener {
             startActivity(Intent(this, CompeteActivity::class.java))
         }
 
-        findViewById<Button>(R.id.master_button).setOnClickListener {
-            startActivity(Intent(this, ImproveTestActivity::class.java))
+        findViewById<ImageView>(R.id.competeImageView).setOnClickListener {
+            startActivity(Intent(this, CompeteActivity::class.java))
+        }
+
+        findViewById<TextView>(R.id.competeTextView).setOnClickListener {
+            startActivity(Intent(this, CompeteActivity::class.java))
         }
     }
 

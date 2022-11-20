@@ -1,3 +1,21 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar"/>
+    <style name="AppTheme.GreenButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/active_green</item>
+        <item name="android:textColor">@color/gray_black_text</item>
+        <item name="shapeAppearanceOverlay">@style/ButtonRoundedAppearance</item>
+    </style>
+
+    <style name="ButtonRoundedAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">32dp</item>
+        <item name="cornerSizeBottomRight">32dp</item>
+        <item name="cornerSizeTopLeft">32dp</item>
+        <item name="cornerSizeBottomLeft">32dp</item>
+    </style>
+
+    <style name="circleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

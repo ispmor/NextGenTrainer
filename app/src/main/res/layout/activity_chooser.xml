@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/background_dark">
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:shapeAppearanceOverlay="@style/circleImageView"
+        app:srcCompat="@drawable/default_profile_picture" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/dark_container"
+        android:contentDescription="@string/nsb"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/helloTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/hello_user"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileImageView" />
+
+    <TextView
+        android:id="@+id/readyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/ready"
+        app:layout_constraintBottom_toTopOf="@+id/trainingButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/helloTextView" />
+
+    <Button
+        android:id="@+id/trainingButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/training_button"
+        android:contentDescription="@string/training_button"
+        app:layout_constraintBottom_toTopOf="@+id/fitLogButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/readyTextView" />
+
+    <Button
+        android:id="@+id/fitLogButton"
+        android:layout_width="0dp"
+        android:layout_height="175dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/fit_log_button"
+
+        android:contentDescription="@string/flb"
+        android:textColor="@color/gray_black_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/competeButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/competeButton"
+        android:layout_width="0dp"
+        android:layout_height="175dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/compete_button"
+        android:contentDescription="@string/cb"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fitLogButton" />
+
+    <ImageView
+        android:id="@+id/trainImageView"
+        android:layout_width="371dp"
+        android:layout_height="361dp"
+        android:elevation="5dp"
+        android:src="@mipmap/training_image_foreground"
+        app:layout_constraintBottom_toBottomOf="@+id/trainingButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/trainingButton"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/trainingTextView"
+        android:layout_width="142dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:elevation="11dp"
+        android:gravity="center|start"
+        android:text="@string/training"
+        android:textColor="@color/gray_black_text"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/trainingButton"
+        app:layout_constraintTop_toTopOf="@+id/trainingButton" />
+
+    <TextView
+        android:id="@+id/alreadyTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:elevation="11dp"
+        android:text="@string/already_prepared_to_work_out_let_s_go"
+        android:textColor="@color/gray_black_text"
+        app:layout_constraintEnd_toEndOf="@+id/trainingTextView"
+        app:layout_constraintStart_toStartOf="@+id/trainingButton"
+        app:layout_constraintTop_toBottomOf="@+id/trainingTextView" />
+
+    <ImageView
+        android:id="@+id/fitlogImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fitLogButton"
+        app:layout_constraintEnd_toEndOf="@+id/fitLogButton"
+        app:layout_constraintStart_toStartOf="@+id/fitLogButton"
+        app:layout_constraintTop_toTopOf="@+id/fitLogButton"
+        app:srcCompat="@drawable/fitlog_no_text" />
+
+    <ImageView
+        android:id="@+id/competeImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/competeButton"
+        app:layout_constraintEnd_toEndOf="@+id/competeButton"
+        app:layout_constraintStart_toStartOf="@+id/competeButton"
+        app:layout_constraintTop_toTopOf="@+id/competeButton"
+        app:srcCompat="@drawable/compete_no_text" />
+
+    <TextView
+        android:id="@+id/fitlogTextVieww"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="11dp"
+        android:text="@string/fitlog"
+        android:textColor="@color/gray_black_text"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/fitlogImageView"
+        app:layout_constraintEnd_toEndOf="@+id/fitlogImageView"
+        app:layout_constraintStart_toStartOf="@+id/fitlogImageView"
+        app:layout_constraintTop_toTopOf="@+id/fitlogImageView"
+        app:layout_constraintVertical_bias="0.85" />
+
+    <TextView
+        android:id="@+id/competeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="11dp"
+        android:text="@string/compete_text"
+        android:textColor="@color/gray_black_text"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/competeImageView"
+        app:layout_constraintEnd_toEndOf="@+id/competeImageView"
+        app:layout_constraintStart_toStartOf="@+id/competeImageView"
+        app:layout_constraintTop_toTopOf="@+id/competeImageView"
+        app:layout_constraintVertical_bias="0.85" />
+
+    <ImageButton
+        android:id="@+id/bellButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#00FFFFFF"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/button3"
+        app:layout_constraintEnd_toStartOf="@id/gearImageButton"
+        app:layout_constraintStart_toStartOf="@+id/button3"
+        app:layout_constraintTop_toTopOf="@+id/button3"
+        app:srcCompat="@drawable/bell_ikon" />
+
+    <ImageButton
+        android:id="@+id/gearImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#00FFFFFF"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="@+id/button3"
+        app:layout_constraintStart_toEndOf="@+id/bellButton"
+        app:layout_constraintTop_toTopOf="@+id/button3"
+        app:srcCompat="@drawable/gear_icon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
