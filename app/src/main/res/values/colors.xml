@@ -11,4 +11,10 @@
     <color name="white">#FFFFFF</color>
     <color name="blue">#4286f4</color>
     <color name="red">#f44242</color>
+    <color name="gray_black_text">#242424</color>
+    <color name="active_green">#bbf247</color>
+    <color name="background_dark">#192225</color>
+    <color name="training_yellow">#fbf6b5</color>
+    <color name="light_blue">#d7f2f4</color>
+    <color name="light_pink">#f1d1d1</color>
 </resources>

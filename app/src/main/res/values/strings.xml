@@ -170,7 +170,6 @@
     <string name="repetition">Repetition</string>
     <string name="tie">TIE!</string>
     <string name="go">GO!!!!!</string>
-    <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -179,5 +178,27 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="log_in_to">Login To <b>Get Started</b></string>
+    <string name="get_started">Get Started!</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="forgot_password"><u><b>Forgot Password?</b></u></string>
+    <string name="login">Login</string>
+    <string name="or">or</string>
+    <string name="sign_up">Don\'t have an account? <b>Sign up!</b></string>
+    <string name="continue_with_facebook">Continue with Facebook</string>
+    <string name="continue_with_twitter">Continue with Twitter</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="hello_user">Hello, <b>User</b></string>
+    <string name="fit_log">Fit Log</string>
+    <string name="already_prepared_to_work_out_let_s_go">Already prepared to work out? Let\'s go!</string>
+    <string name="training">Training</string>
+    <string name="nsb">notifications settings button</string>
+    <string name="ready">Ready for a new challenge?</string>
+    <string name="training_button">training button</string>
+    <string name="flb">fit log button</string>
+    <string name="cb">compete button</string>
+    <string name="fitlog">FitLog</string>
+    <string name="compete_text">Compete</string>
 
 </resources>

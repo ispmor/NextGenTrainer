@@ -132,6 +132,8 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
 
     implementation("com.google.android.gms:play-services-cronet:18.0.1")
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
 }
 
 configurations {
