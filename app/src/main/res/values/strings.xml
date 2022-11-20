@@ -200,5 +200,9 @@
     <string name="cb">compete button</string>
     <string name="fitlog">FitLog</string>
     <string name="compete_text">Compete</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="make_it_hard">Make it hard to crack ;-) <br />- Min . 8 characters.<br />- At least 1 special character.<br />- At least one CAPITAL letter.<br />- At least one number</string>
+    <string name="login_hint">Login</string>
 
 </resources>
