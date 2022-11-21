@@ -95,8 +95,8 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         val login = user?.displayName
 
         if (user != null) {
-            val name = user.displayName.orEmpty()
-            textView?.text = Html.fromHtml("Hello, <b>$login</b>", Html.FROM_HTML_MODE_COMPACT)
+            val name = login.orEmpty()
+            textView?.text = Html.fromHtml("Hello, <b>$name</b>", Html.FROM_HTML_MODE_COMPACT)
         }
     }
 

@@ -63,6 +63,10 @@ class SignUpActivity : AppCompatActivity() {
                     Log.d(TAG, "createUserWithEmail:success on $login")
                     val user = auth.currentUser
 
+                    user!!.sendEmailVerification().addOnCompleteListener(this) {
+                        Log.d(TAG, "Sent email verification.")
+                    }
+
                     updateLogin(user, login)
                     Toast.makeText(
                         baseContext,
