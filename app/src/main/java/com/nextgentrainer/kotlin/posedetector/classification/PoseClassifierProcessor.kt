@@ -6,6 +6,9 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.google.common.base.Preconditions
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
@@ -46,6 +49,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private var posesFromLastRep: MutableList<Pose> = ArrayList()
     private var posesTimestampsFromLastRep: MutableList<Date> = ArrayList()
     private val qualityDetector = QualityDetector(movementRepository)
+    private val user: FirebaseUser
 
     init {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
@@ -63,6 +67,8 @@ class PoseClassifierProcessor @WorkerThread constructor(
         }
         lastRep = repetitionRepository.getEmptyRepetition()
         loadPoseSamples(context, baseExercise)
+
+        user = Firebase.auth.currentUser!!
     }
 
     private fun loadPoseSamples(context: Context, baseExercise: String) {
@@ -170,7 +176,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
                     classification.getClassConfidence(maxConfidenceClass),
                     repCounter,
                     repetitionQuality,
-                    "MOCKUP-USER"
+                    user.uid
                 )
                 Log.d(
                     TAG,

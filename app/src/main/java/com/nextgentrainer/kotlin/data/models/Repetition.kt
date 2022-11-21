@@ -9,5 +9,5 @@ data class Repetition(
     val repetitionCounter: RepetitionCounter?,
     val quality: RepetitionQuality?,
     var timestamp: Date = Date(),
-    val userLogin: String
+    val userId: String
 )

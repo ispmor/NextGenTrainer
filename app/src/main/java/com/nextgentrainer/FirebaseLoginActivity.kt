@@ -34,6 +34,38 @@ class FirebaseLoginActivity : AppCompatActivity(), ActivityCompat.OnRequestPermi
         auth = Firebase.auth
     }
 
+    public override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = getCurrentUser()
+
+        if (currentUser != null) {
+            reload()
+        }
+
+        val loginButton = findViewById<Button>(R.id.loginButton)
+        val emailEditText = findViewById<EditText>(R.id.editTextTextEmailAddress)
+        val passwordEditText = findViewById<EditText>(R.id.editTextTextPassword)
+        loginButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                signIn(email, password)
+            } else {
+                Toast.makeText(
+                    baseContext,
+                    "Provided empty credentials. Failed login attempt.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        val signup = findViewById<TextView>(R.id.signUpTextView)
+        signup.setOnClickListener {
+            startActivity(Intent(this, SignUpActivity::class.java))
+        }
+    }
+
     private fun allRuntimePermissionsGranted(): Boolean {
         for (permission in REQUIRED_RUNTIME_PERMISSIONS) {
             permission.let {
@@ -74,40 +106,8 @@ class FirebaseLoginActivity : AppCompatActivity(), ActivityCompat.OnRequestPermi
         return false
     }
 
-    public override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = getCurrentUser()
-
-        if (currentUser != null) {
-            reload()
-        }
-
-        val loginButton = findViewById<Button>(R.id.loginButton)
-        val emailEditText = findViewById<EditText>(R.id.editTextTextEmailAddress)
-        val passwordEditText = findViewById<EditText>(R.id.editTextTextPassword)
-        loginButton.setOnClickListener {
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                signIn(email, password)
-            } else {
-                Toast.makeText(
-                    baseContext,
-                    "Provided empty credentials. Failed login attempt.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        val signup = findViewById<TextView>(R.id.signUpTextView)
-        signup.setOnClickListener {
-            startActivity(Intent(this, SignUpActivity::class.java))
-        }
-    }
-
     private fun reload() {
-        // TODO
+        startActivity(Intent(this, ChooserActivity::class.java))
     }
 
     private fun signIn(email: String, password: String) {

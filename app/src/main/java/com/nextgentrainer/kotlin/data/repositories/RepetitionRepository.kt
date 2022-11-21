@@ -32,7 +32,7 @@ class RepetitionRepository(val context: Context) {
         confidence: Float,
         repCounter: RepetitionCounter,
         repetitionQuality: RepetitionQuality,
-        userLogin: String
+        userId: String
     ): Repetition {
         return Repetition(
             maxConfidenceClass,
@@ -40,7 +40,7 @@ class RepetitionRepository(val context: Context) {
             repCounter,
             repetitionQuality,
             Date(),
-            userLogin
+            userId
         )
     }
 }

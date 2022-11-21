@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.FirebaseLoginActivity
 import com.nextgentrainer.R
@@ -61,6 +62,8 @@ class SignUpActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success on $login")
                     val user = auth.currentUser
+
+                    updateLogin(user, login)
                     Toast.makeText(
                         baseContext,
                         "You have been registered. Confirm your mail and sign in.",
@@ -68,14 +71,29 @@ class SignUpActivity : AppCompatActivity() {
                     ).show()
                     updateUI(user)
                 } else {
-                    // If sign in fails, display a message to the user.
+                    // If sign in fails, display a message to the user. Here we should also improve error returned
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
                     Toast.makeText(
                         baseContext,
-                        "Authentication failed.",
+                        "Sign-up failed Try again later.",
                         Toast.LENGTH_SHORT
                     ).show()
                     updateUI(null)
+                }
+            }
+    }
+
+    private fun updateLogin(user: FirebaseUser?, login: String) {
+        val profileUpdates = userProfileChangeRequest {
+            displayName = login
+        }
+
+        user!!.updateProfile(profileUpdates)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "User profile updated.")
+                } else {
+                    Log.d(TAG, "Pailed to set user login: ${task.exception}")
                 }
             }
     }
