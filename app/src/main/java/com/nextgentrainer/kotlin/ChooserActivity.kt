@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
+import android.text.Html
 import android.util.Log
 import android.view.View
 import android.view.Window
@@ -15,10 +16,14 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.BuildConfig
 import com.nextgentrainer.R
 
 class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickListener {
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
@@ -35,6 +40,9 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+
+        auth = Firebase.auth
+
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_chooser)
@@ -77,6 +85,18 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
 
         findViewById<TextView>(R.id.competeTextView).setOnClickListener {
             startActivity(Intent(this, CompeteActivity::class.java))
+        }
+    }
+
+    public override fun onStart() {
+        super.onStart()
+        val textView = findViewById<TextView>(R.id.helloTextView)
+        val user = auth.currentUser
+        val login = user?.displayName
+
+        if (user != null) {
+            val name = login.orEmpty()
+            textView?.text = Html.fromHtml("Hello, <b>$name</b>", Html.FROM_HTML_MODE_COMPACT)
         }
     }
 

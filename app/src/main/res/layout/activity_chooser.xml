@@ -105,12 +105,17 @@
 
     <ImageView
         android:id="@+id/trainImageView"
-        android:layout_width="371dp"
-        android:layout_height="361dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:cropToPadding="false"
         android:elevation="5dp"
-        android:src="@mipmap/training_image_foreground"
+        android:foreground="@mipmap/trainers_image_foreground"
         app:layout_constraintBottom_toBottomOf="@+id/trainingButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/trainingButton"
         app:layout_constraintTop_toTopOf="@+id/trainingButton"
         app:layout_constraintVertical_bias="1.0" />
 
