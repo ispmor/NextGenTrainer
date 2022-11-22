@@ -43,24 +43,12 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
     private var summedReps = 0
     private val repsOfEachExercise: MutableMap<String?, Float> = HashMap()
     override fun onCreate(savedInstanceState: Bundle?) {
-//        if (BuildConfig.DEBUG) {
-//            StrictMode.setThreadPolicy(
-//                    new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
-//            StrictMode.setVmPolicy(
-//                    new StrictMode.VmPolicy.Builder()
-//                            .detectLeakedSqlLiteObjects()
-//                            .detectLeakedClosableObjects()
-//                            .penaltyLog()
-//                            .build());
-//        }
         super.onCreate(savedInstanceState)
         val context = applicationContext
         val cacheFilename = context.getString(R.string.cache_filename)
         Log.d(TAG, cacheFilename)
         val separateSessions = readHistoryFromFile(context, cacheFilename)
         setContentView(R.layout.activity_fit_log)
-        //        TextView tv = (TextView) findViewById(R.id.reps_number_total);
-//        tv.setText(String.format("%d", summedReps));
         fillQualityProgressChart(separateSessions)
         fillPieChartWithData(repsOfEachExercise)
         // Set up ListView and Adapter

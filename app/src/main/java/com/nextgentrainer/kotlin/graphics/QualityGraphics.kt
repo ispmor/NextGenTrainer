@@ -25,7 +25,7 @@ class QualityGraphics(
         whitePaint.textSize = TEXT_SIZE
         backgroundPaint.color = Color.BLACK
         backgroundPaint.alpha = 50
-        greenPaint.color = Color.rgb(43, 255, 0)
+        greenPaint.color = Color.rgb(187, 242, 71)
     }
 
     override fun draw(canvas: Canvas) {
