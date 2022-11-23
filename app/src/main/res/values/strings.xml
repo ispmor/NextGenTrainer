@@ -168,6 +168,7 @@
     <string name="competitionSession">CompetitionSession</string>
     <string name="movement">Movement</string>
     <string name="repetition">Repetition</string>
+    <string name="exerciseSet">ExerciseSet</string>
     <string name="tie">TIE!</string>
     <string name="go">GO!!!!!</string>
     <string name="prompt_email">Email</string>

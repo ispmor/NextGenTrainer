@@ -1,6 +1,5 @@
 package com.nextgentrainer.kotlin.data.repository
 
-import android.content.Context
 import com.google.firebase.database.ktx.getValue
 import com.google.gson.Gson
 import com.google.mlkit.vision.common.PointF3D
@@ -12,9 +11,9 @@ import com.nextgentrainer.kotlin.posedetector.classification.Utils
 import com.nextgentrainer.kotlin.utils.QualityDetector
 import kotlin.math.abs
 
-class MovementRepository(context: Context) {
+class MovementRepository {
 
-    private val database = MovementFirebaseSource(context).database
+    private val database = MovementFirebaseSource().database
 
     fun saveMovement(movement: Movement): String {
         val key = database.push().key!!

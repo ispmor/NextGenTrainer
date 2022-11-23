@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,8 +27,8 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonStreamParser
 import com.nextgentrainer.R
+import com.nextgentrainer.kotlin.data.model.ExerciseSetOld
 import com.nextgentrainer.kotlin.data.model.Repetition
-import com.nextgentrainer.kotlin.utils.ExerciseSet
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -45,8 +44,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = applicationContext
-        val cacheFilename = context.getString(R.string.cache_filename)
-        Log.d(TAG, cacheFilename)
+        val cacheFilename = "cache.csv"
         val separateSessions = readHistoryFromFile(context, cacheFilename)
         setContentView(R.layout.activity_fit_log)
         fillQualityProgressChart(separateSessions)
@@ -88,10 +86,10 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun readHistoryFromFile(context: Context, cacheFilename: String):
-        MutableList<Map<String?, MutableList<ExerciseSet>>> {
+        MutableList<Map<String?, MutableList<ExerciseSetOld>>> {
         var whatShouldBeSessionSize = 0
-        var setsAppearedSoFarForExercise: MutableMap<String?, MutableList<ExerciseSet>> = HashMap()
-        val allSessions: MutableList<Map<String?, MutableList<ExerciseSet>>> = ArrayList()
+        var setsAppearedSoFarForExercise: MutableMap<String?, MutableList<ExerciseSetOld>> = HashMap()
+        val allSessions: MutableList<Map<String?, MutableList<ExerciseSetOld>>> = ArrayList()
 
         context.openFileInput(cacheFilename).use { inputStreamFromFile ->
             InputStreamReader(inputStreamFromFile, StandardCharsets.UTF_8).use { reader ->
@@ -139,9 +137,9 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun addRepetitionToExerciseSet(
         setsAppearedSoFarForExercise:
-            MutableMap<String?, MutableList<ExerciseSet>>,
+            MutableMap<String?, MutableList<ExerciseSetOld>>,
         loadedRepetition: Repetition
-    ): MutableMap<String?, MutableList<ExerciseSet>> {
+    ): MutableMap<String?, MutableList<ExerciseSetOld>> {
         val exerciseName = loadedRepetition.poseName
         if (setsAppearedSoFarForExercise.containsKey(exerciseName)) {
             val lastIdx = setsAppearedSoFarForExercise[exerciseName]!!.size
@@ -151,14 +149,14 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
                 setsAppearedSoFarForExercise[exerciseName]!![lastIdx - 1]
                     .addRepetition(loadedRepetition)
             } else {
-                val newSet = ExerciseSet(lastIdx + 1)
+                val newSet = ExerciseSetOld(lastIdx + 1)
                 newSet.addRepetition(loadedRepetition)
                 setsAppearedSoFarForExercise[exerciseName]!!.add(newSet)
             }
         } else {
-            val newSet = ExerciseSet(1)
+            val newSet = ExerciseSetOld(1)
             newSet.addRepetition(loadedRepetition)
-            val newList: MutableList<ExerciseSet> = ArrayList()
+            val newList: MutableList<ExerciseSetOld> = ArrayList()
             newList.add(newSet)
             setsAppearedSoFarForExercise[exerciseName] = newList
         }
@@ -185,9 +183,9 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
     class MyArrayAdapter(
         context: Context,
         @LayoutRes private val resource: Int,
-        private val objects: MutableList<Map<String?, MutableList<ExerciseSet>>>
+        private val objects: MutableList<Map<String?, MutableList<ExerciseSetOld>>>
     ) :
-        ArrayAdapter<Map<String?, MutableList<ExerciseSet>>>(context, resource, objects) {
+        ArrayAdapter<Map<String?, MutableList<ExerciseSetOld>>>(context, resource, objects) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             var view = convertView
@@ -201,7 +199,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
                 val format = formatter.format(firstSessionSet.get().value[0].repetitions[0].timestamp)
                 (view!!.findViewById<View>(android.R.id.text1) as TextView).text = format
                 val sessionTotalSets = objects[position].values.stream().mapToLong {
-                    obj: List<ExerciseSet> ->
+                    obj: List<ExerciseSetOld> ->
                     obj.size.toLong()
                 }.sum()
                 (view.findViewById<View>(android.R.id.text2) as TextView)
@@ -216,7 +214,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun fillQualityProgressChart(quality: List<Map<String?, MutableList<ExerciseSet>>>) {
+    private fun fillQualityProgressChart(quality: List<Map<String?, MutableList<ExerciseSetOld>>>) {
         val chart = findViewById<View>(R.id.chart) as LineChart
         val entries: MutableList<Entry> = ArrayList()
         for (i in quality.indices) {
@@ -240,9 +238,9 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
         chart.animateY(MILLIS_1500)
     }
 
-    private fun calculateAvgSessionQuality(session: Map<String?, MutableList<ExerciseSet>>): Float {
-        return session.values.stream().flatMap { obj: List<ExerciseSet> -> obj.stream() }
-            .mapToDouble { exerciseSet: ExerciseSet ->
+    private fun calculateAvgSessionQuality(session: Map<String?, MutableList<ExerciseSetOld>>): Float {
+        return session.values.stream().flatMap { obj: List<ExerciseSetOld> -> obj.stream() }
+            .mapToDouble { exerciseSet: ExerciseSetOld ->
                 exerciseSet.repetitions.stream()
                     .mapToDouble { rep: Repetition -> rep.quality!!.quality.toDouble() }
                     .average().orElse(Double.NaN)
@@ -253,7 +251,7 @@ class FitLogActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     companion object {
-        private const val TAG = "FitLog"
+//        private const val TAG = "FitLog"
         private const val PERIOD_THRESHOLD_SECONDS = 15
         private const val MILLIS_1000 = 1000
         private const val MILLIS_1500 = 1500

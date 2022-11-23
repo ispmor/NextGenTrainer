@@ -31,8 +31,13 @@ import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.model.CompeteSession
+import com.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
+import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
+import com.nextgentrainer.kotlin.data.source.ExerciseSetDataSource
+import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
+import com.nextgentrainer.kotlin.data.source.WorkoutSource
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper
 import com.nextgentrainer.kotlin.utils.Constants
@@ -65,18 +70,22 @@ class CompeteActivity :
     private var notStartedYet = true
     private lateinit var movementRepository: MovementRepository
     private lateinit var repetitionRepository: RepetitionRepository
+    private lateinit var exerciseSetRepository: ExerciseSetRepository
+    private lateinit var workoutRepository: WorkoutRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
-        movementRepository = MovementRepository(this)
-        repetitionRepository = RepetitionRepository(this)
+        movementRepository = MovementRepository()
+        repetitionRepository = RepetitionRepository(RepetitionFirebaseSource())
         countdownTextView = findViewById(R.id.challengeCounterTextView)
 
         againstTextView = findViewById(R.id.textViewAgainst)
         againstTextView.text = getString(R.string.waiting)
 
+        exerciseSetRepository = ExerciseSetRepository(ExerciseSetDataSource())
+        workoutRepository = WorkoutRepository(WorkoutSource(this))
         challengeRuleTextView = findViewById(R.id.challengeTextView)
         challengeTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -97,7 +106,8 @@ class CompeteActivity :
             selectedModel,
             this,
             movementRepository,
-            repetitionRepository
+            repetitionRepository,
+            workoutRepository
         )
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(
@@ -224,7 +234,8 @@ class CompeteActivity :
             selectedModel,
             this,
             movementRepository,
-            repetitionRepository
+            repetitionRepository,
+            workoutRepository
         )
 
         val builder = ImageAnalysis.Builder()

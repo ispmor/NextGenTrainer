@@ -1,19 +1,32 @@
 package com.nextgentrainer.kotlin.data.repository
 
-import android.content.Context
+import com.nextgentrainer.kotlin.data.model.ExerciseSet
 import com.nextgentrainer.kotlin.data.model.Repetition
 import com.nextgentrainer.kotlin.data.model.RepetitionQuality
 import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import java.util.Date
 
-class RepetitionRepository(val context: Context) {
-    private val database = RepetitionFirebaseSource(context).database
+class RepetitionRepository(private val source: RepetitionFirebaseSource) {
+    private val database = source.database
 
     fun saveRepetition(repetition: Repetition): String {
         val key = database.push().key!!
         database.child(key).setValue(repetition)
+        source.addToRepetitionList(repetition)
         return key
+    }
+
+    fun getSet(): ExerciseSet? {
+        return if (source.getRepetitionList().isNotEmpty()) {
+            ExerciseSet(
+                source.getRepetitionList()[0].userId,
+                source.getRepetitionList()[0].poseName!!,
+                source.getRepetitionList()
+            )
+        } else {
+            null
+        }
     }
 
     fun getEmptyRepetition(): Repetition {

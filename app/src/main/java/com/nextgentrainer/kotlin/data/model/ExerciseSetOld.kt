@@ -1,8 +1,6 @@
-package com.nextgentrainer.kotlin.utils
+package com.nextgentrainer.kotlin.data.model
 
-import com.nextgentrainer.kotlin.data.model.Repetition
-
-class ExerciseSet(val setNumber: Int) {
+class ExerciseSetOld(val setNumber: Int) {
     val repetitions: MutableList<Repetition>
 
     init {

@@ -2,7 +2,11 @@ package com.nextgentrainer.kotlin.data.model
 
 import java.util.stream.Collectors
 
-class RepetitionQuality(val exerciseName: String, val qualityFeatures: List<QualityFeature>, val movementId: String) {
+class RepetitionQuality(
+    val exerciseName: String = "",
+    val qualityFeatures: List<QualityFeature> = listOf(),
+    val movementId: String = ""
+) {
 
     val quality: Float
         get() {

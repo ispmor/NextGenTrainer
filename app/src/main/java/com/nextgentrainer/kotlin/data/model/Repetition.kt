@@ -4,10 +4,10 @@ import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import java.util.Date
 
 data class Repetition(
-    val poseName: String?,
-    val confidence: Float,
-    val repetitionCounter: RepetitionCounter?,
-    val quality: RepetitionQuality?,
+    val poseName: String? = "",
+    val confidence: Float = 0.0f,
+    val repetitionCounter: RepetitionCounter? = RepetitionCounter(),
+    val quality: RepetitionQuality? = RepetitionQuality(),
     var timestamp: Date = Date(),
-    val userId: String
+    val userId: String = ""
 )

@@ -1,6 +1,9 @@
 package com.nextgentrainer.kotlin.data.model
 
-class QualityFeature(var name: String, var isValid: Boolean, var decisionBase: List<*>?) {
+class QualityFeature(
+    var name: String = "",
+    var isValid: Boolean = false,
+) {
 
     override fun toString(): String {
         return "{" +
