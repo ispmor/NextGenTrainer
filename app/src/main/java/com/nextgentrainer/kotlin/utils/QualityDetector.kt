@@ -4,9 +4,9 @@ import android.content.Context
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.QualityFeature
-import com.nextgentrainer.kotlin.data.models.RepetitionQuality
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.model.QualityFeature
+import com.nextgentrainer.kotlin.data.model.RepetitionQuality
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToCache
 import java.util.Date
 import kotlin.math.abs

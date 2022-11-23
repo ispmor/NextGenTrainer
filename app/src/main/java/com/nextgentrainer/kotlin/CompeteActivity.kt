@@ -30,9 +30,9 @@ import com.google.mlkit.common.MlKitException
 import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.CompeteSession
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
-import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
+import com.nextgentrainer.kotlin.data.model.CompeteSession
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper
 import com.nextgentrainer.kotlin.utils.Constants

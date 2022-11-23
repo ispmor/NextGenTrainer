@@ -3,8 +3,8 @@ package com.nextgentrainer.kotlin.utils
 import android.content.Context
 import android.net.Uri
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
-import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.Constants.PULL_UPS_TRAINER
 import com.nextgentrainer.kotlin.utils.Constants.PUSH_UPS_TRAINER

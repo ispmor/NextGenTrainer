@@ -12,10 +12,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.Repetition
-import com.nextgentrainer.kotlin.data.models.RepetitionQuality
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
-import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
+import com.nextgentrainer.kotlin.data.model.Repetition
+import com.nextgentrainer.kotlin.data.model.RepetitionQuality
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.utils.ExerciseSet
 import com.nextgentrainer.kotlin.utils.QualityDetector
 import java.io.BufferedReader

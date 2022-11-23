@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.data.repositories
+package com.nextgentrainer.kotlin.data.repository
 
 import android.content.Context
 import android.util.Log
@@ -7,7 +7,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.CompeteSession
+import com.nextgentrainer.kotlin.data.model.CompeteSession
 import java.util.Date
 
 class CompeteSessionRepository(private val context: Context) {

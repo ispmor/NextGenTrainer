@@ -8,7 +8,7 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.GraphicOverlay.Graphic
-import com.nextgentrainer.kotlin.data.models.Repetition
+import com.nextgentrainer.kotlin.data.model.Repetition
 
 /**
  * Draw the detected pose in preview.

@@ -1,9 +1,9 @@
-package com.nextgentrainer.kotlin.data.repositories
+package com.nextgentrainer.kotlin.data.repository
 
 import android.content.Context
-import com.nextgentrainer.kotlin.data.models.Repetition
-import com.nextgentrainer.kotlin.data.models.RepetitionQuality
-import com.nextgentrainer.kotlin.data.sources.RepetitionFirebaseSource
+import com.nextgentrainer.kotlin.data.model.Repetition
+import com.nextgentrainer.kotlin.data.model.RepetitionQuality
+import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import java.util.Date
 

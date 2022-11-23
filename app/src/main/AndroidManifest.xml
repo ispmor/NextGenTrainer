@@ -24,14 +24,21 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat">
         <activity
-            android:name=".kotlin.SignUpActivity"
+            android:name=".kotlin.FitlogCustomActivity"
             android:exported="false"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <!-- <activity -->
+        <activity
+            android:name=".kotlin.SignUpActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity> <!-- <activity -->
         <!-- android:name=".FirebaseLoginActivity" -->
         <!-- android:exported="false"> -->
         <!-- <meta-data -->

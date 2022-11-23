@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.data.models
+package com.nextgentrainer.kotlin.data.model
 
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import java.util.Date

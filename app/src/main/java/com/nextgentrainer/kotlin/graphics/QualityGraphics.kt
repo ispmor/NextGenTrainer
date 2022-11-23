@@ -7,7 +7,7 @@ import android.graphics.Path
 import android.graphics.RectF
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.GraphicOverlay.Graphic
-import com.nextgentrainer.kotlin.data.models.Repetition
+import com.nextgentrainer.kotlin.data.model.Repetition
 import java.util.Locale
 
 class QualityGraphics(

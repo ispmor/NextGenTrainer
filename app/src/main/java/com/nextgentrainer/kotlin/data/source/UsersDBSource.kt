@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.data.sources
+package com.nextgentrainer.kotlin.data.source
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

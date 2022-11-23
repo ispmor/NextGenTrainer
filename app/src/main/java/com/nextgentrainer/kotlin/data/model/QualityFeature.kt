@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.data.models
+package com.nextgentrainer.kotlin.data.model
 
 class QualityFeature(var name: String, var isValid: Boolean, var decisionBase: List<*>?) {
 

@@ -11,9 +11,9 @@ import com.google.mlkit.vision.pose.PoseDetector
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.kotlin.VisionProcessorBase
-import com.nextgentrainer.kotlin.data.models.Repetition
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
-import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
+import com.nextgentrainer.kotlin.data.model.Repetition
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.graphics.CustomPoseGraphics
 import com.nextgentrainer.kotlin.graphics.QualityGraphics
 import com.nextgentrainer.kotlin.posedetector.classification.PoseClassifierProcessor
