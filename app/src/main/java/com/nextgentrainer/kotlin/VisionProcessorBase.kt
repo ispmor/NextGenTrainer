@@ -180,7 +180,7 @@ abstract class VisionProcessorBase<T> protected constructor(context: Context) :
             true,
             frameStartMs
         )
-            .addOnSuccessListener(executor) { results: T -> processLatestImage(graphicOverlay) }
+            .addOnSuccessListener(executor) { _: T -> processLatestImage(graphicOverlay) }
     }
 
     // -----------------Code for processing live preview frame from CameraX API-----------------------

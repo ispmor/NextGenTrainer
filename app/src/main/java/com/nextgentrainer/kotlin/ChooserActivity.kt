@@ -12,8 +12,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.Button
-import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -47,7 +46,7 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
 
         setContentView(R.layout.activity_chooser)
 
-        findViewById<Button>(R.id.trainingButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.trainingButton).setOnClickListener {
             startActivity(Intent(this, CameraActivity::class.java))
         }
 
@@ -59,32 +58,24 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
             startActivity(Intent(this, CameraActivity::class.java))
         }
 
-        findViewById<ImageView>(R.id.trainImageView).setOnClickListener {
-            startActivity(Intent(this, CameraActivity::class.java))
-        }
-
-        findViewById<ImageView>(R.id.fitlogImageView).setOnClickListener {
-            startActivity(Intent(this, FitLogActivity::class.java))
-        }
-
         findViewById<TextView>(R.id.fitlogTextVieww).setOnClickListener {
-            startActivity(Intent(this, FitLogActivity::class.java))
+            startActivity(Intent(this, FitlogCustomActivity::class.java))
         }
 
-        findViewById<Button>(R.id.fitLogButton).setOnClickListener {
-            startActivity(Intent(this, FitLogActivity::class.java))
+        findViewById<ImageButton>(R.id.fitLogButton).setOnClickListener {
+            startActivity(Intent(this, FitlogCustomActivity::class.java))
         }
 
-        findViewById<Button>(R.id.competeButton).setOnClickListener {
-            startActivity(Intent(this, CompeteActivity::class.java))
-        }
-
-        findViewById<ImageView>(R.id.competeImageView).setOnClickListener {
+        findViewById<ImageButton>(R.id.competeButton).setOnClickListener {
             startActivity(Intent(this, CompeteActivity::class.java))
         }
 
         findViewById<TextView>(R.id.competeTextView).setOnClickListener {
             startActivity(Intent(this, CompeteActivity::class.java))
+        }
+
+        findViewById<ImageButton>(R.id.gearImageButton).setOnClickListener {
+            startActivity(Intent(this, FitlogCustomActivity::class.java))
         }
     }
 

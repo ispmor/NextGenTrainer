@@ -17,4 +17,6 @@
     <color name="training_yellow">#fbf6b5</color>
     <color name="light_blue">#d7f2f4</color>
     <color name="light_pink">#F5D5D5</color>
+    <color name="light_blue_badge">#d6f1f3</color>
+    <color name="passive_gray">#343e41</color>
 </resources>

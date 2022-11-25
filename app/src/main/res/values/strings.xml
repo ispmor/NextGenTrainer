@@ -168,6 +168,7 @@
     <string name="competitionSession">CompetitionSession</string>
     <string name="movement">Movement</string>
     <string name="repetition">Repetition</string>
+    <string name="exerciseSet">ExerciseSet</string>
     <string name="tie">TIE!</string>
     <string name="go">GO!!!!!</string>
     <string name="prompt_email">Email</string>
@@ -204,5 +205,6 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="make_it_hard">Make it hard to crack ;-) <br />- Min . 8 characters.<br />- At least 1 special character.<br />- At least one CAPITAL letter.<br />- At least one number</string>
     <string name="login_hint">Login</string>
+    <string name="title_activity_login_delete">LoginActivityDELETE</string>
 
 </resources>

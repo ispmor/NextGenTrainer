@@ -4,9 +4,9 @@ import android.content.Context
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.QualityFeature
-import com.nextgentrainer.kotlin.data.models.RepetitionQuality
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
+import com.nextgentrainer.kotlin.data.model.QualityFeature
+import com.nextgentrainer.kotlin.data.model.RepetitionQuality
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToCache
 import java.util.Date
 import kotlin.math.abs
@@ -78,30 +78,26 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         results.add(
             QualityFeature(
                 "knees",
-                kneesTrajectoryOk,
-                distanceBetweenAnklesAndKneesDiff
+                kneesTrajectoryOk
             )
         )
         results.add(
             QualityFeature(
                 "depth",
-                squatDeepEnough,
-                squatDepthDeeperThan90deg
+                squatDeepEnough
             )
         )
-        results.add(QualityFeature(Companion.MOVEMENT_SPEED_OK, movementSpeedOk, listOf(repTime)))
+        results.add(QualityFeature(Companion.MOVEMENT_SPEED_OK, movementSpeedOk))
         results.add(
             QualityFeature(
                 "back",
-                tightsTorsoAngleOkWhenSquatNotDeepEnough,
-                postureIsOk
+                tightsTorsoAngleOkWhenSquatNotDeepEnough
             )
         )
         results.add(
             QualityFeature(
                 "forward tilt",
-                shoulderHipDistanceOk,
-                shoulderHipDistance
+                shoulderHipDistanceOk
             )
         )
         saveDataToCache(
@@ -163,23 +159,21 @@ class QualityDetector(private val movementRepository: MovementRepository) {
             value: Double ->
             value > DEG_15 && value < DEG_90
         }
-        results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
-        results.add(QualityFeature("legsAreStraight", legsAreStraight, areLegsStraight))
+        results.add(QualityFeature("movementSpeedOk", movementSpeedOk))
+        results.add(QualityFeature("legsAreStraight", legsAreStraight))
         results.add(
             QualityFeature(
                 "bodyIsStraight",
                 bodyIsStraight,
-                movement.hipsAngle
             )
         )
         results.add(
-            QualityFeature("elbowsBentBelow90deg", elbowsBentBelow90deg, elbowsBentTo90)
+            QualityFeature("elbowsBentBelow90deg", elbowsBentBelow90deg)
         )
         results.add(
             QualityFeature(
                 "elbowsPositionRelativeToTorsoOk",
                 elbowsPositionRelativeToTorsoOk,
-                avgAngleBetweenTorsoAndElbows
             )
         )
 
@@ -227,15 +221,14 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         }
         movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
             repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
-        results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
-        results.add(QualityFeature("freeStar", freeStar, listOf(freeStar)))
-        results.add(QualityFeature("noKipping", noKipping, legsAndTorsoStraightMoreOrLess))
-        results.add(QualityFeature("chinAboveTheBar", chinAboveTheBar, mouthAboveWrist))
+        results.add(QualityFeature("movementSpeedOk", movementSpeedOk))
+        results.add(QualityFeature("freeStar", freeStar))
+        results.add(QualityFeature("noKipping", noKipping))
+        results.add(QualityFeature("chinAboveTheBar", chinAboveTheBar))
         results.add(
             QualityFeature(
                 "elbowsStraightAtTheBottom",
-                elbowsStraightAtTheBottom,
-                movement.leftElbowAngle
+                elbowsStraightAtTheBottom
             )
         )
 
@@ -282,27 +275,24 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         anklesLevelWithHip = anklesMoreOrLessLevelWithHeap.stream().allMatch { i -> i }
         movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
             repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
-        results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
-        results.add(QualityFeature("freeStar", freeStar, listOf(freeStar)))
+        results.add(QualityFeature("movementSpeedOk", movementSpeedOk))
+        results.add(QualityFeature("freeStar", freeStar))
         results.add(
             QualityFeature(
                 "kneesInStablePosition",
-                kneesInStablePosition,
-                movement.rightKneeAngle
+                kneesInStablePosition
             )
         )
         results.add(
             QualityFeature(
                 "wristsNearHead",
-                wristsNearHead,
-                wristsToHeadDistanceIsGreaterThanToAnkles
+                wristsNearHead
             )
         )
         results.add(
             QualityFeature(
                 "anklesLevelWithHip",
-                anklesLevelWithHip,
-                anklesMoreOrLessLevelWithHeap
+                anklesLevelWithHip
             )
         )
         val movementId = movementRepository.saveMovement(movement)
@@ -319,7 +309,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         val repTime = getRepTime(posesTimestamps)
         movementSpeedOk = MOVEMENT_SPEED_LOWER_THRESHOLD < repTime &&
             repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
-        results.add(QualityFeature("movementSpeedOk", movementSpeedOk, listOf(repTime)))
+        results.add(QualityFeature("movementSpeedOk", movementSpeedOk))
 
         val movement = movementRepository.getNewMovementFromPoseList(poseList)
         val movementId = movementRepository.saveMovement(movement)

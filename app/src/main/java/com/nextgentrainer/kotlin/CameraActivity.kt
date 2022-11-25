@@ -34,11 +34,15 @@ import com.google.mlkit.common.MlKitException
 import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
-import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
+import com.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
+import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
+import com.nextgentrainer.kotlin.data.source.ExerciseSetDataSource
+import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
+import com.nextgentrainer.kotlin.data.source.WorkoutSource
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
-import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
-import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToCache
+import com.nextgentrainer.kotlin.ui.camera.CameraViewModel
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToFileInExternalStorage
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.selectModel
 import com.nextgentrainer.kotlin.utils.Constants.CREATE_FILE
@@ -48,13 +52,10 @@ import com.nextgentrainer.kotlin.utils.Constants.STATE_SELECTED_MODEL
 import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.stream.Collectors
-import kotlin.collections.ArrayList
+import dagger.hilt.android.AndroidEntryPoint
 
 @KeepName
+@AndroidEntryPoint
 class CameraActivity :
     AppCompatActivity(),
     OnItemSelectedListener,
@@ -72,16 +73,32 @@ class CameraActivity :
     private lateinit var imageProcessor: ExerciseProcessor
     private lateinit var movementRepository: MovementRepository
     private lateinit var repetitionRepository: RepetitionRepository
+    private lateinit var exerciseSetRepository: ExerciseSetRepository
+    private lateinit var exerciseSetDataSource: ExerciseSetDataSource
+    private lateinit var cameraViewModel: CameraViewModel
+    private lateinit var workoutRepository: WorkoutRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        movementRepository = MovementRepository(this)
-        repetitionRepository = RepetitionRepository(this)
-        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository)
+        movementRepository = MovementRepository()
+        val repetitionFirebaseSource = RepetitionFirebaseSource()
+        repetitionRepository = RepetitionRepository(repetitionFirebaseSource)
+        exerciseSetDataSource = ExerciseSetDataSource()
+        exerciseSetRepository = ExerciseSetRepository(exerciseSetDataSource)
+        workoutRepository = WorkoutRepository(WorkoutSource(this))
+        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository, workoutRepository)
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
         }
+
+        cameraViewModel = CameraViewModel(
+            repetitionRepository,
+            workoutRepository
+        )
+
+        cameraViewModel.initWorkouts()
+
         cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
         setContentView(R.layout.activity_camera_preview)
         previewView = findViewById(R.id.preview_view)
@@ -109,6 +126,7 @@ class CameraActivity :
         spinner.onItemSelectedListener = this
         val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
         facingSwitch.setOnCheckedChangeListener(this)
+
         ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
             .get(CameraXViewModel::class.java)
             .processCameraProvider
@@ -151,27 +169,28 @@ class CameraActivity :
 
         val saveButton = findViewById<Button>(R.id.save_button)
         saveButton.setOnClickListener {
-            val counters = (imageProcessor as ExerciseProcessor?)!!.repetitionCounters
-            countersAsString = counters!!.stream().map {
-                obj: RepetitionCounter? ->
-                obj.toString()
-            }.collect(Collectors.joining("\n"))
-            saveDataToCache(countersAsString, "", this)
-            createCSVDocumentPicker()
+            cameraViewModel.saveExerciseSet()
+//            val counters = (imageProcessor as ExerciseProcessor?)!!.repetitionCounters
+//            countersAsString = counters!!.stream().map {
+//                obj: RepetitionCounter? ->
+//                obj.toString()
+//            }.collect(Collectors.joining("\n"))
+//            saveDataToCache(countersAsString, "", this)
+//            createCSVDocumentPicker()
         }
     }
 
-    private fun createCSVDocumentPicker() {
-        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        val date = Date()
-        val today = formatter.format(date)
-        val fileName = "$today.csv"
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = "text/csv"
-        intent.putExtra(Intent.EXTRA_TITLE, fileName)
-        startActivityForResult(intent, CREATE_FILE)
-    }
+//    private fun createCSVDocumentPicker() {
+//        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+//        val date = Date()
+//        val today = formatter.format(date)
+//        val fileName = "$today.csv"
+//        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+//        intent.addCategory(Intent.CATEGORY_OPENABLE)
+//        intent.type = "text/csv"
+//        intent.putExtra(Intent.EXTRA_TITLE, fileName)
+//        startActivityForResult(intent, CREATE_FILE)
+//    }
 
     override fun onSaveInstanceState(bundle: Bundle) {
         super.onSaveInstanceState(bundle)
@@ -278,7 +297,7 @@ class CameraActivity :
         }
         imageProcessor.stop()
 
-        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository)
+        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository, workoutRepository)
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)

@@ -1,11 +1,11 @@
-package com.nextgentrainer.kotlin.data.repositories
+package com.nextgentrainer.kotlin.data.repository
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.widget.Toast
-import com.nextgentrainer.kotlin.data.models.User
-import com.nextgentrainer.kotlin.data.sources.UsersDBSource
+import com.nextgentrainer.kotlin.data.model.User
+import com.nextgentrainer.kotlin.data.source.UsersDBSource
 
 class UsersDBRepository(val context: Context) {
     fun saveToDB(user: User) {

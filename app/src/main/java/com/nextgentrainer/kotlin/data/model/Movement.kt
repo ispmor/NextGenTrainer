@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.data.models
+package com.nextgentrainer.kotlin.data.model
 
 import com.google.mlkit.vision.common.PointF3D
 

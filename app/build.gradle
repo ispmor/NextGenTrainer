@@ -1,16 +1,18 @@
 plugins {
     id "org.sonarqube" version "3.4.0.2513"
-
     id 'com.android.application'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id("org.jlleitschuh.gradle.ktlint") version("10.2.1")
     id("io.gitlab.arturbosch.detekt") version("1.19.0")
+//    id 'com.google.dagger.hilt.android' version '2.44' apply false
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.dagger.hilt.android'
 
 
 android {
@@ -27,8 +29,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 33
 
-        versionCode 7
-        versionName "v1.07-alpha"
+        versionCode 8
+        versionName "v1.08-alpha"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "NextGenTrainer")
     }
@@ -55,8 +57,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     androidResources {
         noCompress 'tflite'
@@ -74,17 +76,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20'
     implementation 'androidx.multidex:multidex:2.0.1'
-
+    implementation 'androidx.fragment:fragment-ktx:1.5.4'
 
     // Pose detection with default models
     implementation 'com.google.mlkit:pose-detection:18.0.0-beta3'
     // Pose detection with accurate models
     implementation 'com.google.mlkit:pose-detection-accurate:18.0.0-beta3'
 
-    // Selfie segmentation
-    implementation 'com.google.mlkit:segmentation-selfie:16.0.0-beta4'
 
     implementation 'com.google.mlkit:camera:16.0.0-beta3'
 
@@ -99,6 +99,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
 
 
     // For how to setup gradle dependencies in Android X, see:
@@ -114,8 +116,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
 
     // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-livedata:2.5.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.annotation:annotation:1.5.0'
@@ -134,10 +136,23 @@ dependencies {
     implementation("com.google.android.gms:play-services-cronet:18.0.1")
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 
+    // Dagger Hilt
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
+//    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltAndroidXVersion"
+//    kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
+
+    // DataStore
+    implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
+
 }
 
 configurations {
     // Resolves dependency conflict caused by some dependencies use
     // com.google.guava:guava and com.google.guava:listenablefuture together.
     all*.exclude group: 'com.google.guava', module: 'listenablefuture'
+}
+
+kapt {
+    correctErrorTypes true
 }

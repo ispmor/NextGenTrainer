@@ -59,7 +59,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/helloTextView" />
 
-    <Button
+    <ImageButton
         android:id="@+id/trainingButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -68,12 +68,13 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/training_button"
         android:contentDescription="@string/training_button"
+        android:foreground="@mipmap/trainers_image_foreground"
         app:layout_constraintBottom_toTopOf="@+id/fitLogButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/readyTextView" />
 
-    <Button
+    <ImageButton
         android:id="@+id/fitLogButton"
         android:layout_width="0dp"
         android:layout_height="175dp"
@@ -81,7 +82,7 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/fit_log_button"
-
+        android:foreground="@drawable/fitlog_no_text"
         android:contentDescription="@string/flb"
         android:textColor="@color/gray_black_text"
         android:textSize="16sp"
@@ -90,7 +91,7 @@
         app:layout_constraintEnd_toStartOf="@id/competeButton"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/competeButton"
         android:layout_width="0dp"
         android:layout_height="175dp"
@@ -98,26 +99,12 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/compete_button"
+        android:foreground="@drawable/compete_no_text"
         android:contentDescription="@string/cb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fitLogButton" />
 
-    <ImageView
-        android:id="@+id/trainImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:cropToPadding="false"
-        android:elevation="5dp"
-        android:foreground="@mipmap/trainers_image_foreground"
-        app:layout_constraintBottom_toBottomOf="@+id/trainingButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/trainingButton"
-        app:layout_constraintTop_toTopOf="@+id/trainingButton"
-        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/trainingTextView"
@@ -146,35 +133,6 @@
         app:layout_constraintStart_toStartOf="@+id/trainingButton"
         app:layout_constraintTop_toBottomOf="@+id/trainingTextView" />
 
-    <ImageView
-        android:id="@+id/fitlogImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:elevation="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fitLogButton"
-        app:layout_constraintEnd_toEndOf="@+id/fitLogButton"
-        app:layout_constraintStart_toStartOf="@+id/fitLogButton"
-        app:layout_constraintTop_toTopOf="@+id/fitLogButton"
-        app:srcCompat="@drawable/fitlog_no_text" />
-
-    <ImageView
-        android:id="@+id/competeImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:elevation="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/competeButton"
-        app:layout_constraintEnd_toEndOf="@+id/competeButton"
-        app:layout_constraintStart_toStartOf="@+id/competeButton"
-        app:layout_constraintTop_toTopOf="@+id/competeButton"
-        app:srcCompat="@drawable/compete_no_text" />
 
     <TextView
         android:id="@+id/fitlogTextVieww"
@@ -185,10 +143,10 @@
         android:textColor="@color/gray_black_text"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/fitlogImageView"
-        app:layout_constraintEnd_toEndOf="@+id/fitlogImageView"
-        app:layout_constraintStart_toStartOf="@+id/fitlogImageView"
-        app:layout_constraintTop_toTopOf="@+id/fitlogImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/fitLogButton"
+        app:layout_constraintEnd_toEndOf="@+id/fitLogButton"
+        app:layout_constraintStart_toStartOf="@+id/fitLogButton"
+        app:layout_constraintTop_toTopOf="@+id/fitLogButton"
         app:layout_constraintVertical_bias="0.85" />
 
     <TextView
@@ -200,10 +158,10 @@
         android:textColor="@color/gray_black_text"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/competeImageView"
-        app:layout_constraintEnd_toEndOf="@+id/competeImageView"
-        app:layout_constraintStart_toStartOf="@+id/competeImageView"
-        app:layout_constraintTop_toTopOf="@+id/competeImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/competeButton"
+        app:layout_constraintEnd_toEndOf="@+id/competeButton"
+        app:layout_constraintStart_toStartOf="@+id/competeButton"
+        app:layout_constraintTop_toTopOf="@+id/competeButton"
         app:layout_constraintVertical_bias="0.85" />
 
     <ImageButton

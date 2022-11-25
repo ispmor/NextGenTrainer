@@ -7,7 +7,7 @@ import android.util.Log
  */
 class RepetitionCounter @JvmOverloads
 constructor(
-    val className: String,
+    val className: String = "",
     private val enterThreshold: Float = DEFAULT_ENTER_THRESHOLD,
     private val exitThreshold: Float = DEFAULT_EXIT_THRESHOLD
 ) {

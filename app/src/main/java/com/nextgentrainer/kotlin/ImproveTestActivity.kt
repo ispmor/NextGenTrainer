@@ -7,6 +7,6 @@ import com.nextgentrainer.R
 class ImproveTestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_improve_test)
+        setContentView(R.layout.activity_fitlog_custom)
     }
 }

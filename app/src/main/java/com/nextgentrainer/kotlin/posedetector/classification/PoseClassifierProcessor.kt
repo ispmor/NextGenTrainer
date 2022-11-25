@@ -12,11 +12,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.mlkit.vision.pose.Pose
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.models.Repetition
-import com.nextgentrainer.kotlin.data.models.RepetitionQuality
-import com.nextgentrainer.kotlin.data.repositories.MovementRepository
-import com.nextgentrainer.kotlin.data.repositories.RepetitionRepository
-import com.nextgentrainer.kotlin.utils.ExerciseSet
+import com.nextgentrainer.kotlin.data.model.ExerciseSetOld
+import com.nextgentrainer.kotlin.data.model.Repetition
+import com.nextgentrainer.kotlin.data.model.RepetitionQuality
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.utils.QualityDetector
 import java.io.BufferedReader
 import java.io.IOException
@@ -45,7 +45,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private val context: Context
     private var baseExercise: String? = null
     private var lastRep: Repetition
-    private val sets: MutableMap<String, List<ExerciseSet>> = HashMap()
+    private val sets: MutableMap<String, List<ExerciseSetOld>> = HashMap()
     private var posesFromLastRep: MutableList<Pose> = ArrayList()
     private var posesTimestampsFromLastRep: MutableList<Date> = ArrayList()
     private val qualityDetector = QualityDetector(movementRepository)
@@ -141,6 +141,9 @@ class PoseClassifierProcessor @WorkerThread constructor(
 //            lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
             result.add(maxConfidenceClassResult)
         }
+//        if (Date().time - lastRep.timestamp.time > 5000) {
+//            repetitionRepository.notifyCreateNewSet(true)
+//        }
         return lastRep
     }
 
@@ -160,10 +163,6 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 Log.d(TAG, "RepsBefore: $repsBefore Reps after: $repsAfter")
 
                 val repetitionQuality = gradeQuality(posesFromLastRep, posesTimestampsFromLastRep)
-                repetitionQuality.qualityFeatures.forEach {
-                    Log.d(TAG, it.name)
-                    Log.d(TAG, it.decisionBase.toString())
-                }
                 MediaPlayer.create(context, R.raw.notification).start()
                 lastRepResult = String.format(
                     Locale.US,
