@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fitLogFragment"
-        android:name="com.nextgentrainer.kotlin.ui.fitlog.FitLogFragment"
+        android:name="com.nextgentrainer.kotlin.ui.fitlog.WorkoutsFragment"
         android:label="fragment_workouts"
         tools:layout="@layout/fragment_workouts" />
 </navigation>

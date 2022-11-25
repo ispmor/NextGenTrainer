@@ -9,7 +9,6 @@ import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.kotlin.data.model.ExerciseSet
 import com.nextgentrainer.kotlin.data.model.Workout
 import com.nextgentrainer.kotlin.data.source.WorkoutSource
-
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -35,6 +34,10 @@ class WorkoutRepository(private val workoutDataSource: WorkoutSource) {
 
     suspend fun getAllUserWorkouts(userId: String): Task<DataSnapshot> {
         return workoutDataSource.getAllWorkoutsForUser(userId).get()
+    }
+
+    fun setWorkoutList(workouts: List<Workout>) {
+        workoutList = workouts
     }
 
     fun initLastWorkout(refresh: Boolean) {

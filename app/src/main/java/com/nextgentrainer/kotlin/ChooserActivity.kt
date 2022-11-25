@@ -63,7 +63,7 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         }
 
         findViewById<ImageButton>(R.id.fitLogButton).setOnClickListener {
-            startActivity(Intent(this, FitLogActivity::class.java))
+            startActivity(Intent(this, FitlogCustomActivity::class.java))
         }
 
         findViewById<ImageButton>(R.id.competeButton).setOnClickListener {

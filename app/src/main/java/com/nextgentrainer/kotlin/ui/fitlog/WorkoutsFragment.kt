@@ -10,19 +10,19 @@ import com.nextgentrainer.databinding.FragmentWorkoutsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FitLogFragment : Fragment(R.layout.fragment_workouts) {
-    private val viewModel: FitLogViewModel by viewModels()
+class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
+    private val viewModel: WorkoutsFragmentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentWorkoutsBinding.bind(view)
 
-        val fitLogListAdapter = FitLogListAdapter()
+        val workoutsListAdapter = WorkoutsListAdapter()
 
         binding.apply {
             fitLogCustomListView.apply {
-                adapter = fitLogListAdapter
+                adapter = workoutsListAdapter
                 layoutManager = LinearLayoutManager(requireContext())
                 setHasFixedSize(true)
             }
@@ -31,7 +31,7 @@ class FitLogFragment : Fragment(R.layout.fragment_workouts) {
         viewModel.uiState.observe(
             viewLifecycleOwner
         ) {
-            fitLogListAdapter.submitList(it.workoutsItems)
+            workoutsListAdapter.submitList(it.workoutsItems)
         }
 
         viewModel.fetchWorkouts()

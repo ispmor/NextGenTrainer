@@ -31,7 +31,6 @@ class WorkoutSource(val context: Context) {
     fun saveWorkout(workout: Workout) {
         val fileOutput: FileOutputStream =
             context.openFileOutput(cacheFilename, Context.MODE_APPEND)
-         val fileInput: FileInputStream = context.openFileInput(cacheFilename)
         val gson = GsonBuilder().create()
         fileOutput.use { fos ->
             fos.write(gson.toJson(workout).toByteArray(StandardCharsets.UTF_8))
@@ -39,8 +38,6 @@ class WorkoutSource(val context: Context) {
     }
 
     fun loadWorkouts(): List<Workout> {
-        val fileOutput: FileOutputStream =
-            context.openFileOutput(cacheFilename, Context.MODE_APPEND)
         val fileInput: FileInputStream = context.openFileInput(cacheFilename)
         fileInput.use { inputStreamFromFile ->
             InputStreamReader(inputStreamFromFile, StandardCharsets.UTF_8).use { reader ->
@@ -70,7 +67,12 @@ class WorkoutSource(val context: Context) {
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val dateString = formatter.format(Date(System.currentTimeMillis()))
         val tdayMillis = formatter.parse(dateString)!!.time
-        return database.orderByChild("userId").equalTo(userId).orderByChild("timestampMillis").startAt(tdayMillis.toDouble()).limitToLast(1)
+        return database
+            .orderByChild("userId")
+            .equalTo(userId)
+            .orderByChild("timestampMillis")
+            .startAt(tdayMillis.toDouble())
+            .limitToLast(1)
     }
 
     fun updateWorkout(newWorkout: Workout): Workout {

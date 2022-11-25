@@ -13,7 +13,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-class FitLogListAdapter : ListAdapter<Workout, FitLogListAdapter.WorkoutViewHolder>(DiffCallback()) {
+class WorkoutsListAdapter : ListAdapter<Workout, WorkoutsListAdapter.WorkoutViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val binding = LayoutFitlogListItemBinding.inflate(
@@ -42,12 +42,15 @@ class FitLogListAdapter : ListAdapter<Workout, FitLogListAdapter.WorkoutViewHold
                 }
             }
             val quality = qualityList.average().roundToInt()
-            val highestQualityIdx = qualityList.indexOf(qualityList.max())
-
             val repsSum = workout.sets.flatMap { it.repetitions }.size
             val setsSum = workout.sets.size
 
             binding.apply {
+                bestWorkoutTextView.visibility = if (workout.isBest) {
+                    View.VISIBLE
+                } else {
+                    View.INVISIBLE
+                }
                 setsSumTextView.text = setsSum.toString()
                 repsSumTextView.text = repsSum.toString()
                 dayFitLogItem.text = dayOfWeekString
