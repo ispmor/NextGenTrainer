@@ -67,29 +67,27 @@ class WorkoutSource(val context: Context) {
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val dateString = formatter.format(Date(System.currentTimeMillis()))
         val tdayMillis = formatter.parse(dateString)!!.time
-        return database
-            .orderByChild("userId")
-            .equalTo(userId)
+        return database.child(userId)
             .orderByChild("timestampMillis")
             .startAt(tdayMillis.toDouble())
             .limitToLast(1)
     }
 
     fun updateWorkout(newWorkout: Workout): Workout {
-        database.child(newWorkout.workoutId).setValue(newWorkout)
+        database.child(newWorkout.userId).child(newWorkout.workoutId).setValue(newWorkout)
         return newWorkout
     }
 
     fun saveNewWorkout(set: ExerciseSet): Workout {
-        val key = database.push().key!!
+        val key = database.child(set.userId).push().key!!
         val newWorkout = Workout(set.userId, key, sets = listOf(set))
-        database.child(key).setValue(newWorkout)
+        database.child(set.userId).child(key).setValue(newWorkout)
         saveWorkout(newWorkout)
         return newWorkout
     }
 
     fun getAllWorkoutsForUser(userId: String): Query {
-        return database.orderByChild("userId").equalTo(userId)
+        return database.child(userId)
     }
 
     companion object {

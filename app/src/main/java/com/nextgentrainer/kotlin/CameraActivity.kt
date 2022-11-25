@@ -52,8 +52,10 @@ import com.nextgentrainer.kotlin.utils.Constants.STATE_SELECTED_MODEL
 import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
+import dagger.hilt.android.AndroidEntryPoint
 
 @KeepName
+@AndroidEntryPoint
 class CameraActivity :
     AppCompatActivity(),
     OnItemSelectedListener,
