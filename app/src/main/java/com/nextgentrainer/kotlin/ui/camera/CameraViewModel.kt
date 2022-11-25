@@ -22,7 +22,7 @@ class CameraViewModel(
         } else {
             _cameraRepetitionState.value = CameraRepetitionState(exerciseSet = exerciseSet)
             viewModelScope.launch {
-                workoutRepository.getAllWorkouts(true)
+                workoutRepository.getAllWorkouts(false)
                 workoutRepository.addExerciseSetToWorkout(exerciseSet)
             }
         }
@@ -31,7 +31,7 @@ class CameraViewModel(
     fun initWorkouts() {
         viewModelScope.launch {
             workoutRepository.initLastWorkout(true)
-            workoutRepository.getAllWorkouts(true)
+            // workoutRepository.getAllWorkouts(true)
         }
     }
 }
