@@ -1,10 +1,15 @@
 package com.nextgentrainer.kotlin.data.repository
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.kotlin.data.model.ExerciseSet
 import com.nextgentrainer.kotlin.data.model.Workout
 import com.nextgentrainer.kotlin.data.source.WorkoutSource
+
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -28,9 +33,13 @@ class WorkoutRepository(private val workoutDataSource: WorkoutSource) {
         return latestNewsMutex.withLock { this.workoutList }
     }
 
+    suspend fun getAllUserWorkouts(userId: String): Task<DataSnapshot> {
+        return workoutDataSource.getAllWorkoutsForUser(userId).get()
+    }
+
     fun initLastWorkout(refresh: Boolean) {
         if (refresh || lastWorkout == null) {
-            workoutDataSource.getLastWorkoutOnline().get().addOnSuccessListener {
+            workoutDataSource.getLastWorkoutOnline(Firebase.auth.currentUser!!.uid).get().addOnSuccessListener {
                 val value = it.getValue<HashMap<String, Any>>()
                 val tmpKey = value?.keys?.first()
                 if (tmpKey != null) {

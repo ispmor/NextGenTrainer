@@ -21,16 +21,17 @@ import java.util.Date
 import java.util.Locale
 
 @KeepName
-class WorkoutSource(context: Context) {
+class WorkoutSource(val context: Context) {
     private val cacheFilename = "cache.csv"
-    private val fileOutput: FileOutputStream =
-        context.openFileOutput(cacheFilename, Context.MODE_APPEND)
-    private val fileInput: FileInputStream = context.openFileInput(cacheFilename)
+
     private val database =
         Firebase.database("https://nextgentrainer-c380e-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("Workout")
 
     fun saveWorkout(workout: Workout) {
+        val fileOutput: FileOutputStream =
+            context.openFileOutput(cacheFilename, Context.MODE_APPEND)
+         val fileInput: FileInputStream = context.openFileInput(cacheFilename)
         val gson = GsonBuilder().create()
         fileOutput.use { fos ->
             fos.write(gson.toJson(workout).toByteArray(StandardCharsets.UTF_8))
@@ -38,6 +39,9 @@ class WorkoutSource(context: Context) {
     }
 
     fun loadWorkouts(): List<Workout> {
+        val fileOutput: FileOutputStream =
+            context.openFileOutput(cacheFilename, Context.MODE_APPEND)
+        val fileInput: FileInputStream = context.openFileInput(cacheFilename)
         fileInput.use { inputStreamFromFile ->
             InputStreamReader(inputStreamFromFile, StandardCharsets.UTF_8).use { reader ->
                 try {
@@ -62,11 +66,11 @@ class WorkoutSource(context: Context) {
         }
     }
 
-    fun getLastWorkoutOnline(): Query {
+    fun getLastWorkoutOnline(userId: String): Query {
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val dateString = formatter.format(Date(System.currentTimeMillis()))
         val tdayMillis = formatter.parse(dateString)!!.time
-        return database.orderByChild("timestampMillis").startAt(tdayMillis.toDouble()).limitToLast(1)
+        return database.orderByChild("userId").equalTo(userId).orderByChild("timestampMillis").startAt(tdayMillis.toDouble()).limitToLast(1)
     }
 
     fun updateWorkout(newWorkout: Workout): Workout {
@@ -80,6 +84,10 @@ class WorkoutSource(context: Context) {
         database.child(key).setValue(newWorkout)
         saveWorkout(newWorkout)
         return newWorkout
+    }
+
+    fun getAllWorkoutsForUser(userId: String): Query {
+        return database.orderByChild("userId").equalTo(userId)
     }
 
     companion object {
