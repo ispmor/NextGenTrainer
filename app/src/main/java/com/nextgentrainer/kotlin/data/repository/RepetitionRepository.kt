@@ -11,8 +11,8 @@ class RepetitionRepository(private val source: RepetitionFirebaseSource) {
     private val database = source.database
 
     fun saveRepetition(repetition: Repetition): String {
-        val key = database.push().key!!
-        database.child(key).setValue(repetition)
+        val key = database.child(repetition.userId).push().key!!
+        database.child(repetition.userId).child(key).setValue(repetition)
         source.addToRepetitionList(repetition)
         return key
     }

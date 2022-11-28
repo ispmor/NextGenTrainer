@@ -1,6 +1,8 @@
 package com.nextgentrainer.kotlin.data.repository
 
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
@@ -14,15 +16,16 @@ import kotlin.math.abs
 class MovementRepository {
 
     private val database = MovementFirebaseSource().database
+    private val user = Firebase.auth.currentUser!!
 
     fun saveMovement(movement: Movement): String {
-        val key = database.push().key!!
-        database.child(key).setValue(movement)
+        val key = database.child(user.uid).push().key!!
+        database.child(user.uid).child(key).setValue(movement)
         return key
     }
 
     fun getMovement(key: String): Movement? {
-        return database.child(key).get().result.getValue<Movement>()
+        return database.child(user.uid).child(key).get().result.getValue<Movement>()
     }
 
     fun getNewMovementFromPoseList(poseList: List<Pose>): Movement {
