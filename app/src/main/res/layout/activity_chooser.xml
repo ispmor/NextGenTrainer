@@ -68,7 +68,6 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/training_button"
         android:contentDescription="@string/training_button"
-        android:foreground="@drawable/train_button_white"
         app:layout_constraintBottom_toTopOf="@+id/fitLogButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -195,5 +194,15 @@
         app:layout_constraintStart_toEndOf="@+id/bellButton"
         app:layout_constraintTop_toTopOf="@+id/button3"
         app:srcCompat="@drawable/gear_icon" />
+
+    <ImageView
+        android:id="@+id/trainingButtonImageView"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        app:layout_constraintBottom_toBottomOf="@+id/trainingButton"
+        app:layout_constraintEnd_toEndOf="@+id/trainingButton"
+        app:layout_constraintStart_toStartOf="@+id/trainingButton"
+        app:layout_constraintTop_toTopOf="@+id/trainingButton"
+        app:srcCompat="@drawable/train_button_white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

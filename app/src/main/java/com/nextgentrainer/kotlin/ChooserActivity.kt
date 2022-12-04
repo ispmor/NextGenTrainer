@@ -13,6 +13,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -47,6 +48,10 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         setContentView(R.layout.activity_chooser)
 
         findViewById<ImageButton>(R.id.trainingButton).setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
+
+        findViewById<ImageView>(R.id.trainingButtonImageView).setOnClickListener {
             startActivity(Intent(this, CameraActivity::class.java))
         }
 
