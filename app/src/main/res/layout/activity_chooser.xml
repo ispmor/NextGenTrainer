@@ -68,7 +68,7 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/training_button"
         android:contentDescription="@string/training_button"
-        android:foreground="@mipmap/trainers_image_foreground"
+        android:foreground="@drawable/train_button_white"
         app:layout_constraintBottom_toTopOf="@+id/fitLogButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
