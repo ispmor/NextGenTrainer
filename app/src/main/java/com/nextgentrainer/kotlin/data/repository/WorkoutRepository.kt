@@ -33,7 +33,7 @@ class WorkoutRepository(private val workoutDataSource: WorkoutSource) {
     }
 
     suspend fun getAllUserWorkouts(userId: String): Task<DataSnapshot> {
-        return workoutDataSource.getAllWorkoutsForUser(userId).get()
+        return workoutDataSource.getAllWorkoutsForUser(userId).orderByChild("timestampMillis").get()
     }
 
     fun setWorkoutList(workouts: List<Workout>) {

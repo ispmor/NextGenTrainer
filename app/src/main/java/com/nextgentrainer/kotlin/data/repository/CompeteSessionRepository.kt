@@ -2,6 +2,7 @@ package com.nextgentrainer.kotlin.data.repository
 
 import android.content.Context
 import android.util.Log
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -13,7 +14,8 @@ import java.util.Date
 class CompeteSessionRepository(private val context: Context) {
 
     private val database: DatabaseReference = Firebase.database(context.getString(R.string.database_url))
-        .getReference(context.getString(R.string.movement))
+        .getReference("CompetitionSession")
+    private val user = Firebase.auth.currentUser!!
 
     fun createNewSession(exercise: String?, user1: String?): String {
         val keyTmp = database.push().key
@@ -22,7 +24,7 @@ class CompeteSessionRepository(private val context: Context) {
             return ""
         }
         val session = CompeteSession(keyTmp, exercise, user1, startDateMillis = Date().time)
-        database.child(keyTmp).setValue(session)
+        database.child(user.uid).child(keyTmp).setValue(session)
 
 //        bindSessionToKey(keyTmp)
         return keyTmp
@@ -31,7 +33,7 @@ class CompeteSessionRepository(private val context: Context) {
     fun getCompeteSession(key: String): CompeteSession {
         var tmpKey: String
         var resultSession: CompeteSession = CompeteSession()
-        database.orderByChild("finished").equalTo(false).limitToFirst(1).get()
+        database.child(user.uid).orderByChild("finished").equalTo(false).limitToFirst(1).get()
             .addOnSuccessListener {
                 val value = it.getValue<HashMap<String, Any>>()
 
