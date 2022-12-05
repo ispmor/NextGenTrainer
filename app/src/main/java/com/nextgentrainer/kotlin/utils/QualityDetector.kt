@@ -33,7 +33,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         val squatDeepEnough: Boolean
         val tightsTorsoAngleOkWhenSquatNotDeepEnough: Boolean
         val shoulderHipDistanceOk: Boolean
-        val movement = movementRepository.getNewMovementFromPoseList(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList, posesTimestamps)
         val distanceBetweenAnklesAndKneesDiff: MutableList<Double> = ArrayList()
         val distanceBetweenAnklesAndKneesIsOk: MutableList<Boolean> = ArrayList()
         val squatDepthDeeperThan90deg: MutableList<Boolean> = ArrayList()
@@ -123,7 +123,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         val bodyIsStraight: Boolean
         val elbowsBentBelow90deg: Boolean
         val elbowsPositionRelativeToTorsoOk: Boolean
-        val movement = movementRepository.getNewMovementFromPoseList(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList, posesTimestamps)
         val repTime = getRepTime(posesTimestamps)
         val areLegsStraight: MutableList<Boolean> = ArrayList()
         val isBodyProperlyAligned: MutableList<Boolean> = ArrayList()
@@ -196,7 +196,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         val noKipping: Boolean
         val chinAboveTheBar: Boolean
         val elbowsStraightAtTheBottom: Boolean
-        val movement = movementRepository.getNewMovementFromPoseList(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList, posesTimestamps)
         val torsoAngle = movement.hipsAngle
         val leftKneeAngle = movement.leftKneeAngle
         val rightKneeAngle = movement.rightKneeAngle
@@ -250,7 +250,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         val anklesLevelWithHip: Boolean
         val kneesInStablePosition: Boolean
         val freeStar = true
-        val movement = movementRepository.getNewMovementFromPoseList(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList, posesTimestamps)
         val wristsToHeadDistanceIsGreaterThanToAnkles: MutableList<Boolean> = ArrayList()
         val anklesMoreOrLessLevelWithHeap: MutableList<Boolean> = ArrayList()
         val repTime = getRepTime(posesTimestamps)
@@ -311,7 +311,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
             repTime < MOVEMENT_SPEED_UPPER_THRESHOLD
         results.add(QualityFeature("movementSpeedOk", movementSpeedOk))
 
-        val movement = movementRepository.getNewMovementFromPoseList(poseList)
+        val movement = movementRepository.getNewMovementFromPoseList(poseList, posesTimestamps)
         val movementId = movementRepository.saveMovement(movement)
         return RepetitionQuality("all", results, movementId)
     }
@@ -358,9 +358,9 @@ class QualityDetector(private val movementRepository: MovementRepository) {
             val y2 = p2.y
             val z2 = p2.z
             return (
-                (x2 - x1).toDouble().pow(Companion.SQUARE) +
-                    (y2 - y1).toDouble().pow(Companion.SQUARE) +
-                    (z2 - z1).toDouble().pow(Companion.SQUARE)
+                (x2 - x1).toDouble().pow(SQUARE) +
+                    (y2 - y1).toDouble().pow(SQUARE) +
+                    (z2 - z1).toDouble().pow(SQUARE)
                 ).pow(HALF)
         }
     }

@@ -1,6 +1,7 @@
 package com.nextgentrainer.kotlin.data.model
 
 import com.google.mlkit.vision.common.PointF3D
+import java.util.Date
 
 data class Movement(
     val leftHipMovement: ArrayList<PointF3D?>,
@@ -28,5 +29,6 @@ data class Movement(
     val leftElbowToTorsoAngle: ArrayList<Double?>,
     val rightElbowToTorsoAngle: ArrayList<Double?>,
     val distanceBetweenKnees: ArrayList<Double?>,
-    val distanceBetweenAnkles: ArrayList<Double?>
+    val distanceBetweenAnkles: ArrayList<Double?>,
+    val timestamps: List<Date>,
 )

@@ -11,6 +11,7 @@ import com.nextgentrainer.kotlin.data.model.Movement
 import com.nextgentrainer.kotlin.data.source.MovementFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.Utils
 import com.nextgentrainer.kotlin.utils.QualityDetector
+import java.util.Date
 import kotlin.math.abs
 
 class MovementRepository {
@@ -28,7 +29,7 @@ class MovementRepository {
         return database.child(user.uid).child(key).get().result.getValue<Movement>()
     }
 
-    fun getNewMovementFromPoseList(poseList: List<Pose>): Movement {
+    fun getNewMovementFromPoseList(poseList: List<Pose>, posesTimestamps: List<Date>): Movement {
         val leftHipMovement = ArrayList<PointF3D?>()
         val rightHipMovement = ArrayList<PointF3D?>()
         val leftKneeMovement = ArrayList<PointF3D?>()
@@ -176,7 +177,8 @@ class MovementRepository {
             leftElbowToTorsoAngle,
             rightElbowToTorsoAngle,
             distanceBetweenKnees,
-            distanceBetweenAnkles
+            distanceBetweenAnkles,
+            posesTimestamps
         )
     }
 
