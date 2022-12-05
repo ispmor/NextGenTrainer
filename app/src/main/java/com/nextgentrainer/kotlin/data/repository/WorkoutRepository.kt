@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class WorkoutRepository(private val workoutDataSource: WorkoutSource) {
+    lateinit var selectedWorkout: Workout
     private val latestNewsMutex = Mutex()
 
     // Cache of the latest news got from the network.

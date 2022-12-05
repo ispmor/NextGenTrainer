@@ -9,5 +9,15 @@
         android:id="@+id/fitLogFragment"
         android:name="com.nextgentrainer.kotlin.ui.fitlog.WorkoutsFragment"
         android:label="fragment_workouts"
-        tools:layout="@layout/fragment_workouts" />
+        tools:layout="@layout/fragment_workouts" >
+        <action
+            android:id="@+id/action_workout_to_sets"
+            app:destination="@id/setsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/setsFragment"
+        android:name="com.nextgentrainer.kotlin.ui.fitlog.SetsFragment"
+        android:label="SetsFragment"
+        tools:layout="@layout/fragment_sets"/>
+
 </navigation>

@@ -6,6 +6,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nextgentrainer.R
+import com.nextgentrainer.kotlin.data.model.Workout
+import com.nextgentrainer.kotlin.ui.fitlog.SetsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date

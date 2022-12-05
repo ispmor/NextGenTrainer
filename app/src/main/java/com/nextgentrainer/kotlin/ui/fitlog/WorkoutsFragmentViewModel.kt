@@ -71,4 +71,9 @@ class WorkoutsFragmentViewModel @Inject constructor(
     private fun getMessagesFromThrowable(ioe: IOException): List<String> {
         return listOf(ioe.message!!)
     }
+
+    fun selectWorkout(workout: Workout) {
+        workoutRepository.selectedWorkout = workout
+        _uiState.value = WorkoutFragmentUiState(selectedWorkout = workout, userSelectedWorkout = true)
+    }
 }
