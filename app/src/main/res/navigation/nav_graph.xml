@@ -18,6 +18,15 @@
         android:id="@+id/setsFragment"
         android:name="com.nextgentrainer.kotlin.ui.fitlog.SetsFragment"
         android:label="SetsFragment"
-        tools:layout="@layout/fragment_sets"/>
+        tools:layout="@layout/fragment_sets">
+        <action
+            android:id="@+id/action_setsFragment_to_repetitionsFragment"
+            app:destination="@id/repetitionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/repetitionsFragment"
+        android:name="com.nextgentrainer.kotlin.ui.fitlog.RepetitionsFragment"
+        android:label="fragment_repetitions"
+        tools:layout="@layout/fragment_repetitions" />
 
 </navigation>

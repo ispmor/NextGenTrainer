@@ -16,6 +16,9 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.dagger.hilt.android'
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 
 android {
     compileSdkVersion 33
@@ -38,16 +41,19 @@ android {
     }
     buildTypes {
         proguard {
+            resValue("string", "GIF_API_PASSWORD", localProperties['GIF_API_PASSWORD'])
             debuggable false
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard.cfg'
         }
         release {
+            resValue("string", "GIF_API_PASSWORD", localProperties['GIF_API_PASSWORD'])
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
+            resValue("string", "GIF_API_PASSWORD", localProperties['GIF_API_PASSWORD'])
             minifyEnabled false
             proguardFiles 'proguard-rules.pro'
             firebaseAppDistribution {
@@ -103,6 +109,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
 
     // For how to setup gradle dependencies in Android X, see:
@@ -137,6 +144,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-cronet:18.0.1")
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    implementation 'com.google.firebase:firebase-storage-ktx'
 
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
@@ -146,6 +154,8 @@ dependencies {
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
+
+    implementation 'com.google.android.gms:play-services-cronet:18.0.1'
 
 }
 

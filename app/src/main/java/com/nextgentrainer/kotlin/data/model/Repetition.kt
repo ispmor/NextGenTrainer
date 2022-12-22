@@ -11,4 +11,8 @@ data class Repetition(
     var timestamp: Date = Date(),
     val userId: String = "",
     val repetitionId: String = "",
+    var webp: String = "",
+    var absoluteLocalPath: String = "",
+    var isBest: Boolean = false
+
 )

@@ -29,7 +29,7 @@ class WorkoutsFragmentViewModel @Inject constructor(
                     .addOnSuccessListener {
                         val value = it.getValue<HashMap<String, Workout>>()
                         if (value != null) {
-                            val workoutList = value.values.toList()
+                            val workoutList = value.values.toList().distinctBy { workout -> workout.workoutId }
                             val qualityList = workoutList.map { workout ->
                                 workout.sets.flatMap {
                                     it.repetitions.map {
@@ -51,7 +51,7 @@ class WorkoutsFragmentViewModel @Inject constructor(
                                 } else {
                                     workout
                                 }
-                            }
+                            }.sortedWith(compareByDescending { workout -> workout.timestampMillis })
 
                             workoutRepository.setWorkoutList(workoutList)
 

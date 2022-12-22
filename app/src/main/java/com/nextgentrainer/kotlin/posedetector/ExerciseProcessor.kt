@@ -13,6 +13,7 @@ import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.kotlin.VisionProcessorBase
 import com.nextgentrainer.kotlin.data.model.Repetition
+import com.nextgentrainer.kotlin.data.repository.GifRepository
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
@@ -32,7 +33,8 @@ class ExerciseProcessor(
     private val baseExercise: String,
     private val movementRepository: MovementRepository,
     private val repetitionRepository: RepetitionRepository,
-    private var workoutRepository: WorkoutRepository
+    private var workoutRepository: WorkoutRepository,
+    private val gifRepository: GifRepository
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     var isStarted: Boolean = false
     private val detector: PoseDetector
@@ -76,7 +78,8 @@ class ExerciseProcessor(
                             isStreamMode,
                             baseExercise,
                             movementRepository,
-                            repetitionRepository
+                            repetitionRepository,
+                            gifRepository
                         )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
@@ -109,7 +112,8 @@ class ExerciseProcessor(
                             isStreamMode,
                             baseExercise,
                             movementRepository,
-                            repetitionRepository
+                            repetitionRepository,
+                            gifRepository
                         )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)

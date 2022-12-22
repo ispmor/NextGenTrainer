@@ -3,16 +3,14 @@ package com.nextgentrainer.kotlin.ui.fitlog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.nextgentrainer.databinding.LayoutSetsListItemBinding
 import com.nextgentrainer.kotlin.data.model.ExerciseSet
-import java.util.Locale
 import kotlin.math.roundToInt
 
-class SetsListAdapter : ListAdapter<ExerciseSet, SetsListAdapter.SetsViewHolder>(DiffCallback()) {
+class SetsListAdapter(val viewModel: SetsViewModel) : ListAdapter<ExerciseSet, SetsListAdapter.SetsViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SetsViewHolder {
         val binding = LayoutSetsListItemBinding.inflate(
@@ -28,6 +26,7 @@ class SetsListAdapter : ListAdapter<ExerciseSet, SetsListAdapter.SetsViewHolder>
         val currentItem = getItem(position)
         holder.bind(currentItem)
         holder.itemView.setOnClickListener {
+            viewModel.selectSet(currentItem)
         }
     }
 

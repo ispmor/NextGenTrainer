@@ -1,11 +1,12 @@
 package com.nextgentrainer.kotlin.ui.fitlog
 
 import com.nextgentrainer.kotlin.data.model.ExerciseSet
+import com.nextgentrainer.kotlin.data.model.Repetition
 
-data class SetsFragmentUiState(
+data class RepetitionsFragmentUiState(
     val isLoading: Boolean = true,
-    val sets: List<ExerciseSet> = listOf(),
+    val repetitions: List<Repetition> = listOf(),
     val selectedSet: ExerciseSet = ExerciseSet(),
-    val userSelectedSet: Boolean = false,
+    val userSelectedRepetition: Boolean = false,
     val userMessages: List<String> = listOf()
 )

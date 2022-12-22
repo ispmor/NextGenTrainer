@@ -35,6 +35,7 @@ import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
+import com.nextgentrainer.kotlin.data.repository.GifRepository
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
@@ -53,6 +54,7 @@ import com.nextgentrainer.preference.PreferenceUtils
 import com.nextgentrainer.preference.SettingsActivity
 import com.nextgentrainer.preference.SettingsActivity.LaunchSource
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @KeepName
 @AndroidEntryPoint
@@ -77,6 +79,7 @@ class CameraActivity :
     private lateinit var exerciseSetDataSource: ExerciseSetDataSource
     private lateinit var cameraViewModel: CameraViewModel
     private lateinit var workoutRepository: WorkoutRepository
+    @Inject lateinit var gifRepository: GifRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +90,15 @@ class CameraActivity :
         exerciseSetDataSource = ExerciseSetDataSource()
         exerciseSetRepository = ExerciseSetRepository(exerciseSetDataSource)
         workoutRepository = WorkoutRepository(WorkoutSource(this))
-        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository, workoutRepository)
+        imageProcessor = selectModel(
+            selectedModel,
+            this,
+            movementRepository,
+            repetitionRepository,
+            workoutRepository,
+            gifRepository
+        )
+
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
         }
@@ -297,7 +308,14 @@ class CameraActivity :
         }
         imageProcessor.stop()
 
-        imageProcessor = selectModel(selectedModel, this, movementRepository, repetitionRepository, workoutRepository)
+        imageProcessor = selectModel(
+            selectedModel,
+            this,
+            movementRepository,
+            repetitionRepository,
+            workoutRepository,
+            gifRepository
+        )
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)

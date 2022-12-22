@@ -207,5 +207,6 @@
     <string name="login_hint">Login</string>
     <string name="title_activity_login_delete">LoginActivityDELETE</string>
     <string name="best_set">Best set</string>
+    <string name="best_rep">Best Repetition</string>
 
 </resources>

@@ -32,7 +32,7 @@ class FitlogCustomActivity : AppCompatActivity() {
         val dateEnding = formatterDate.format(Date(System.currentTimeMillis() - millisecondsInAWeek))
         val year = formatterYear.format(Date(System.currentTimeMillis()))
 
-        findViewById<TextView>(R.id.fitLogDateTextView).text = "$dateStarting-$dateEnding"
+        findViewById<TextView>(R.id.fitLogDateTextView).text = "$dateEnding-$dateStarting"
         findViewById<TextView>(R.id.fitLogYearTextView).text = year
     }
 }
