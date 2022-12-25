@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.nextgentrainer.R
 import com.nextgentrainer.databinding.LayoutFitlogListItemBinding
 import com.nextgentrainer.kotlin.data.model.Workout
 import java.text.SimpleDateFormat
@@ -14,7 +13,8 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-class WorkoutsListAdapter(val viewModel: WorkoutsFragmentViewModel) : ListAdapter<Workout, WorkoutsListAdapter.WorkoutViewHolder>(DiffCallback()) {
+class WorkoutsListAdapter(val viewModel: WorkoutsFragmentViewModel) :
+    ListAdapter<Workout, WorkoutsListAdapter.WorkoutViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val binding = LayoutFitlogListItemBinding.inflate(
@@ -30,11 +30,12 @@ class WorkoutsListAdapter(val viewModel: WorkoutsFragmentViewModel) : ListAdapte
         val currentItem = getItem(position)
         holder.bind(currentItem)
         holder.itemView.setOnClickListener {
-           viewModel.selectWorkout(workout = currentItem)
+            viewModel.selectWorkout(workout = currentItem)
         }
     }
 
-    class WorkoutViewHolder(private val binding: LayoutFitlogListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class WorkoutViewHolder(private val binding: LayoutFitlogListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(workout: Workout) {
             val formatterDate = SimpleDateFormat("dd MMM", Locale.getDefault())
             val formatterDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault())
@@ -83,7 +84,8 @@ class WorkoutsListAdapter(val viewModel: WorkoutsFragmentViewModel) : ListAdapte
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Workout>() {
-        override fun areItemsTheSame(oldItem: Workout, newItem: Workout) = oldItem.workoutId == newItem.workoutId
+        override fun areItemsTheSame(oldItem: Workout, newItem: Workout) =
+            oldItem.workoutId == newItem.workoutId
 
         override fun areContentsTheSame(oldItem: Workout, newItem: Workout) = oldItem == newItem
     }

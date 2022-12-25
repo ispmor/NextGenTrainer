@@ -138,8 +138,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 Locale.US,
                 "%s : %.2f confidence",
                 maxConfidenceClass,
-                classification.getClassConfidence(maxConfidenceClass) /
-                    poseClassifier!!.confidenceRange()
+                classification.getClassConfidence(maxConfidenceClass) / poseClassifier!!.confidenceRange()
             )
 //            lastRep!!.poseName = maxConfidenceClass
 //            lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
@@ -188,8 +187,8 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 saveRepetitionToCache(lastRep) // .posesFromLastRep
                 val repId = repetitionRepository.saveRepetition(lastRep)
                 handler.postDelayed({
-                        gifRepository.sendPostRequest(repId, lastRep.quality!!.movementId)
-                    }, 5000)
+                    gifRepository.sendPostRequest(repId, lastRep.quality!!.movementId)
+                }, 5000)
 
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
@@ -241,7 +240,10 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 posesFromLastRep,
                 posesTimestampsFromLastRep
             )
-            else -> qualityDetector.allExcerciseQuality(posesFromLastRep, posesTimestampsFromLastRep)
+            else -> qualityDetector.allExcerciseQuality(
+                posesFromLastRep,
+                posesTimestampsFromLastRep
+            )
         }
     }
 

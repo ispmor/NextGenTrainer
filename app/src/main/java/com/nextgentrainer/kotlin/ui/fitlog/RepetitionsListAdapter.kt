@@ -1,18 +1,18 @@
 package com.nextgentrainer.kotlin.ui.fitlog
 
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.nextgentrainer.databinding.LayoutRepetitionsListItemBinding
 import com.nextgentrainer.kotlin.data.model.Repetition
 import kotlin.math.roundToInt
 
-class RepetitionsListAdapter : ListAdapter<Repetition, RepetitionsListAdapter.RepetitionsViewHolder>(DiffCallback()) {
+class RepetitionsListAdapter :
+    ListAdapter<Repetition, RepetitionsListAdapter.RepetitionsViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepetitionsViewHolder {
         val binding = LayoutRepetitionsListItemBinding.inflate(
@@ -29,7 +29,8 @@ class RepetitionsListAdapter : ListAdapter<Repetition, RepetitionsListAdapter.Re
         holder.bind(currentItem)
     }
 
-    class RepetitionsViewHolder(private val binding: LayoutRepetitionsListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class RepetitionsViewHolder(private val binding: LayoutRepetitionsListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(repetition: Repetition) {
             val quality = repetition.quality?.quality!!.roundToInt()
 
@@ -61,15 +62,32 @@ class RepetitionsListAdapter : ListAdapter<Repetition, RepetitionsListAdapter.Re
                     arrayOfQualityMarkersPassive[i].visibility = View.INVISIBLE
                 }
 
-                val uri = Uri.parse(repetition.absoluteLocalPath)
-                repetitionGifView.setImageURI(uri)
+                val baseUrl = "https://storage.googleapis.com/nextgentrainer-c380e.appspot.com/"
+
+                Glide.with(mainLinearLayoutWorkouts)
+                    .load(
+                        baseUrl + repetition.quality.movementId + ".webp"
+                    )
+                    .into(repetitionGifView)
+                // repetitionGifView.setImageURI(uri)
+
+//                val controller = Fresco.newDraweeControllerBuilder()
+//                    .setUri(uri)
+//                    .setAutoPlayAnimations(true)
+//                    .build()
+//
+//                repetitionGifView.controller = controller
+//                repetitionGifView.setImageURI(uri)
+                //  repetitionGifView.animate()
             }
         }
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Repetition>() {
-        override fun areItemsTheSame(oldItem: Repetition, newItem: Repetition) = oldItem.repetitionId == newItem.repetitionId
+        override fun areItemsTheSame(oldItem: Repetition, newItem: Repetition) =
+            oldItem.repetitionId == newItem.repetitionId
 
-        override fun areContentsTheSame(oldItem: Repetition, newItem: Repetition) = oldItem == newItem
+        override fun areContentsTheSame(oldItem: Repetition, newItem: Repetition) =
+            oldItem == newItem
     }
 }

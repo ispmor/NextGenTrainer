@@ -6,8 +6,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.model.Workout
-import com.nextgentrainer.kotlin.ui.fitlog.SetsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,7 +27,8 @@ class FitlogCustomActivity : AppCompatActivity() {
         val formatterYear = SimpleDateFormat("yyyy", Locale.getDefault())
         val millisecondsInAWeek = 1000 * 3600 * 24 * 7
         val dateStarting = formatterDay.format(Date(System.currentTimeMillis()))
-        val dateEnding = formatterDate.format(Date(System.currentTimeMillis() - millisecondsInAWeek))
+        val dateEnding =
+            formatterDate.format(Date(System.currentTimeMillis() - millisecondsInAWeek))
         val year = formatterYear.format(Date(System.currentTimeMillis()))
 
         findViewById<TextView>(R.id.fitLogDateTextView).text = "$dateEnding-$dateStarting"

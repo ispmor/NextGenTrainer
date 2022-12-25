@@ -4,7 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".kotlin.ui.fitlog.WorkoutsFragment">
+    tools:context=".kotlin.ui.fitlog.WorkoutsFragment"
+    android:id="@+id/mainLinearLayoutWorkouts">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -181,7 +182,8 @@
                     android:layout_height="150dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="0dp"
-                    app:srcCompat="@mipmap/workout_gif_example_foreground" />
+                    android:elevation="20dp"
+                     />
 
             </LinearLayout>
 

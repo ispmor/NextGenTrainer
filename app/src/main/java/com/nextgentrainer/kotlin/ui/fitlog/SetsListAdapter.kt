@@ -10,7 +10,8 @@ import com.nextgentrainer.databinding.LayoutSetsListItemBinding
 import com.nextgentrainer.kotlin.data.model.ExerciseSet
 import kotlin.math.roundToInt
 
-class SetsListAdapter(val viewModel: SetsViewModel) : ListAdapter<ExerciseSet, SetsListAdapter.SetsViewHolder>(DiffCallback()) {
+class SetsListAdapter(val viewModel: SetsViewModel) :
+    ListAdapter<ExerciseSet, SetsListAdapter.SetsViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SetsViewHolder {
         val binding = LayoutSetsListItemBinding.inflate(
@@ -72,7 +73,9 @@ class SetsListAdapter(val viewModel: SetsViewModel) : ListAdapter<ExerciseSet, S
     }
 
     class DiffCallback : DiffUtil.ItemCallback<ExerciseSet>() {
-        override fun areItemsTheSame(oldItem: ExerciseSet, newItem: ExerciseSet) = oldItem.repetitions[0].repetitionId == newItem.repetitions[0].repetitionId
+        override fun areItemsTheSame(oldItem: ExerciseSet, newItem: ExerciseSet) = oldItem
+            .repetitions[0]
+            .repetitionId == newItem.repetitions[0].repetitionId
 
         override fun areContentsTheSame(oldItem: ExerciseSet, newItem: ExerciseSet) = oldItem == newItem
     }

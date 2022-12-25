@@ -36,7 +36,7 @@ object NetworkModule {
 
     private fun createDefaultCronetEngine(context: Context): CronetEngine {
         return CronetEngine.Builder(context) // The storage path must be set first when using a disk cache.
-            .setStoragePath(context.filesDir.absolutePath) // Enable on-disk cache, this enables automatic QUIC usage for subsequent requests
+            .setStoragePath(context.filesDir.absolutePath)
             .enableHttpCache(
                 CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP,
                 (100 * 1024).toLong()
