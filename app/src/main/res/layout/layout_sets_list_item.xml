@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".kotlin.ui.fitlog.WorkoutsFragment">
+    tools:context=".kotlin.ui.fitlog.workout.WorkoutsFragment">
 
     <RelativeLayout
         android:layout_width="wrap_content"

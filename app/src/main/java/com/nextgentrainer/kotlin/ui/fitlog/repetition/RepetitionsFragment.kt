@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.repetition
 
 import android.os.Bundle
 import android.view.LayoutInflater

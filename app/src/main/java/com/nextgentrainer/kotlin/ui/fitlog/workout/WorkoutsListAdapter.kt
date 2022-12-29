@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.workout
 
 import android.view.LayoutInflater
 import android.view.View

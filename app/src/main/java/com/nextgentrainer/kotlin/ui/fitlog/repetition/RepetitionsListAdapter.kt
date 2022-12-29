@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.repetition
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.nextgentrainer.R
 import com.nextgentrainer.databinding.LayoutRepetitionsListItemBinding
 import com.nextgentrainer.kotlin.data.model.Repetition
 import kotlin.math.roundToInt
@@ -68,17 +69,8 @@ class RepetitionsListAdapter :
                     .load(
                         baseUrl + repetition.quality.movementId + ".webp"
                     )
+                    .placeholder(R.drawable.image_not_supported)
                     .into(repetitionGifView)
-                // repetitionGifView.setImageURI(uri)
-
-//                val controller = Fresco.newDraweeControllerBuilder()
-//                    .setUri(uri)
-//                    .setAutoPlayAnimations(true)
-//                    .build()
-//
-//                repetitionGifView.controller = controller
-//                repetitionGifView.setImageURI(uri)
-                //  repetitionGifView.animate()
             }
         }
     }

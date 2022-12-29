@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.workout
 
 import com.nextgentrainer.kotlin.data.model.Workout
 

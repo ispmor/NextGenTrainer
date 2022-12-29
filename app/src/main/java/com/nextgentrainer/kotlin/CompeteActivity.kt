@@ -76,6 +76,7 @@ class CompeteActivity :
     private lateinit var repetitionRepository: RepetitionRepository
     private lateinit var exerciseSetRepository: ExerciseSetRepository
     private lateinit var workoutRepository: WorkoutRepository
+
     @Inject lateinit var gifRepository: GifRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +84,7 @@ class CompeteActivity :
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
         movementRepository = MovementRepository()
-        repetitionRepository = RepetitionRepository(RepetitionFirebaseSource())
+        repetitionRepository = RepetitionRepository(RepetitionFirebaseSource(), gifRepository)
         countdownTextView = findViewById(R.id.challengeCounterTextView)
 
         againstTextView = findViewById(R.id.textViewAgainst)
@@ -112,8 +113,7 @@ class CompeteActivity :
             this,
             movementRepository,
             repetitionRepository,
-            workoutRepository,
-            gifRepository
+            workoutRepository
         )
         if (savedInstanceState != null) {
             selectedModel = savedInstanceState.getString(
@@ -241,8 +241,7 @@ class CompeteActivity :
             this,
             movementRepository,
             repetitionRepository,
-            workoutRepository,
-            gifRepository
+            workoutRepository
         )
 
         val builder = ImageAnalysis.Builder()

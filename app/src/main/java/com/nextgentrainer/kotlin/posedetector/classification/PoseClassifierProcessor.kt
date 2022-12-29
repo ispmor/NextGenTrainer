@@ -2,7 +2,6 @@ package com.nextgentrainer.kotlin.posedetector.classification
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.WorkerThread
@@ -16,7 +15,6 @@ import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.model.ExerciseSetOld
 import com.nextgentrainer.kotlin.data.model.Repetition
 import com.nextgentrainer.kotlin.data.model.RepetitionQuality
-import com.nextgentrainer.kotlin.data.repository.GifRepository
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.utils.QualityDetector
@@ -37,7 +35,6 @@ class PoseClassifierProcessor @WorkerThread constructor(
     baseExercise: String,
     movementRepository: MovementRepository,
     private val repetitionRepository: RepetitionRepository,
-    private val gifRepository: GifRepository
 ) {
     private val isStreamMode: Boolean
     private var lastDetectedClass: String? = ""
@@ -53,7 +50,6 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private var posesTimestampsFromLastRep: MutableList<Date> = ArrayList()
     private val qualityDetector = QualityDetector(movementRepository)
     private val user: FirebaseUser
-    private val handler = Handler(Looper.getMainLooper())
 
     init {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
@@ -185,11 +181,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
                     String.format(Locale.getDefault(), "QUALITY: %s", repetitionQuality.quality)
                 )
                 saveRepetitionToCache(lastRep) // .posesFromLastRep
-                val repId = repetitionRepository.saveRepetition(lastRep)
-                handler.postDelayed({
-                    gifRepository.sendPostRequest(repId, lastRep.quality!!.movementId)
-                }, 5000)
-
+                repetitionRepository.saveRepetition(lastRep)
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
                 repCounters!![maxConfidenceClass] = repCounter

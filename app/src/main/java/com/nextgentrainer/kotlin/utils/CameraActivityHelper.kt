@@ -3,7 +3,6 @@ package com.nextgentrainer.kotlin.utils
 import android.content.Context
 import android.net.Uri
 import com.nextgentrainer.R
-import com.nextgentrainer.kotlin.data.repository.GifRepository
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
@@ -23,8 +22,7 @@ object CameraActivityHelper {
         context: Context,
         movementRepository: MovementRepository,
         repetitionRepository: RepetitionRepository,
-        workoutRepository: WorkoutRepository,
-        gifRepository: GifRepository
+        workoutRepository: WorkoutRepository
     ): ExerciseProcessor {
         return when (selectedModel) {
             REP_COUNTER -> {
@@ -40,7 +38,6 @@ object CameraActivityHelper {
                     movementRepository,
                     repetitionRepository,
                     workoutRepository,
-                    gifRepository
                 )
             }
             PUSH_UPS_TRAINER -> ExerciseProcessor(
@@ -51,8 +48,7 @@ object CameraActivityHelper {
                 "pushups",
                 movementRepository,
                 repetitionRepository,
-                workoutRepository,
-                gifRepository
+                workoutRepository
             )
             PULL_UPS_TRAINER -> ExerciseProcessor(
                 context,
@@ -62,8 +58,7 @@ object CameraActivityHelper {
                 "pullups",
                 movementRepository,
                 repetitionRepository,
-                workoutRepository,
-                gifRepository
+                workoutRepository
             )
             SIT_UPS_TRAINER -> ExerciseProcessor(
                 context,
@@ -73,8 +68,7 @@ object CameraActivityHelper {
                 "situps",
                 movementRepository,
                 repetitionRepository,
-                workoutRepository,
-                gifRepository
+                workoutRepository
             )
             SQUATS_TRAINER -> ExerciseProcessor(
                 context,
@@ -84,8 +78,7 @@ object CameraActivityHelper {
                 "squats",
                 movementRepository,
                 repetitionRepository,
-                workoutRepository,
-                gifRepository
+                workoutRepository
             )
             else -> throw IllegalStateException("Invalid model name")
         }

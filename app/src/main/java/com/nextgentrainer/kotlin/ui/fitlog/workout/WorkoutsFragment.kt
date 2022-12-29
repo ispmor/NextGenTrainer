@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.workout
 
 import android.os.Bundle
 import android.view.View
@@ -7,23 +7,22 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nextgentrainer.R
-import com.nextgentrainer.databinding.FragmentSetsBinding
+import com.nextgentrainer.databinding.FragmentWorkoutsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SetsFragment : Fragment(R.layout.fragment_sets) {
-    private val viewModel: SetsViewModel by viewModels()
+class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
+    private val viewModel: WorkoutsFragmentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentSetsBinding.bind(view)
-
-        val setsListAdapter = SetsListAdapter(viewModel)
+        val binding = FragmentWorkoutsBinding.bind(view)
+        val workoutsListAdapter = WorkoutsListAdapter(viewModel)
 
         binding.apply {
-            workoutSetsListView.apply {
-                adapter = setsListAdapter
+            fitLogCustomListView.apply {
+                adapter = workoutsListAdapter
                 layoutManager = LinearLayoutManager(requireContext())
                 setHasFixedSize(true)
             }
@@ -32,16 +31,14 @@ class SetsFragment : Fragment(R.layout.fragment_sets) {
         viewModel.uiState.observe(
             viewLifecycleOwner
         ) {
-            if (it.sets.isNotEmpty()) {
-                setsListAdapter.submitList(it.sets)
+            if (it.workoutsItems.isNotEmpty()) {
+                workoutsListAdapter.submitList(it.workoutsItems)
             }
-
-            if (it.userSelectedSet) {
-                val action = SetsFragmentDirections.actionSetsFragmentToRepetitionsFragment()
+            if (it.userSelectedWorkout) {
+                val action = WorkoutsFragmentDirections.actionWorkoutToSets()
                 view.findNavController().navigate(action)
             }
         }
-
-        viewModel.updateSetsListFromRepo()
+        viewModel.fetchWorkouts()
     }
 }

@@ -7,11 +7,14 @@ import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import java.util.Date
 
-class RepetitionRepository(private val source: RepetitionFirebaseSource) {
+class RepetitionRepository(private val source: RepetitionFirebaseSource, val gifRepository: GifRepository) {
     private val database = source.database
 
     fun saveRepetition(repetition: Repetition): String {
         database.child(repetition.userId).child(repetition.repetitionId).setValue(repetition)
+            .addOnSuccessListener {
+                gifRepository.sendPostRequest(repetition.repetitionId, repetition.quality!!.movementId)
+            }
         source.addToRepetitionList(repetition)
         return repetition.repetitionId
     }

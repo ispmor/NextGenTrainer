@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.repetition
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

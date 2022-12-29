@@ -208,5 +208,7 @@
     <string name="title_activity_login_delete">LoginActivityDELETE</string>
     <string name="best_set">Best set</string>
     <string name="best_rep">Best Repetition</string>
+    <string name="rep_quality">Rep Quality</string>
+    <string name="repetition_gif">Repetition Gif</string>
 
 </resources>

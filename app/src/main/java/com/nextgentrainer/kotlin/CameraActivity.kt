@@ -86,7 +86,7 @@ class CameraActivity :
         Log.d(TAG, "onCreate")
         movementRepository = MovementRepository()
         val repetitionFirebaseSource = RepetitionFirebaseSource()
-        repetitionRepository = RepetitionRepository(repetitionFirebaseSource)
+        repetitionRepository = RepetitionRepository(repetitionFirebaseSource, gifRepository)
         exerciseSetDataSource = ExerciseSetDataSource()
         exerciseSetRepository = ExerciseSetRepository(exerciseSetDataSource)
         workoutRepository = WorkoutRepository(WorkoutSource(this))
@@ -95,8 +95,7 @@ class CameraActivity :
             this,
             movementRepository,
             repetitionRepository,
-            workoutRepository,
-            gifRepository
+            workoutRepository
         )
 
         if (savedInstanceState != null) {
@@ -313,8 +312,7 @@ class CameraActivity :
             this,
             movementRepository,
             repetitionRepository,
-            workoutRepository,
-            gifRepository
+            workoutRepository
         )
 
         val builder = ImageAnalysis.Builder()
