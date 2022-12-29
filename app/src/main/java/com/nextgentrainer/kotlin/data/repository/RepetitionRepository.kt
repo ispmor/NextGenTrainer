@@ -7,22 +7,24 @@ import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.RepetitionCounter
 import java.util.Date
 
-class RepetitionRepository(private val source: RepetitionFirebaseSource) {
+class RepetitionRepository(private val source: RepetitionFirebaseSource, val gifRepository: GifRepository) {
     private val database = source.database
 
     fun saveRepetition(repetition: Repetition): String {
-        val key = database.child(repetition.userId).push().key!!
-        database.child(repetition.userId).child(key).setValue(repetition)
+        database.child(repetition.userId).child(repetition.repetitionId).setValue(repetition)
+            .addOnSuccessListener {
+                gifRepository.sendPostRequest(repetition.repetitionId, repetition.quality!!.movementId)
+            }
         source.addToRepetitionList(repetition)
-        return key
+        return repetition.repetitionId
     }
 
     fun getSet(): ExerciseSet? {
         return if (source.getRepetitionList().isNotEmpty()) {
             ExerciseSet(
                 source.getRepetitionList()[0].userId,
-                source.getRepetitionList()[0].poseName!!,
-                source.getRepetitionList()
+                source.getRepetitionList()[0].poseName!!.split("_")[0].uppercase(),
+                source.getRepetitionList(),
             )
         } else {
             null
@@ -36,6 +38,7 @@ class RepetitionRepository(private val source: RepetitionFirebaseSource) {
             null,
             null,
             Date(),
+            "",
             ""
         )
     }
@@ -47,13 +50,15 @@ class RepetitionRepository(private val source: RepetitionFirebaseSource) {
         repetitionQuality: RepetitionQuality,
         userId: String
     ): Repetition {
+        val key = database.child(userId).push().key!!
         return Repetition(
             maxConfidenceClass,
             confidence,
             repCounter,
             repetitionQuality,
             Date(),
-            userId
+            userId,
+            key
         )
     }
 }

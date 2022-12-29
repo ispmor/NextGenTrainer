@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.workout
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,7 +29,7 @@ class WorkoutsFragmentViewModel @Inject constructor(
                     .addOnSuccessListener {
                         val value = it.getValue<HashMap<String, Workout>>()
                         if (value != null) {
-                            val workoutList = value.values.toList()
+                            val workoutList = value.values.toList().distinctBy { workout -> workout.workoutId }
                             val qualityList = workoutList.map { workout ->
                                 workout.sets.flatMap {
                                     it.repetitions.map {
@@ -51,7 +51,7 @@ class WorkoutsFragmentViewModel @Inject constructor(
                                 } else {
                                     workout
                                 }
-                            }
+                            }.sortedWith(compareByDescending { workout -> workout.timestampMillis })
 
                             workoutRepository.setWorkoutList(workoutList)
 
@@ -70,5 +70,10 @@ class WorkoutsFragmentViewModel @Inject constructor(
 
     private fun getMessagesFromThrowable(ioe: IOException): List<String> {
         return listOf(ioe.message!!)
+    }
+
+    fun selectWorkout(workout: Workout) {
+        workoutRepository.selectedWorkout = workout
+        _uiState.value = WorkoutFragmentUiState(selectedWorkout = workout, userSelectedWorkout = true)
     }
 }

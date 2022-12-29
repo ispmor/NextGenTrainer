@@ -32,6 +32,7 @@ import com.nextgentrainer.GraphicOverlay
 import com.nextgentrainer.R
 import com.nextgentrainer.kotlin.data.model.CompeteSession
 import com.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
+import com.nextgentrainer.kotlin.data.repository.GifRepository
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
@@ -42,9 +43,12 @@ import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper
 import com.nextgentrainer.kotlin.utils.Constants
 import com.nextgentrainer.preference.PreferenceUtils
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Date
+import javax.inject.Inject
 
 @KeepName
+@AndroidEntryPoint
 class CompeteActivity :
     AppCompatActivity() {
 
@@ -73,12 +77,14 @@ class CompeteActivity :
     private lateinit var exerciseSetRepository: ExerciseSetRepository
     private lateinit var workoutRepository: WorkoutRepository
 
+    @Inject lateinit var gifRepository: GifRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
         movementRepository = MovementRepository()
-        repetitionRepository = RepetitionRepository(RepetitionFirebaseSource())
+        repetitionRepository = RepetitionRepository(RepetitionFirebaseSource(), gifRepository)
         countdownTextView = findViewById(R.id.challengeCounterTextView)
 
         againstTextView = findViewById(R.id.textViewAgainst)

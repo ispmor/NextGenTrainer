@@ -34,7 +34,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     isStreamMode: Boolean,
     baseExercise: String,
     movementRepository: MovementRepository,
-    private val repetitionRepository: RepetitionRepository
+    private val repetitionRepository: RepetitionRepository,
 ) {
     private val isStreamMode: Boolean
     private var lastDetectedClass: String? = ""
@@ -134,8 +134,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 Locale.US,
                 "%s : %.2f confidence",
                 maxConfidenceClass,
-                classification!!.getClassConfidence(maxConfidenceClass) /
-                    poseClassifier!!.confidenceRange()
+                classification.getClassConfidence(maxConfidenceClass) / poseClassifier!!.confidenceRange()
             )
 //            lastRep!!.poseName = maxConfidenceClass
 //            lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
@@ -183,7 +182,6 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 )
                 saveRepetitionToCache(lastRep) // .posesFromLastRep
                 repetitionRepository.saveRepetition(lastRep)
-
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
                 repCounters!![maxConfidenceClass] = repCounter
@@ -234,7 +232,10 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 posesFromLastRep,
                 posesTimestampsFromLastRep
             )
-            else -> qualityDetector.allExcerciseQuality(posesFromLastRep, posesTimestampsFromLastRep)
+            else -> qualityDetector.allExcerciseQuality(
+                posesFromLastRep,
+                posesTimestampsFromLastRep
+            )
         }
     }
 

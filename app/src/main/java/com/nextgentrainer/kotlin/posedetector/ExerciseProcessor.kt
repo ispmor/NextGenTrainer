@@ -137,8 +137,7 @@ class ExerciseProcessor(
             )
         } else {
             oldClassificationResults.add(
-                results.classificationResult?.poseName +
-                    "No repetitions."
+                results.classificationResult?.poseName + "No repetitions."
             )
         }
         oldClassificationResults.add(

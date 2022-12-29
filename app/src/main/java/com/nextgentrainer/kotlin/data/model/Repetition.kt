@@ -9,5 +9,10 @@ data class Repetition(
     val repetitionCounter: RepetitionCounter? = RepetitionCounter(),
     val quality: RepetitionQuality? = RepetitionQuality(),
     var timestamp: Date = Date(),
-    val userId: String = ""
+    val userId: String = "",
+    val repetitionId: String = "",
+    var webp: String = "",
+    var absoluteLocalPath: String = "",
+    var isBest: Boolean = false
+
 )

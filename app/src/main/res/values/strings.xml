@@ -206,5 +206,9 @@
     <string name="make_it_hard">Make it hard to crack ;-) <br />- Min . 8 characters.<br />- At least 1 special character.<br />- At least one CAPITAL letter.<br />- At least one number</string>
     <string name="login_hint">Login</string>
     <string name="title_activity_login_delete">LoginActivityDELETE</string>
+    <string name="best_set">Best set</string>
+    <string name="best_rep">Best Repetition</string>
+    <string name="rep_quality">Rep Quality</string>
+    <string name="repetition_gif">Repetition Gif</string>
 
 </resources>

@@ -37,7 +37,7 @@ object CameraActivityHelper {
                     "all",
                     movementRepository,
                     repetitionRepository,
-                    workoutRepository
+                    workoutRepository,
                 )
             }
             PUSH_UPS_TRAINER -> ExerciseProcessor(

@@ -6,8 +6,9 @@ import com.nextgentrainer.kotlin.data.source.ExerciseSetDataSource
 class ExerciseSetRepository(private val exerciseSetDataSource: ExerciseSetDataSource) {
     private var lastExerciseSet: ExerciseSet? = null
 
-    suspend fun saveExerciseSet(exerciseSet: ExerciseSet) {
-        exerciseSetDataSource.saveExerciseSet(exerciseSet)
+    suspend fun saveExerciseSet(exerciseSet: ExerciseSet): String {
+        val key = exerciseSetDataSource.saveExerciseSet(exerciseSet)
         lastExerciseSet = exerciseSet
+        return key
     }
 }

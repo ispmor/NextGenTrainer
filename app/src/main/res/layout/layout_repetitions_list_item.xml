@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".kotlin.ui.fitlog.workout.WorkoutsFragment">
+    tools:context=".kotlin.ui.fitlog.workout.WorkoutsFragment"
+    android:id="@+id/mainLinearLayoutWorkouts">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -12,99 +14,62 @@
         android:layout_marginVertical="8dp"
         android:background="@drawable/grey_box">
         <TextView
-            android:id="@+id/bestWorkoutTextView"
+            android:id="@+id/bestRepTextView"
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:background="@drawable/best_workout_badge"
-            android:text="Best workout session"
+            android:text="@string/best_rep"
             android:textColor="@color/gray_black_text"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:gravity="center"
             android:layout_marginEnd="0dp"
             android:layout_alignParentEnd="true"
             android:visibility="invisible"
+            android:elevation="10dp"
             />
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:orientation="vertical">
+
             <TextView
+                android:id="@+id/exerciseNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dayFitLogItem"
                 android:layout_marginStart="20dp"
-                android:textSize="26dp"
-                android:textStyle="bold"
-                android:text="Monday"/>
-            <TextView
-                android:layout_width="wrap_content"
+                android:text="1"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/dateFitLogItem"
-                android:layout_marginStart="20dp"
-                android:textSize="16dp"
-                android:textStyle="bold"
-                android:text="22 Oct"/>
+                >
 
-
-            <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/repsSumTextView"
-                        android:layout_marginStart="20dp"
-                        android:textSize="28dp"
-                        android:textStyle="bold"
-                        android:text="100"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/repsTextView"
-                        android:layout_marginStart="20dp"
-                        android:textSize="14dp"
-                        android:text="Reps"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/setsSumTextView"
-                        android:layout_marginStart="20dp"
-                        android:textSize="28dp"
-                        android:textStyle="bold"
-                        android:text="6"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/setsTextView"
-                        android:layout_marginStart="20dp"
-                        android:textSize="14dp"
-                        android:text="Sets"/>
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/repetitionGifView"
+                    android:layout_width="200dp"
+                    android:layout_height="150dp"
+                    android:contentDescription="@string/repetition_gif"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <LinearLayout
                         android:id="@+id/linearLayoutPassive"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentStart="true"
                         android:layout_marginVertical="10dp"
-                        android:layout_marginEnd="30dp"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginBottom="30dp"
                         android:orientation="vertical">
 
                         <LinearLayout
@@ -156,17 +121,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
-                            android:text="Rep Quality"
-                            android:textSize="14dp" />
+                            android:text="@string/rep_quality"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/linearLayoutActive"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentStart="true"
                         android:layout_marginVertical="10dp"
-                        android:layout_marginEnd="30dp"
+                        android:layout_marginStart="0dp"
                         android:orientation="vertical"
                         android:visibility="visible">
 
@@ -183,7 +148,7 @@
                                 android:layout_marginStart="20dp"
                                 android:background="@drawable/prallelogram_active"
                                 android:textStyle="bold"
-                                android:visibility="invisible"/>
+                                android:visibility="invisible" />
 
                             <TextView
                                 android:id="@+id/quality2TextView"
@@ -191,7 +156,7 @@
                                 android:layout_height="36dp"
                                 android:background="@drawable/prallelogram_active"
                                 android:textStyle="bold"
-                                android:visibility="invisible"/>
+                                android:visibility="invisible" />
 
                             <TextView
                                 android:id="@+id/quality3TextView"
@@ -199,7 +164,7 @@
                                 android:layout_height="36dp"
                                 android:background="@drawable/prallelogram_active"
                                 android:textStyle="bold"
-                                android:visibility="invisible"/>
+                                android:visibility="invisible" />
 
                             <TextView
                                 android:id="@+id/quality4TextView"
@@ -207,7 +172,7 @@
                                 android:layout_height="36dp"
                                 android:background="@drawable/prallelogram_active"
                                 android:textStyle="bold"
-                                android:visibility="invisible"/>
+                                android:visibility="invisible" />
 
                             <TextView
                                 android:id="@+id/quality5TextView"
@@ -215,12 +180,15 @@
                                 android:layout_height="36dp"
                                 android:background="@drawable/prallelogram_active"
                                 android:textStyle="bold"
-                                android:visibility="invisible"/>
+                                android:visibility="invisible" />
 
                         </LinearLayout>
                     </LinearLayout>
                 </RelativeLayout>
-            </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

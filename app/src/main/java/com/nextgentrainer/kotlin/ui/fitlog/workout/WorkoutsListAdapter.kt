@@ -1,4 +1,4 @@
-package com.nextgentrainer.kotlin.ui.fitlog
+package com.nextgentrainer.kotlin.ui.fitlog.workout
 
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +13,8 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-class WorkoutsListAdapter : ListAdapter<Workout, WorkoutsListAdapter.WorkoutViewHolder>(DiffCallback()) {
+class WorkoutsListAdapter(val viewModel: WorkoutsFragmentViewModel) :
+    ListAdapter<Workout, WorkoutsListAdapter.WorkoutViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val binding = LayoutFitlogListItemBinding.inflate(
@@ -28,9 +29,13 @@ class WorkoutsListAdapter : ListAdapter<Workout, WorkoutsListAdapter.WorkoutView
     override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
         val currentItem = getItem(position)
         holder.bind(currentItem)
+        holder.itemView.setOnClickListener {
+            viewModel.selectWorkout(workout = currentItem)
+        }
     }
 
-    class WorkoutViewHolder(private val binding: LayoutFitlogListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class WorkoutViewHolder(private val binding: LayoutFitlogListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(workout: Workout) {
             val formatterDate = SimpleDateFormat("dd MMM", Locale.getDefault())
             val formatterDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault())
@@ -79,7 +84,8 @@ class WorkoutsListAdapter : ListAdapter<Workout, WorkoutsListAdapter.WorkoutView
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Workout>() {
-        override fun areItemsTheSame(oldItem: Workout, newItem: Workout) = oldItem.workoutId == newItem.workoutId
+        override fun areItemsTheSame(oldItem: Workout, newItem: Workout) =
+            oldItem.workoutId == newItem.workoutId
 
         override fun areContentsTheSame(oldItem: Workout, newItem: Workout) = oldItem == newItem
     }

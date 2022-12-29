@@ -8,3 +8,4 @@ app/.project
 app/.settings/
 
 google-services.json
+*local.properties*
