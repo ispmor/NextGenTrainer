@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nextgentrainer.R
 import com.nextgentrainer.databinding.FragmentRepetitionsBinding
@@ -28,7 +29,7 @@ class RepetitionsFragment : Fragment(R.layout.fragment_repetitions) {
 
         val binding = FragmentRepetitionsBinding.bind(view)
 
-        val repetitionsListAdapter = RepetitionsListAdapter()
+        val repetitionsListAdapter = RepetitionsListAdapter(viewModel)
 
         binding.apply {
             workoutSetsListView.apply {
@@ -43,6 +44,12 @@ class RepetitionsFragment : Fragment(R.layout.fragment_repetitions) {
         ) {
             if (it.repetitions.isNotEmpty()) {
                 repetitionsListAdapter.submitList(it.repetitions)
+            }
+
+            if (it.userSelectedRepetition) {
+                val action =
+                    RepetitionsFragmentDirections.actionRepetitionsFragmentToRepetitionAnalysis()
+                view.findNavController().navigate(action)
             }
         }
 

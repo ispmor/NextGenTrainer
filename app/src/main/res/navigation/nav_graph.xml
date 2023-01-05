@@ -27,6 +27,15 @@
         android:id="@+id/repetitionsFragment"
         android:name="com.nextgentrainer.kotlin.ui.fitlog.repetition.RepetitionsFragment"
         android:label="fragment_repetitions"
-        tools:layout="@layout/fragment_repetitions" />
+        tools:layout="@layout/fragment_repetitions" >
+        <action
+            android:id="@+id/action_repetitionsFragment_to_repetitionAnalysis"
+            app:destination="@id/repetitionAnalysis" />
+    </fragment>
+    <fragment
+        android:id="@+id/repetitionAnalysis"
+        android:name="com.nextgentrainer.kotlin.ui.fitlog.repetitionAnalysis.RepetitionAnalysis"
+        android:label="fragment_repetition_analysis"
+        tools:layout="@layout/fragment_repetition_analysis" />
 
 </navigation>

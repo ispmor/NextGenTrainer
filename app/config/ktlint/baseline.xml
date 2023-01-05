@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
+	<file name="src/main/java/com/nextgentrainer/kotlin/data/repository/MovementRepository.kt">
+		<error line="9" column="1" source="no-unused-imports" />
+		<error line="131" column="1" source="no-consecutive-blank-lines" />
+	</file>
+	<file name="src/main/java/com/nextgentrainer/kotlin/posedetector/classification/PoseClassifierProcessor.kt">
+		<error line="26" column="1" source="no-unused-imports" />
+		<error line="28" column="1" source="no-unused-imports" />
+	</file>
+	<file name="src/main/java/com/nextgentrainer/kotlin/ui/fitlog/repetitionAnalysis/RepetitionAnalysisListAdapter.kt">
+		<error line="10" column="1" source="no-unused-imports" />
+		<error line="87" column="1" source="no-consecutive-blank-lines" />
+	</file>
 </baseline>

@@ -1,13 +1,15 @@
 package com.nextgentrainer.kotlin.data.repository
 
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.google.mlkit.vision.common.PointF3D
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import com.nextgentrainer.kotlin.data.model.Movement
+import com.nextgentrainer.kotlin.data.model.Point
 import com.nextgentrainer.kotlin.data.source.MovementFirebaseSource
 import com.nextgentrainer.kotlin.posedetector.classification.Utils
 import com.nextgentrainer.kotlin.utils.QualityDetector
@@ -18,6 +20,8 @@ class MovementRepository {
 
     private val database = MovementFirebaseSource().database
     private val user = Firebase.auth.currentUser!!
+    lateinit var selectedMovement: Movement
+    lateinit var selectedMovementId: String
 
     fun saveMovement(movement: Movement): String {
         val key = database.child(user.uid).push().key!!
@@ -25,28 +29,28 @@ class MovementRepository {
         return key
     }
 
-    fun getMovement(key: String): Movement? {
-        return database.child(user.uid).child(key).get().result.getValue<Movement>()
+    fun getMovement(key: String): Task<DataSnapshot> {
+        return database.child(user.uid).child(key).get()
     }
 
     fun getNewMovementFromPoseList(poseList: List<Pose>, posesTimestamps: List<Date>): Movement {
-        val leftHipMovement = ArrayList<PointF3D?>()
-        val rightHipMovement = ArrayList<PointF3D?>()
-        val leftKneeMovement = ArrayList<PointF3D?>()
-        val rightKneeMovement = ArrayList<PointF3D?>()
-        val leftAnkleMovement = ArrayList<PointF3D?>()
-        val rightAnkleMovement = ArrayList<PointF3D?>()
-        val leftShoulderMovement = ArrayList<PointF3D?>()
-        val rightShoulderMovement = ArrayList<PointF3D?>()
-        val leftElbowMovement = ArrayList<PointF3D?>()
-        val rightElbowMovement = ArrayList<PointF3D?>()
-        val leftWristMovement = ArrayList<PointF3D?>()
-        val rightWristMovement = ArrayList<PointF3D?>()
-        val leftToeMovement = ArrayList<PointF3D?>()
-        val rightToeMovement = ArrayList<PointF3D?>()
-        val leftHeelMovement = ArrayList<PointF3D?>()
-        val rightHeelMovement = ArrayList<PointF3D?>()
-        val mouthMovement = ArrayList<PointF3D?>()
+        val leftHipMovement = ArrayList<Point>()
+        val rightHipMovement = ArrayList<Point>()
+        val leftKneeMovement = ArrayList<Point>()
+        val rightKneeMovement = ArrayList<Point>()
+        val leftAnkleMovement = ArrayList<Point>()
+        val rightAnkleMovement = ArrayList<Point>()
+        val leftShoulderMovement = ArrayList<Point>()
+        val rightShoulderMovement = ArrayList<Point>()
+        val leftElbowMovement = ArrayList<Point>()
+        val rightElbowMovement = ArrayList<Point>()
+        val leftWristMovement = ArrayList<Point>()
+        val rightWristMovement = ArrayList<Point>()
+        val leftToeMovement = ArrayList<Point>()
+        val rightToeMovement = ArrayList<Point>()
+        val leftHeelMovement = ArrayList<Point>()
+        val rightHeelMovement = ArrayList<Point>()
+        val mouthMovement = ArrayList<Point>()
         val leftKneeAngle = ArrayList<Double?>()
         val rightKneeAngle = ArrayList<Double?>()
         val hipsAngle = ArrayList<Double?>()
@@ -59,27 +63,144 @@ class MovementRepository {
 
         var i = 0
         for (pose in poseList) {
-            leftHipMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_HIP)?.position3D)
-            rightHipMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)?.position3D)
-            leftKneeMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)?.position3D)
-            rightKneeMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)?.position3D)
-            leftAnkleMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)?.position3D)
-            rightAnkleMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)?.position3D)
-            leftShoulderMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position3D)
-            rightShoulderMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.position3D)
-            leftElbowMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.position3D)
-            rightElbowMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.position3D)
-            leftWristMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)?.position3D)
-            rightWristMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.position3D)
-            leftToeMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)?.position3D)
-            rightToeMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX)?.position3D)
-            leftHeelMovement.add(pose.getPoseLandmark(PoseLandmark.LEFT_HEEL)?.position3D)
-            rightHeelMovement.add(pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL)?.position3D)
+            pose.getPoseLandmark(PoseLandmark.LEFT_HIP)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftHipMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightHipMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftKneeMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightKneeMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftAnkleMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightAnkleMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftShoulderMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightShoulderMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftElbowMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightElbowMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftWristMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightWristMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftToeMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightToeMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.LEFT_HEEL)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { leftHeelMovement.add(it) }
+
+            pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL)?.position3D?.let {
+                Point(
+                    it.x,
+                    it.y,
+                    it.z
+                )
+            }?.let { rightHeelMovement.add(it) }
+
+            val mouthF3D = Utils.average(
+                pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)!!
+                    .position3D,
+                pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH)!!.position3D
+            )
             mouthMovement.add(
-                Utils.average(
-                    pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)!!
-                        .position3D,
-                    pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH)!!.position3D
+                Point(
+                    mouthF3D.x,
+                    mouthF3D.y,
+                    mouthF3D.z
                 )
             )
             leftKneeAngle.add(
@@ -139,14 +260,14 @@ class MovementRepository {
             )
             distanceBetweenKnees.add(
                 QualityDetector.getDistanceBetween3dPoints(
-                    leftKneeMovement[i]!!,
-                    rightKneeMovement[i]!!
+                    leftKneeMovement[i],
+                    rightKneeMovement[i]
                 )
             )
             distanceBetweenAnkles.add(
                 QualityDetector.getDistanceBetween3dPoints(
-                    leftAnkleMovement[i]!!,
-                    rightAnkleMovement[i]!!
+                    leftAnkleMovement[i],
+                    rightAnkleMovement[i]
                 )
             )
             i += 1
