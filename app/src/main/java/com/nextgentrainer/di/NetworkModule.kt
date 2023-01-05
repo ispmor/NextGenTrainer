@@ -2,8 +2,11 @@ package com.nextgentrainer.di
 
 import android.content.Context
 import com.nextgentrainer.kotlin.data.repository.GifRepository
+import com.nextgentrainer.kotlin.data.repository.MovementRepository
+import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
 import com.nextgentrainer.kotlin.data.source.CloudStorageSource
+import com.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
 import com.nextgentrainer.kotlin.data.source.WorkoutSource
 import dagger.Module
 import dagger.Provides
@@ -32,6 +35,18 @@ object NetworkModule {
     @Provides
     fun provideGifRepository(@ApplicationContext context: Context): GifRepository {
         return GifRepository(CloudStorageSource(context))
+    }
+
+    @Singleton
+    @Provides
+    fun provideRepetitionRepository(gifRepository: GifRepository): RepetitionRepository {
+        return RepetitionRepository(RepetitionFirebaseSource(), gifRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMovementRepository(): MovementRepository {
+        return MovementRepository()
     }
 
     private fun createDefaultCronetEngine(context: Context): CronetEngine {

@@ -9,6 +9,7 @@ import java.util.Date
 
 class RepetitionRepository(private val source: RepetitionFirebaseSource, val gifRepository: GifRepository) {
     private val database = source.database
+    lateinit var selectedRepetition: Repetition
 
     fun saveRepetition(repetition: Repetition): String {
         database.child(repetition.userId).child(repetition.repetitionId).setValue(repetition)

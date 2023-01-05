@@ -37,6 +37,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private val repetitionRepository: RepetitionRepository,
 ) {
     private val isStreamMode: Boolean
+    private val lastDetectedClasses: MutableList<String> = mutableListOf()
     private var lastDetectedClass: String? = ""
     private var emaSmoothing: EMASmoothing? = null
     private var repCounters: MutableMap<String?, RepetitionCounter?>? = null
@@ -50,6 +51,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private var posesTimestampsFromLastRep: MutableList<Date> = ArrayList()
     private val qualityDetector = QualityDetector(movementRepository)
     private val user: FirebaseUser
+    private val lastClassification: MutableList<ClassificationResult> = mutableListOf()
 
     init {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
@@ -140,9 +142,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
 //            lastRep!!.confidence = classification.getClassConfidence(maxConfidenceClass)
             result.add(maxConfidenceClassResult)
         }
-//        if (Date().time - lastRep.timestamp.time > 5000) {
-//            repetitionRepository.notifyCreateNewSet(true)
-//        }
+
         return lastRep
     }
 
@@ -151,14 +151,17 @@ class PoseClassifierProcessor @WorkerThread constructor(
         val detectionResultHasChanged = lastDetectedClass != maxConfidenceClass
         if (detectionResultHasChanged) {
             lastDetectedClass = maxConfidenceClass
-            if (maxConfidenceClass != "" && repCounters!!.containsKey(maxConfidenceClass) &&
-                detectionResultHasChanged
+            lastClassification.add(classification)
+            lastDetectedClasses.add(maxConfidenceClass.orEmpty())
+            if (maxConfidenceClass != "" && lastDetectedClasses.size == 3 &&
+                repCounters!!.containsKey(lastDetectedClasses[1])
             ) {
                 lastDetectedClass = maxConfidenceClass
-                val repCounter = repCounters!![maxConfidenceClass]
+                val successClass = lastDetectedClasses[1]
+                val repCounter = repCounters!![successClass]
                 val repsBefore = repCounter!!.numRepeats
                 // int repsAfter = repCounter.addClassificationResult(classification);
-                val repsAfter = repCounter.increaseCount(classification)
+                val repsAfter = repCounter.increaseCount(lastClassification[1])
                 Log.d(TAG, "RepsBefore: $repsBefore Reps after: $repsAfter")
 
                 val repetitionQuality = gradeQuality(posesFromLastRep, posesTimestampsFromLastRep)
@@ -170,8 +173,8 @@ class PoseClassifierProcessor @WorkerThread constructor(
                     repsAfter
                 )
                 lastRep = repetitionRepository.createRepetition(
-                    maxConfidenceClass!!,
-                    classification.getClassConfidence(maxConfidenceClass),
+                    successClass,
+                    lastClassification[1].getClassConfidence(successClass),
                     repCounter,
                     repetitionQuality,
                     user.uid
@@ -184,7 +187,11 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 repetitionRepository.saveRepetition(lastRep)
                 posesFromLastRep = ArrayList()
                 posesTimestampsFromLastRep = ArrayList()
-                repCounters!![maxConfidenceClass] = repCounter
+                repCounters!![successClass] = repCounter
+                lastDetectedClasses.removeFirst()
+                lastDetectedClasses.removeFirst()
+                lastClassification.removeFirst()
+                lastClassification.removeFirst()
                 return lastRep
             }
         }

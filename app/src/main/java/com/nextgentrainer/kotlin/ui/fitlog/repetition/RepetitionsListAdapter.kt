@@ -12,7 +12,7 @@ import com.nextgentrainer.databinding.LayoutRepetitionsListItemBinding
 import com.nextgentrainer.kotlin.data.model.Repetition
 import kotlin.math.roundToInt
 
-class RepetitionsListAdapter :
+class RepetitionsListAdapter(val viewModel: RepetitionsViewModel) :
     ListAdapter<Repetition, RepetitionsListAdapter.RepetitionsViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepetitionsViewHolder {
@@ -28,6 +28,10 @@ class RepetitionsListAdapter :
     override fun onBindViewHolder(holder: RepetitionsViewHolder, position: Int) {
         val currentItem = getItem(position)
         holder.bind(currentItem)
+
+        holder.itemView.setOnClickListener {
+            viewModel.selectRepetition(currentItem)
+        }
     }
 
     class RepetitionsViewHolder(private val binding: LayoutRepetitionsListItemBinding) :
