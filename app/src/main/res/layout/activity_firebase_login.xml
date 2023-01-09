@@ -40,6 +40,7 @@
         android:background="@drawable/empty_cornered_box"
         android:ems="10"
         android:hint="@string/email"
+        android:autofillHints="username"
         android:inputType="textEmailAddress"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toTopOf="@+id/editTextTextPassword"
@@ -56,6 +57,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/empty_cornered_box"
+        android:autofillHints="password"
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
@@ -78,9 +80,9 @@
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_height="60dp"
         android:background="@drawable/rounded_corners_green_button"
         android:text="@string/login"
         android:textColor="@color/gray_black_text"
@@ -95,7 +97,7 @@
         android:layout_width="150dp"
         android:layout_height="1dp"
         android:background="#5878909C"
-        app:layout_constraintBottom_toTopOf="@+id/facebookLoginButton"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintEnd_toStartOf="@+id/orTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
@@ -105,7 +107,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/or"
-        app:layout_constraintBottom_toTopOf="@+id/facebookLoginButton"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintEnd_toStartOf="@+id/rightOrLine"
         app:layout_constraintStart_toEndOf="@+id/leftOrLine"
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
@@ -116,47 +118,47 @@
         android:layout_width="150dp"
         android:layout_height="1dp"
         android:background="#5878909C"
-        app:layout_constraintBottom_toTopOf="@+id/facebookLoginButton"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orTextView"
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
 
-    <Button
-        android:id="@+id/facebookLoginButton"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/facebook_button"
-        android:drawableLeft="@drawable/facebook_logo"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="@string/continue_with_facebook"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@id/twitterLoginButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rightOrLine" />
+<!--    <Button-->
+<!--        android:id="@+id/facebookLoginButton"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:background="@drawable/facebook_button"-->
+<!--        android:drawableLeft="@drawable/facebook_logo"-->
+<!--        android:paddingStart="20dp"-->
+<!--        android:paddingEnd="20dp"-->
+<!--        android:text="@string/continue_with_facebook"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/twitterLoginButton"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/rightOrLine" />-->
 
-    <Button
-        android:id="@+id/twitterLoginButton"
-        android:layout_width="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_height="60dp"
-        android:layout_centerInParent="true"
-        android:background="@drawable/twitter_button"
-        android:textColor="@android:color/white"
-        android:text="@string/continue_with_twitter"
-        android:drawableLeft="@drawable/twitter_logo"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        app:layout_constraintBottom_toTopOf="@id/googleSignInButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/facebookLoginButton" />
+<!--    <Button-->
+<!--        android:id="@+id/twitterLoginButton"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:background="@drawable/twitter_button"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:text="@string/continue_with_twitter"-->
+<!--        android:drawableLeft="@drawable/twitter_logo"-->
+<!--        android:paddingStart="20dp"-->
+<!--        android:paddingEnd="20dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/googleSignInButton"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/facebookLoginButton" />-->
 
     <Button
         android:id="@+id/googleSignInButton"
@@ -164,7 +166,6 @@
         android:layout_height="60dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="100dp"
         android:background="@drawable/google_button"
         android:drawableLeft="@drawable/google_logo"
         android:gravity="center"
@@ -175,20 +176,39 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/twitterLoginButton" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline8"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/signUpTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:text="@string/sign_up"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@id/googleSignInButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/loginButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.3
-" />
+        app:layout_constraintTop_toBottomOf="@+id/loginToTextView" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_begin="442dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

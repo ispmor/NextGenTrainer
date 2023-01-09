@@ -7,6 +7,8 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import android.text.Html
 import android.util.Log
+import android.view.ContextMenu
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -20,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nextgentrainer.BuildConfig
+import com.nextgentrainer.FirebaseLoginActivity
 import com.nextgentrainer.R
 
 class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickListener {
@@ -43,7 +46,10 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
 
         auth = Firebase.auth
 
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
 
         setContentView(R.layout.activity_chooser)
 
@@ -79,8 +85,10 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
             startActivity(Intent(this, CompeteActivity::class.java))
         }
 
-        findViewById<ImageButton>(R.id.gearImageButton).setOnClickListener {
-            startActivity(Intent(this, FitlogCustomActivity::class.java))
+        val gearButton = findViewById<ImageButton>(R.id.gearImageButton)
+        registerForContextMenu(gearButton)
+        gearButton.setOnClickListener {
+            gearButton.showContextMenu()
         }
     }
 
@@ -103,6 +111,27 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
 
     override fun onClick(v: View) {
         startActivity(Intent(this, CameraActivity::class.java))
+    }
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu?,
+        v: View?,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        menuInflater.inflate(R.menu.chooser_menu, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.sign_out -> {
+                Firebase.auth.signOut()
+                startActivity(Intent(this, FirebaseLoginActivity::class.java))
+                finish()
+            }
+        }
+
+        return super.onContextItemSelected(item)
     }
 
     companion object {
