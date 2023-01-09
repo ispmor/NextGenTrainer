@@ -33,6 +33,7 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         ) {
             if (it.workoutsItems.isNotEmpty()) {
                 workoutsListAdapter.submitList(it.workoutsItems)
+                binding.workoutsProgressBar.visibility = View.INVISIBLE
             }
             if (it.userSelectedWorkout) {
                 val action = WorkoutsFragmentDirections.actionWorkoutToSets()
