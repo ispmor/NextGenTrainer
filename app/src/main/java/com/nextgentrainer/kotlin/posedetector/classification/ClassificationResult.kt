@@ -3,7 +3,7 @@ package com.nextgentrainer.kotlin.posedetector.classification
 import java.util.Collections
 
 class ClassificationResult {
-    private val classConfidences: MutableMap<String?, Float>
+    val classConfidences: MutableMap<String?, Float>
 
     init {
         classConfidences = HashMap()

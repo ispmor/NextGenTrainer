@@ -313,7 +313,7 @@ class QualityDetector(private val movementRepository: MovementRepository) {
 
         val movement = movementRepository.getNewMovementFromPoseList(poseList, posesTimestamps)
         val movementId = movementRepository.saveMovement(movement)
-        return RepetitionQuality("all", results, movementId)
+        return RepetitionQuality("recording", results, movementId)
     }
 
     private fun getRepTime(posesTimestamps: List<Date>): Float {

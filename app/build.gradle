@@ -34,8 +34,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 33
 
-        versionCode 12
-        versionName "v1.12-alpha"
+        versionCode 13
+        versionName "v1.13-alpha"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "NextGenTrainer")
     }
@@ -57,7 +57,7 @@ android {
             minifyEnabled false
             proguardFiles 'proguard-rules.pro'
             firebaseAppDistribution {
-                //releaseNotesFile="/path/to/releasenotes.txt"
+                releaseNotesFile=rootProject.file("release_notes.txt")
                 groups="QA"
             }
         }
@@ -161,6 +161,8 @@ dependencies {
     def GLIDE_VERSION = "4.14.2"
 // webpdecoder
     implementation "com.github.zjupure:webpdecoder:2.3.${GLIDE_VERSION}"
+
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
 
 
 }

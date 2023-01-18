@@ -17,6 +17,7 @@ import com.nextgentrainer.kotlin.data.model.Repetition
 import com.nextgentrainer.kotlin.data.model.RepetitionQuality
 import com.nextgentrainer.kotlin.data.repository.MovementRepository
 import com.nextgentrainer.kotlin.data.repository.RepetitionRepository
+import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
 import com.nextgentrainer.kotlin.utils.QualityDetector
 import java.io.BufferedReader
 import java.io.IOException
@@ -29,12 +30,14 @@ import kotlin.collections.set
 /**
  * Accepts a stream of [Pose] for classification and Rep counting.
  */
+
 class PoseClassifierProcessor @WorkerThread constructor(
     context: Context,
     isStreamMode: Boolean,
-    baseExercise: String,
+    var baseExercise: String,
     movementRepository: MovementRepository,
     private val repetitionRepository: RepetitionRepository,
+    val workoutRepository: WorkoutRepository
 ) {
     private val isStreamMode: Boolean
     private val lastDetectedClasses: MutableList<String> = mutableListOf()
@@ -44,7 +47,6 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private var poseClassifier: PoseClassifier? = null
     private var lastRepResult: String? = null
     private val context: Context
-    private var baseExercise: String? = null
     private var lastRep: Repetition
     private val sets: MutableMap<String, List<ExerciseSetOld>> = HashMap()
     private var posesFromLastRep: MutableList<Pose> = ArrayList()
@@ -52,6 +54,7 @@ class PoseClassifierProcessor @WorkerThread constructor(
     private val qualityDetector = QualityDetector(movementRepository)
     private val user: FirebaseUser
     private val lastClassification: MutableList<ClassificationResult> = mutableListOf()
+    private var recording = false
 
     init {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
@@ -64,11 +67,15 @@ class PoseClassifierProcessor @WorkerThread constructor(
         this.context = context
         if (baseExercise == "") {
             this.baseExercise = context.getString(R.string.all_exercises)
-        } else {
-            this.baseExercise = baseExercise
         }
         lastRep = repetitionRepository.getEmptyRepetition()
-        loadPoseSamples(context, baseExercise)
+
+        if (baseExercise != "recording") {
+            loadPoseSamples(context, baseExercise)
+        } else {
+            poseClassifier = PoseClassifier(listOf())
+            recording = true
+        }
 
         user = Firebase.auth.currentUser!!
     }
@@ -111,7 +118,13 @@ class PoseClassifierProcessor @WorkerThread constructor(
     fun getPoseResult(pose: Pose): Repetition {
         Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper())
         val result: MutableList<String?> = ArrayList()
-        var classification = poseClassifier!!.classify(pose)
+        var classification: ClassificationResult
+        if (recording) {
+            classification = ClassificationResult()
+            classification.classConfidences["recording"] = 1.0f
+        } else {
+            classification = poseClassifier!!.classify(pose)
+        }
 
         // Update {@link RepetitionCounter}s if {@code isStreamMode}.
         if (isStreamMode) {
@@ -244,6 +257,25 @@ class PoseClassifierProcessor @WorkerThread constructor(
                 posesTimestampsFromLastRep
             )
         }
+    }
+
+    fun saveRecording(exerciseName: String?) {
+        val exerciseNameFinal: String = exerciseName ?: baseExercise
+        val recordingQuality = gradeQuality(posesFromLastRep, posesTimestampsFromLastRep)
+        lastRep = repetitionRepository.createRepetition(
+            exerciseNameFinal,
+            1f,
+            RepetitionCounter(baseExercise),
+            recordingQuality,
+            user.uid
+        )
+        repetitionRepository.saveRepetition(lastRep)
+
+        val setToBeSaved = repetitionRepository.getSet()
+        workoutRepository.addExerciseSetToWorkout(setToBeSaved!!)
+        posesFromLastRep = ArrayList()
+        posesTimestampsFromLastRep = ArrayList()
+        Log.d(TAG, "Saved recording")
     }
 
     val repetitionCountersAsList: List<RepetitionCounter?>

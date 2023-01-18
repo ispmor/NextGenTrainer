@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -12,11 +13,13 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
@@ -30,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.google.android.gms.common.annotation.KeepName
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.common.MlKitException
 import com.nextgentrainer.CameraXViewModel
 import com.nextgentrainer.GraphicOverlay
@@ -47,6 +51,7 @@ import com.nextgentrainer.kotlin.ui.camera.CameraViewModel
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToFileInExternalStorage
 import com.nextgentrainer.kotlin.utils.CameraActivityHelper.selectModel
 import com.nextgentrainer.kotlin.utils.Constants.CREATE_FILE
+import com.nextgentrainer.kotlin.utils.Constants.RECORD
 import com.nextgentrainer.kotlin.utils.Constants.REP_COUNTER
 import com.nextgentrainer.kotlin.utils.Constants.SQUATS_TRAINER
 import com.nextgentrainer.kotlin.utils.Constants.STATE_SELECTED_MODEL
@@ -79,8 +84,11 @@ class CameraActivity :
     private lateinit var exerciseSetDataSource: ExerciseSetDataSource
     private lateinit var cameraViewModel: CameraViewModel
     private lateinit var workoutRepository: WorkoutRepository
-    @Inject lateinit var gifRepository: GifRepository
 
+    @Inject
+    lateinit var gifRepository: GifRepository
+
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
@@ -125,7 +133,7 @@ class CameraActivity :
 //        options.add(PUSH_UPS_TRAINER)
 //        options.add(PULL_UPS_TRAINER)
         options.add(SQUATS_TRAINER)
-//        options.add(SIT_UPS_TRAINER)
+        options.add(RECORD)
 
         // Creating adapter for spinner
         val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
@@ -166,7 +174,6 @@ class CameraActivity :
             override fun onFinish() {
                 countdownTextView.visibility = View.INVISIBLE
                 imageProcessor.isStarted = true
-                // timerToStop.start()
             }
         }
 
@@ -179,28 +186,44 @@ class CameraActivity :
 
         val saveButton = findViewById<Button>(R.id.save_button)
         saveButton.setOnClickListener {
-            cameraViewModel.saveExerciseSet()
-//            val counters = (imageProcessor as ExerciseProcessor?)!!.repetitionCounters
-//            countersAsString = counters!!.stream().map {
-//                obj: RepetitionCounter? ->
-//                obj.toString()
-//            }.collect(Collectors.joining("\n"))
-//            saveDataToCache(countersAsString, "", this)
-//            createCSVDocumentPicker()
+            var exerciseName: String
+
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Exercise Name")
+
+            val input = EditText(this)
+
+            input.inputType = InputType.TYPE_CLASS_TEXT
+            builder.setView(input)
+
+// Set up the buttons
+            builder.setPositiveButton("OK") { dialog, which ->
+                run {
+                    exerciseName = input.text.toString()
+                    cameraViewModel.saveExerciseSet()
+                    imageProcessor.poseClassifierProcessor?.saveRecording(exerciseName.uppercase())
+                    imageProcessor.isStarted = false
+                    dialog.dismiss()
+                    Snackbar.make(it, "Successfully saved repetition", Snackbar.LENGTH_LONG)
+                        .setAction("CLOSE", {})
+                        .show()
+                }
+            }
+            builder.setNegativeButton(
+                "Cancel"
+            ) { dialog, which ->
+                run {
+                    dialog.cancel()
+                    imageProcessor.isStarted = false
+                    Snackbar.make(it, "Did not save the movement", Snackbar.LENGTH_LONG)
+                        .setAction("CLOSE", {})
+                        .show()
+                }
+            }
+
+            builder.show()
         }
     }
-
-//    private fun createCSVDocumentPicker() {
-//        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-//        val date = Date()
-//        val today = formatter.format(date)
-//        val fileName = "$today.csv"
-//        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-//        intent.addCategory(Intent.CATEGORY_OPENABLE)
-//        intent.type = "text/csv"
-//        intent.putExtra(Intent.EXTRA_TITLE, fileName)
-//        startActivityForResult(intent, CREATE_FILE)
-//    }
 
     override fun onSaveInstanceState(bundle: Bundle) {
         super.onSaveInstanceState(bundle)
@@ -351,7 +374,11 @@ class CameraActivity :
                     .show()
             }
         }
-        cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase)
+        cameraProvider!!.bindToLifecycle(
+            /* lifecycleOwner = */this,
+            cameraSelector!!,
+            analysisUseCase
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
