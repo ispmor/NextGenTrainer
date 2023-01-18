@@ -1,0 +1,4 @@
+Release Notes 1.13-alpha:
+1) Movement recording available in the "Training" section.
+2) Recorded movements visible in FitLog without the count of repetitions.
+3) Profile picture functionality implemented (upload / change / display).

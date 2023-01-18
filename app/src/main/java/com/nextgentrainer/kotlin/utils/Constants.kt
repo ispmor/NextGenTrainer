@@ -9,4 +9,5 @@ object Constants {
     const val SQUATS_TRAINER = "Squats Trainer"
     const val PULL_UPS_TRAINER = "Pull-ups Trainer"
     const val STATE_SELECTED_MODEL = "selected_model"
+    const val RECORD = "Record Movement"
 }

@@ -41,7 +41,7 @@ class ExerciseProcessor(
     private val context: Context
     private val classificationExecutor: Executor
     var lastQualifiedRepetition: Repetition? = null
-    private var poseClassifierProcessor: PoseClassifierProcessor? = null
+    var poseClassifierProcessor: PoseClassifierProcessor? = null
 
     /**
      * Internal class to hold Pose and classification results.
@@ -76,7 +76,8 @@ class ExerciseProcessor(
                             isStreamMode,
                             baseExercise,
                             movementRepository,
-                            repetitionRepository
+                            repetitionRepository,
+                            workoutRepository
                         )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
@@ -109,7 +110,8 @@ class ExerciseProcessor(
                             isStreamMode,
                             baseExercise,
                             movementRepository,
-                            repetitionRepository
+                            repetitionRepository,
+                            workoutRepository
                         )
                     }
                     classificationResult = poseClassifierProcessor!!.getPoseResult(pose)

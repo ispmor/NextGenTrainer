@@ -9,6 +9,7 @@ import com.nextgentrainer.kotlin.data.repository.WorkoutRepository
 import com.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import com.nextgentrainer.kotlin.utils.Constants.PULL_UPS_TRAINER
 import com.nextgentrainer.kotlin.utils.Constants.PUSH_UPS_TRAINER
+import com.nextgentrainer.kotlin.utils.Constants.RECORD
 import com.nextgentrainer.kotlin.utils.Constants.REP_COUNTER
 import com.nextgentrainer.kotlin.utils.Constants.SIT_UPS_TRAINER
 import com.nextgentrainer.kotlin.utils.Constants.SQUATS_TRAINER
@@ -76,6 +77,16 @@ object CameraActivityHelper {
                 true,
                 true,
                 "squats",
+                movementRepository,
+                repetitionRepository,
+                workoutRepository
+            )
+            RECORD -> ExerciseProcessor(
+                context,
+                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
+                false,
+                true,
+                "recording",
                 movementRepository,
                 repetitionRepository,
                 workoutRepository

@@ -1,6 +1,8 @@
 package com.nextgentrainer.kotlin
 
+import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -18,15 +20,36 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.nextgentrainer.BuildConfig
 import com.nextgentrainer.FirebaseLoginActivity
 import com.nextgentrainer.R
 
 class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickListener {
     private lateinit var auth: FirebaseAuth
+    private val storageProfilePicRef = FirebaseStorage.getInstance().reference.child("ProfilePic")
+
+    var imgUri: MutableLiveData<Uri?> = MutableLiveData<Uri?>()
+    lateinit var uploadedImageUri: Uri
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            imgUri.value = result.uriContent
+        } else {
+            val exception = result.error
+            exception?.message?.let { Log.e(TAG, it) }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
@@ -85,10 +108,66 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
             startActivity(Intent(this, CompeteActivity::class.java))
         }
 
+        val profilePictureView = findViewById<ImageView>(R.id.profileImageView)
+
+        profilePictureView.setOnClickListener {
+            startCrop()
+            uploadProfileImage()
+        }
+
+        storageProfilePicRef.child(auth.currentUser!!.uid + ".jpg").downloadUrl.addOnSuccessListener {
+            Glide.with(this)
+                .load(it)
+                .placeholder(R.drawable.default_profile_picture)
+                .into(profilePictureView)
+        }
+
         val gearButton = findViewById<ImageButton>(R.id.gearImageButton)
         registerForContextMenu(gearButton)
         gearButton.setOnClickListener {
             gearButton.showContextMenu()
+        }
+    }
+
+    private fun startCrop() {
+        cropImage.launch(
+            CropImageContractOptions(
+                null,
+                CropImageOptions()
+            )
+        )
+    }
+
+    fun uploadProfileImage() {
+        val profilePictureView = findViewById<ImageView>(R.id.profileImageView)
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setTitle("Set your profile image")
+        progressDialog.setMessage("Please wait, while we are setting your data")
+        progressDialog.show()
+
+        imgUri.observe(this) { uri ->
+            if (uri != null) {
+                val fileRef = storageProfilePicRef.child(auth.currentUser!!.uid + ".jpg")
+
+                val uploadTask = fileRef.putFile(uri)
+                uploadTask.addOnSuccessListener {
+                    fileRef.downloadUrl.addOnSuccessListener {
+                        Glide.with(this)
+                            .load(
+                                it
+                            )
+                            .placeholder(R.drawable.default_profile_picture)
+                            .into(profilePictureView)
+                        uploadedImageUri = it
+                    }
+                    progressDialog.dismiss()
+                }
+            } else {
+                progressDialog.dismiss()
+                Snackbar.make(profilePictureView.rootView, "Failed to save the image", Snackbar.LENGTH_LONG)
+                    .setAction("CLOSE", {})
+                    .show()
+            }
         }
     }
 
