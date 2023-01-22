@@ -7,5 +7,7 @@ app/.classpath
 app/.project
 app/.settings/
 
+*.pepk
+
 google-services.json
 *local.properties*

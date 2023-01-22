@@ -29,7 +29,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.nextgentrainer"
+        applicationId "co.nextgentrainer"
         minSdk 26
         multiDexEnabled true
         targetSdkVersion 33
@@ -71,7 +71,7 @@ android {
     androidResources {
         noCompress 'tflite'
     }
-    namespace 'com.nextgentrainer'
+    namespace 'co.nextgentrainer'
 
     // Do NOT compress tflite model files (need to call out to developers!)
 }
