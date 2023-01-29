@@ -4,4 +4,3 @@ data class QualityFeature(
     val name: String = "",
     val valid: Boolean = false
 )
-
