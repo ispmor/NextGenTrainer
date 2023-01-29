@@ -6,8 +6,13 @@ app/build/*
 app/.classpath
 app/.project
 app/.settings/
+app/release/
+app/debug/
 
 *.pepk
 
 google-services.json
 *local.properties*
+
+nextgentrainer-keystore
+*.apk

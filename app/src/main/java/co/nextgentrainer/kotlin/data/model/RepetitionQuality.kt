@@ -12,7 +12,7 @@ class RepetitionQuality(
         get() {
             var sum = 0
             for (feature in qualityFeatures) {
-                sum += if (feature.isValid) 1 else 0
+                sum += if (feature.valid) 1 else 0
             }
             return sum.toFloat()
         }

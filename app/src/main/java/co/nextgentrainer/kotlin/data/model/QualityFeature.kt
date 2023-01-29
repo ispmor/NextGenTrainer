@@ -1,16 +1,7 @@
 package co.nextgentrainer.kotlin.data.model
 
-class QualityFeature(
-    var name: String = "",
-    var isValid: Boolean = false,
-) {
+data class QualityFeature(
+    val name: String = "",
+    val valid: Boolean = false
+)
 
-    override fun toString(): String {
-        return "{" +
-            "\"name\":" + "\"" + name + "\"" +
-            ", \"isValid\":" + isValid +
-            // ", \"decisionBase\": " + decisionBase.toString()
-            // + narazie wykomentowane, ponieważ eksplozja rozmiaru, powinno lecieć do bazki
-            "}"
-    }
-}
