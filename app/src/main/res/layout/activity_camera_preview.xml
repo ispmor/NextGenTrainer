@@ -23,7 +23,7 @@
 
   </androidx.camera.view.PreviewView>
 
-  <com.nextgentrainer.GraphicOverlay
+  <co.nextgentrainer.GraphicOverlay
       android:id="@+id/graphic_overlay"
       android:layout_width="0dp"
       android:layout_height="0dp"

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fitLogFragment"
-        android:name="com.nextgentrainer.kotlin.ui.fitlog.workout.WorkoutsFragment"
+        android:name="co.nextgentrainer.kotlin.ui.fitlog.workout.WorkoutsFragment"
         android:label="fragment_workouts"
         tools:layout="@layout/fragment_workouts" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/setsFragment"
-        android:name="com.nextgentrainer.kotlin.ui.fitlog.sets.SetsFragment"
+        android:name="co.nextgentrainer.kotlin.ui.fitlog.sets.SetsFragment"
         android:label="SetsFragment"
         tools:layout="@layout/fragment_sets">
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/repetitionsFragment"
-        android:name="com.nextgentrainer.kotlin.ui.fitlog.repetition.RepetitionsFragment"
+        android:name="co.nextgentrainer.kotlin.ui.fitlog.repetition.RepetitionsFragment"
         android:label="fragment_repetitions"
         tools:layout="@layout/fragment_repetitions" >
         <action
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/repetitionAnalysis"
-        android:name="com.nextgentrainer.kotlin.ui.fitlog.repetitionAnalysis.RepetitionAnalysis"
+        android:name="co.nextgentrainer.kotlin.ui.fitlog.repetitionAnalysis.RepetitionAnalysis"
         android:label="fragment_repetition_analysis"
         tools:layout="@layout/fragment_repetition_analysis" />
 

@@ -24,6 +24,7 @@
     <string name="menu_item_settings" translatable="false">Settings</string>
     <string name="select_image" translatable="false">Select image</string>
     <string name="custom_object_detection" translatable="false">Custom Object Detector</string>
+    <string name="requestIdToken" translatable="false">42094175930-2t0mqroj80o89jf4784ilson6f88mru4.apps.googleusercontent.com</string>
 
     <!-- Settings related strings. -->
     <string name="pref_screen" translatable="false">ps</string>
