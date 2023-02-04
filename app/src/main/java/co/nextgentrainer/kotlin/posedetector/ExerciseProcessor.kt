@@ -3,6 +3,8 @@ package co.nextgentrainer.kotlin.posedetector
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import co.nextgentrainer.GraphicOverlay
 import co.nextgentrainer.kotlin.VisionProcessorBase
 import co.nextgentrainer.kotlin.data.model.Repetition
@@ -35,6 +37,8 @@ class ExerciseProcessor(
     private var workoutRepository: WorkoutRepository
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     var isStarted: Boolean = false
+    private val _isStarted = MutableLiveData(false)
+    val processingState: LiveData<Boolean> = _isStarted
     private val detector: PoseDetector
     private val runClassification: Boolean
     private val isStreamMode: Boolean
@@ -54,6 +58,11 @@ class ExerciseProcessor(
         this.isStreamMode = isStreamMode
         this.context = context
         classificationExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    fun setIsProcessing(state: Boolean) {
+        isStarted = state
+        _isStarted.value = state
     }
 
     override fun stop() {
@@ -87,6 +96,7 @@ class ExerciseProcessor(
                         if (setToBeSaved != null) {
                             workoutRepository.addExerciseSetToWorkout(setToBeSaved)
                             isStarted = false
+                            _isStarted.value = isStarted
                             Toast.makeText(context, "Set finished", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -120,6 +130,7 @@ class ExerciseProcessor(
                         if (setToBeSaved != null) {
                             workoutRepository.addExerciseSetToWorkout(setToBeSaved)
                             isStarted = false
+                            _isStarted.value = isStarted
                         }
                     }
                 }

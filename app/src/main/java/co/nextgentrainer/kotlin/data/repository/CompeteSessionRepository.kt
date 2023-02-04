@@ -3,8 +3,11 @@ package co.nextgentrainer.kotlin.data.repository
 import android.content.Context
 import android.util.Log
 import co.nextgentrainer.R
+import co.nextgentrainer.kotlin.CompeteActivity
 import co.nextgentrainer.kotlin.data.model.CompeteSession
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -17,17 +20,23 @@ class CompeteSessionRepository(private val context: Context) {
         .getReference("CompetitionSession")
     private val user = Firebase.auth.currentUser!!
 
-    fun createNewSession(exercise: String?, user1: String?): String {
+
+
+    fun createNewSession(exercise: String): String {
         val keyTmp = database.push().key
         if (keyTmp == null) {
             Log.w(TAG, "Couldn't get push key for competitionsession")
             return ""
         }
-        val session = CompeteSession(keyTmp, exercise, user1, startDateMillis = Date().time)
-        database.child(user.uid).child(keyTmp).setValue(session)
+        val session = CompeteSession(keyTmp, exercise, Firebase.auth.currentUser!!.displayName!!, startDateMillis = Date().time)
+        database.child(keyTmp).setValue(session)
 
 //        bindSessionToKey(keyTmp)
         return keyTmp
+    }
+
+    fun getCompeteSessionReference(): Task<DataSnapshot> {
+        return database.orderByChild("finished").equalTo(false).limitToFirst(1).get()
     }
 
     fun getCompeteSession(key: String): CompeteSession {
@@ -45,17 +54,31 @@ class CompeteSessionRepository(private val context: Context) {
                     updateSession(tmpSession)
                     resultSession = tmpSession
                 } else if (key.isNullOrEmpty() && value == null) {
-                    tmpKey = createNewSession("squats", "Test-USER1")
+                    tmpKey = createNewSession("squats")
                 }
             }
 
         return resultSession
     }
 
-    private fun updateSession(
-        session: CompeteSession
-    ) {
+    fun updateSession(session: CompeteSession) {
         database.child(session.uid!!).setValue(session)
+    }
+
+    fun saveRepsForSessionAndUser(key: String, repsString: String, reps: Int) {
+        database.child(key).child(repsString).setValue(reps)
+    }
+
+    fun setEndDateMillis(key: String, time: Long) {
+        database.child(key).child("endDateMillis").setValue(time)
+    }
+
+    fun setFinished(key: String, finished: Boolean) {
+        database.child(key).child("finished").setValue(true)
+    }
+
+    fun getSessionFromKey(key: String): DatabaseReference {
+        return database.child(key)
     }
 
 //    private fun bindSessionToKey(bindingKey: String) {
