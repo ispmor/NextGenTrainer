@@ -28,7 +28,7 @@ class CompeteSessionRepository(private val context: Context) {
             Log.w(TAG, "Couldn't get push key for competitionsession")
             return ""
         }
-        val session = CompeteSession(keyTmp, exercise, Firebase.auth.currentUser!!.displayName!!, startDateMillis = Date().time)
+        val session = CompeteSession(keyTmp, exercise, user1=Firebase.auth.currentUser!!.displayName!!, startDateMillis = Date().time)
         database.child(keyTmp).setValue(session)
 
 //        bindSessionToKey(keyTmp)
@@ -48,7 +48,7 @@ class CompeteSessionRepository(private val context: Context) {
 
                 if (value.isNullOrEmpty() && value != null) {
                     val tmpSession = it.child(value.keys.first()).getValue<CompeteSession>()
-                    tmpSession!!.user2 = "test-2USER"
+                    tmpSession!!.user2 =  Firebase.auth.currentUser!!.displayName
 
                     tmpKey = key!!
                     updateSession(tmpSession)
@@ -73,6 +73,8 @@ class CompeteSessionRepository(private val context: Context) {
         database.child(key).child("endDateMillis").setValue(time)
     }
 
+
+
     fun setFinished(key: String, finished: Boolean) {
         database.child(key).child("finished").setValue(true)
     }
@@ -81,38 +83,9 @@ class CompeteSessionRepository(private val context: Context) {
         return database.child(key)
     }
 
-//    private fun bindSessionToKey(bindingKey: String) {
-//        val c = bindingKey
-// //        database.child(bindingKey).addValueEventListener(object : ValueEventListener {
-// //            override fun onDataChange(dataSnapshot: DataSnapshot) {
-// //                val sessionTmp = dataSnapshot.getValue<CompeteSession>()
-// //                if (sessionTmp != null) {
-// //                    if (
-// //                        bothUsersExist(sessionTmp) &&
-// //                        sessionTmp.endDateMillis == null &&
-// //                        notStartedYet
-// //                    ) {
-// //                        countdownTextView.visibility = View.VISIBLE
-// //                        timer.start()
-// //                        againstTextView.visibility = View.INVISIBLE
-// //                    }
-// //
-// //                    session = sessionTmp
-// //
-// //                    if (sessionTmp.finished) {
-// //                        updateFinished()
-// //                    }
-// //                    Log.d(CompeteActivity.TAG, "Value is: $session")
-// //                }
-// //                Log.d(CompeteActivity.TAG, "Empty TMP session")
-// //            }
-// //
-// //            override fun onCancelled(error: DatabaseError) {
-// //                // Failed to read value
-// //                Log.w(CompeteActivity.TAG, "Failed to read value.", error.toException())
-// //            }
-// //        })
-//    }
+    fun setUserFinished(key: String, whichUserAmI: String) {
+        database.child(key).child("${whichUserAmI}_finished").setValue(true)
+    }
 
     companion object {
         private const val TAG = "CompeteSessionRepository"

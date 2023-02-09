@@ -120,6 +120,8 @@ class CompeteActivity :
             challengeRuleTextView.visibility = it.challengeRuleTextViewVisibility
             challengeRuleTextView.text = it.challengeRuleTextViewText
             challengeRuleTextView.textSize = it.challengeRuleTextViewTextSize
+            againstTextView.text = it.againstTextViewText
+            againstTextView.visibility = it.againstTextViewVisibility
 
             if (it.startTimer) {
                 timer.start()

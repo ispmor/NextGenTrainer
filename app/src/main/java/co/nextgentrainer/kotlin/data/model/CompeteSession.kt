@@ -12,5 +12,7 @@ data class CompeteSession(
     var reps2: Int = 0,
     var startDateMillis: Long? = null,
     var endDateMillis: Long? = null,
-    var finished: Boolean = false
+    var finished: Boolean? = null,
+    var user1_finished: Boolean? = null,
+    var user2_finished: Boolean? = null
 )
