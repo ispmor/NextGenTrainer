@@ -260,12 +260,6 @@ class CameraActivity :
             cameraSelector!!,
             previewUseCase
         )
-
-        viewModel.imageProcessor.processingState.observe(
-            this
-        ) {
-            if (!it)viewModel.resetToDefaultState()
-        }
     }
 
     @SuppressLint("UnsafeOptInUsageError")

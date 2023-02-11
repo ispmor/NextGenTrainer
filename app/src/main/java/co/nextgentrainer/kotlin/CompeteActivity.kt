@@ -61,6 +61,7 @@ class CompeteActivity :
 
 
         challengeRuleTextView = findViewById(R.id.challengeTextView)
+        challengeRuleTextView.gravity = Gravity.CENTER
         challengeTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 challengeRuleTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
@@ -68,7 +69,6 @@ class CompeteActivity :
 
             override fun onFinish() {
                 viewModel.updateSessionHasEnded()
-                challengeRuleTextView.gravity = Gravity.CENTER
                 viewModel.turnOffProcessing()
             }
         }
@@ -103,7 +103,6 @@ class CompeteActivity :
             override fun onFinish() {
                 viewModel.turnOnProcessing()
                 challengeTimer.start()
-                challengeRuleTextView.gravity = Gravity.END
                 challengeRuleTextView.textSize = 90f
             }
         }
@@ -117,8 +116,8 @@ class CompeteActivity :
             startButton.visibility = it.startButtonVisibility
             countdownTextView.visibility = it.countdownTextViewVisibility
             countdownTextView.text = it.countDownTextVewText
-            challengeRuleTextView.visibility = it.challengeRuleTextViewVisibility
             challengeRuleTextView.text = it.challengeRuleTextViewText
+            challengeRuleTextView.visibility = it.challengeRuleTextViewVisibility
             challengeRuleTextView.textSize = it.challengeRuleTextViewTextSize
             againstTextView.text = it.againstTextViewText
             againstTextView.visibility = it.againstTextViewVisibility

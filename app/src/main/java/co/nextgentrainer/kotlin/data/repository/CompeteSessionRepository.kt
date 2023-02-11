@@ -48,12 +48,12 @@ class CompeteSessionRepository(private val context: Context) {
 
                 if (value.isNullOrEmpty() && value != null) {
                     val tmpSession = it.child(value.keys.first()).getValue<CompeteSession>()
-                    tmpSession!!.user2 =  Firebase.auth.currentUser!!.displayName
+                    tmpSession!!.user2 =  Firebase.auth.currentUser!!.displayName!!
 
-                    tmpKey = key!!
+                    tmpKey = key
                     updateSession(tmpSession)
                     resultSession = tmpSession
-                } else if (key.isNullOrEmpty() && value == null) {
+                } else if (key.isEmpty() && value == null) {
                     tmpKey = createNewSession("squats")
                 }
             }
@@ -62,7 +62,7 @@ class CompeteSessionRepository(private val context: Context) {
     }
 
     fun updateSession(session: CompeteSession) {
-        database.child(session.uid!!).setValue(session)
+        database.child(session.uid).setValue(session)
     }
 
     fun saveRepsForSessionAndUser(key: String, repsString: String, reps: Int) {
@@ -75,7 +75,7 @@ class CompeteSessionRepository(private val context: Context) {
 
 
 
-    fun setFinished(key: String, finished: Boolean) {
+    fun setFinished(key: String) {
         database.child(key).child("finished").setValue(true)
     }
 

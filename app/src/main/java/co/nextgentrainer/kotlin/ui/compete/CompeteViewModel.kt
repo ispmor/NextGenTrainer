@@ -4,10 +4,16 @@ import android.app.Application
 import android.util.Log
 import android.view.View
 import androidx.camera.core.ImageProxy
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import co.nextgentrainer.GraphicOverlay
 import co.nextgentrainer.kotlin.data.model.CompeteSession
-import co.nextgentrainer.kotlin.data.repository.*
+import co.nextgentrainer.kotlin.data.repository.CompeteSessionRepository
+import co.nextgentrainer.kotlin.data.repository.MovementRepository
+import co.nextgentrainer.kotlin.data.repository.RepetitionRepository
+import co.nextgentrainer.kotlin.data.repository.WorkoutRepository
 import co.nextgentrainer.kotlin.utils.CameraActivityHelper.selectModel
 import co.nextgentrainer.kotlin.utils.Constants
 import com.google.firebase.auth.ktx.auth
@@ -17,17 +23,15 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 @HiltViewModel
 class CompeteViewModel @Inject constructor(
-    val repetitionRepository: RepetitionRepository,
+    private val repetitionRepository: RepetitionRepository,
     val workoutRepository: WorkoutRepository,
     val movementRepository: MovementRepository,
-    val competeSessionRepository: CompeteSessionRepository,
+    private val competeSessionRepository: CompeteSessionRepository,
     val application: Application
 ) : ViewModel(), DefaultLifecycleObserver {
     private val _competeViewState = MutableLiveData<CompeteState>()
@@ -38,7 +42,7 @@ class CompeteViewModel @Inject constructor(
     private var notStartedYet = true
 
 
-    var imageProcessor = selectModel(
+    private var imageProcessor = selectModel(
         selectedModel,
         context = application.applicationContext,
         movementRepository,
@@ -54,7 +58,7 @@ class CompeteViewModel @Inject constructor(
                 if (key.isNullOrEmpty() && value != null) {
                     key = value.keys.toList()[0]
                     val tmpSession = value[key]!!
-                    tmpSession.user2 = Firebase.auth.currentUser!!.displayName
+                    tmpSession.user2 = Firebase.auth.currentUser!!.displayName!!
 
 
                     competeSessionRepository.updateSession(tmpSession)
@@ -71,12 +75,18 @@ class CompeteViewModel @Inject constructor(
         Log.d("STATE:-------", CompeteState(
             startButtonVisibility = View.INVISIBLE,
             countdownTextViewVisibility = View.VISIBLE,
-            challengeRuleTextViewVisibility = View.VISIBLE
+            challengeRuleTextViewVisibility = View.VISIBLE,
+            challengeRuleTextViewText = "Waiting for the opponent to join",
+            againstTextViewText = "Waiting for the opponent to join",
+            againstTextViewVisibility = View.VISIBLE
         ).toString())
         _competeViewState.value = CompeteState(
             startButtonVisibility = View.INVISIBLE,
             countdownTextViewVisibility = View.VISIBLE,
-            challengeRuleTextViewVisibility = View.VISIBLE
+            challengeRuleTextViewVisibility = View.VISIBLE,
+            challengeRuleTextViewText = "Waiting for the opponent to join",
+            againstTextViewText = "Waiting for the opponent to join",
+            againstTextViewVisibility = View.VISIBLE
         )
     }
 
@@ -108,7 +118,7 @@ class CompeteViewModel @Inject constructor(
         _competeViewState.value = CompeteState(
             countdownTextViewVisibility = View.INVISIBLE,
             challengeRuleTextViewVisibility = View.VISIBLE,
-            startButtonVisibility = View.INVISIBLE,
+            startButtonVisibility = View.INVISIBLE
         )
     }
 
@@ -120,7 +130,7 @@ class CompeteViewModel @Inject constructor(
                 if (sessionTmp != null) {
                     if (
                         bothUsersExist(sessionTmp) &&
-                        sessionTmp.endDateMillis == null &&
+                        sessionTmp.endDateMillis == 0L &&
                         notStartedYet
                     ) {
                         notStartedYet = false
@@ -132,9 +142,9 @@ class CompeteViewModel @Inject constructor(
 
                         )
                     }
-                    session = sessionTmp
+                    updateSession(sessionTmp)
 
-                    if (sessionTmp.user1_finished == true && sessionTmp.user2_finished == true) {
+                    if (sessionTmp.user1_finished && sessionTmp.user2_finished) {
                         updateFinished()
                     }
                     Log.d(TAG, "Value is: $session")
@@ -149,38 +159,70 @@ class CompeteViewModel @Inject constructor(
         })
     }
 
-    //TODO(PROBLEMEM JEST WYŚCIG! KONIECZNIE TRZEBA WYKMINIĆ JAK SYNCHRONIZOWAĆ STAN ZAKOŃCZONEJ SESJI)
     fun updateSession(tmpSession: CompeteSession) {
-        if (tmpSession.user1_finished != null && session?.user1_finished != tmpSession.user1_finished ) {
-            session?.user1_finished = tmpSession.user1_finished
+        if (session == null) {
+            session = tmpSession
+            return
         }
 
-        if (tmpSession.user2_finished != null && tmpSession.user2_finished !=  session?.user2_finished) {
-            session?.user2_finished = tmpSession.user2_finished
+        if (tmpSession.user1_finished ) {
+            session?.user1_finished = true
         }
 
-        if (tmpSession.user1 != null && session?.user1 != tmpSession.user1) {
+        if (tmpSession.user2_finished) {
+            session?.user2_finished = true
+        }
+
+        if (tmpSession.finished) {
+            session?.finished = true
+        }
+
+        if (session?.exercise != tmpSession.exercise && tmpSession.exercise.isNotEmpty()) {
+            session?.exercise = tmpSession.exercise
+        }
+
+        if (session?.uid != tmpSession.uid && tmpSession.uid.isNotEmpty()) {
+            session?.uid = tmpSession.uid
+        }
+
+        if (session?.user1 != tmpSession.user1 && tmpSession.user1.isNotEmpty()) {
             session?.user1 = tmpSession.user1
         }
 
-        if (tmpSession.user2 != null && session?.user2 != tmpSession.user2 ) {
+        if (session?.user2 != tmpSession.user2 && tmpSession.user2.isNotEmpty()) {
             session?.user2 = tmpSession.user2
+        }
+
+        if (session?.reps1 != tmpSession.reps1 && tmpSession.reps1 > 0) {
+            session?.reps1 = tmpSession.reps1
+        }
+
+        if (session?.reps2 != tmpSession.reps2 && tmpSession.reps2 > 0 ) {
+            session?.reps2 = tmpSession.reps2
+        }
+
+        if (session?.startDateMillis != tmpSession.startDateMillis && tmpSession.startDateMillis > 0) {
+            session?.startDateMillis = tmpSession.startDateMillis
+        }
+
+        if (session?.endDateMillis != tmpSession.endDateMillis && tmpSession.endDateMillis > 0) {
+            session?.endDateMillis = tmpSession.endDateMillis
         }
     }
 
     private fun bothUsersExist(tmpSession: CompeteSession): Boolean {
-        return !tmpSession.user1.isNullOrEmpty() && !tmpSession.user2.isNullOrEmpty()
+        return tmpSession.user1.isNotEmpty() && tmpSession.user2.isNotEmpty()
     }
 
     fun updateSessionHasEnded() {
         updateReps()
 
-        if (session?.endDateMillis == null) {
+        if (session?.endDateMillis == 0L) {
             session?.endDateMillis = Date().time
             competeSessionRepository.setEndDateMillis(key!!, Date().time)
         } else {
             session?.finished = true
-            competeSessionRepository.setFinished(key!!, true)
+            competeSessionRepository.setFinished(key!!)
         }
 
         competeSessionRepository.setUserFinished(key!!, whichUserAmI())
@@ -223,14 +265,14 @@ class CompeteViewModel @Inject constructor(
     private fun getOpponentName(): String {
         val whoAmI = Firebase.auth.currentUser!!.displayName!!
         return if (whoAmI != session!!.user1) {
-            session!!.user1!!
+            session!!.user1
         } else {
-            session!!.user2!!
+            session!!.user2
         }
     }
 
     fun updateFinished() {
-        // TODO("Trzeba dodać do uistate i na tej podstawie w observerze to zmieniać")
+        session?.uid?.let { competeSessionRepository.setFinished(it) }
         val challengeRuleTextViewTextSize = 34f
         val whoAmI = Firebase.auth.currentUser!!.displayName!!
 
@@ -241,7 +283,7 @@ class CompeteViewModel @Inject constructor(
         }
 
         val challengeRuleTextViewText = "You did: $myReps reps.\n${getOpponentName()}: ${getOpponentReps()} reps."
-        var againstTextViewText = ""
+        var againstTextViewText: String
         if (session!!.reps1 == session!!.reps2) {
             againstTextViewText = "TIE"
 
@@ -253,10 +295,10 @@ class CompeteViewModel @Inject constructor(
                 session!!.reps1 < session!!.reps2
             }
 
-            if (iWon) {
-                againstTextViewText = "WIN!"
+            againstTextViewText = if (iWon) {
+                "WIN!"
             } else {
-                againstTextViewText = "LOST :("
+                "LOST :("
             }
         }
         _competeViewState.value = CompeteState(

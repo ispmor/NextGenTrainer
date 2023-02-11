@@ -17,4 +17,4 @@ google-services.json
 
 nextgentrainer-keystore
 *.apk
-app/.DS_Store
+*.DS_Store

@@ -34,11 +34,9 @@ class ExerciseProcessor(
     private val baseExercise: String,
     private val movementRepository: MovementRepository,
     private val repetitionRepository: RepetitionRepository,
-    private var workoutRepository: WorkoutRepository
+    private var workoutRepository: WorkoutRepository,
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     var isStarted: Boolean = false
-    private val _isStarted = MutableLiveData(false)
-    val processingState: LiveData<Boolean> = _isStarted
     private val detector: PoseDetector
     private val runClassification: Boolean
     private val isStreamMode: Boolean
@@ -62,7 +60,6 @@ class ExerciseProcessor(
 
     fun setIsProcessing(state: Boolean) {
         isStarted = state
-        _isStarted.value = state
     }
 
     override fun stop() {
@@ -96,7 +93,6 @@ class ExerciseProcessor(
                         if (setToBeSaved != null) {
                             workoutRepository.addExerciseSetToWorkout(setToBeSaved)
                             isStarted = false
-                            _isStarted.value = isStarted
                             Toast.makeText(context, "Set finished", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -130,7 +126,6 @@ class ExerciseProcessor(
                         if (setToBeSaved != null) {
                             workoutRepository.addExerciseSetToWorkout(setToBeSaved)
                             isStarted = false
-                            _isStarted.value = isStarted
                         }
                     }
                 }
