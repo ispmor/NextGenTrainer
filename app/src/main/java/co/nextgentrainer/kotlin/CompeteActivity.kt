@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -59,7 +58,6 @@ class CompeteActivity :
         againstTextView = findViewById(R.id.textViewAgainst)
         againstTextView.text = getString(R.string.waiting)
 
-
         challengeRuleTextView = findViewById(R.id.challengeTextView)
         challengeRuleTextView.gravity = Gravity.CENTER
         challengeTimer = object : CountDownTimer(30000, 1000) {
@@ -72,7 +70,6 @@ class CompeteActivity :
                 viewModel.turnOffProcessing()
             }
         }
-
 
         if (savedInstanceState != null) {
             viewModel.selectedModel = savedInstanceState.getString(
@@ -228,7 +225,6 @@ class CompeteActivity :
         }
         cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase)
     }
-
 
     companion object {
         private const val TAG = "CompeteActivity"

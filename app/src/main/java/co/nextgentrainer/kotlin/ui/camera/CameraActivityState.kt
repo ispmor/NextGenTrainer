@@ -1,6 +1,5 @@
 package co.nextgentrainer.kotlin.ui.camera
 
-import android.opengl.Visibility
 import android.view.View
 import co.nextgentrainer.kotlin.data.model.ExerciseSet
 import co.nextgentrainer.kotlin.data.model.Repetition

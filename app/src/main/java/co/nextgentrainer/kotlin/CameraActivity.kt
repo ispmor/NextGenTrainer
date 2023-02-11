@@ -60,11 +60,9 @@ class CameraActivity :
     private var cameraSelector: CameraSelector? = null
     private val viewModel: CameraViewModel by viewModels()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-
 
         if (savedInstanceState != null) {
             viewModel.selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)

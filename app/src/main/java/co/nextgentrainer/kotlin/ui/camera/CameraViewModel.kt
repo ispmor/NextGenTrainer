@@ -78,7 +78,6 @@ class CameraViewModel @Inject constructor(
             countDownTextVisibility = View.INVISIBLE
         )
         imageProcessor.setIsProcessing(true)
-
     }
 
     fun resetToDefaultState() {
@@ -91,7 +90,7 @@ class CameraViewModel @Inject constructor(
     }
 
     @androidx.camera.core.ExperimentalGetImage
-    fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay){
+    fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay) {
         imageProcessor.processImageProxy(imageProxy, graphicOverlay)
     }
 

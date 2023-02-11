@@ -10,10 +10,10 @@ import android.os.StrictMode.VmPolicy
 import android.text.Html
 import android.util.Log
 import android.view.ContextMenu
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.view.MenuItem
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.AdapterView
@@ -36,7 +36,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-
 
 class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickListener {
     private lateinit var auth: FirebaseAuth
@@ -113,33 +112,33 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         }
 
         findViewById<ImageButton>(R.id.bellButton).setOnClickListener {
-                val builder = AlertDialog.Builder(this)
-                val wv = WebView(this)
-                wv.settings.javaScriptEnabled = true
-                wv.loadUrl(getString(R.string.feedback_form))
-                wv.webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                        view.loadUrl(url)
-                        return true
-                    }
+            val builder = AlertDialog.Builder(this)
+            val wv = WebView(this)
+            wv.settings.javaScriptEnabled = true
+            wv.loadUrl(getString(R.string.feedback_form))
+            wv.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                    view.loadUrl(url)
+                    return true
                 }
+            }
 
-                builder.setTitle("Your feedback:")
+            builder.setTitle("Your feedback:")
 
-                builder.setView(wv)
+            builder.setView(wv)
 
-                builder.setNegativeButton(
-                    "Cancel"
-                ) { dialog, _ ->
-                    run {
-                        dialog.cancel()
-                        Snackbar.make(it, "You're the BEST! Thanks for helping.", Snackbar.LENGTH_LONG)
-                            .setAction("CLOSE", {})
-                            .show()
-                    }
+            builder.setNegativeButton(
+                "Cancel"
+            ) { dialog, _ ->
+                run {
+                    dialog.cancel()
+                    Snackbar.make(it, "You're the BEST! Thanks for helping.", Snackbar.LENGTH_LONG)
+                        .setAction("CLOSE", {})
+                        .show()
                 }
+            }
 
-                builder.show()
+            builder.show()
         }
 
         val profilePictureView = findViewById<ImageView>(R.id.profileImageView)

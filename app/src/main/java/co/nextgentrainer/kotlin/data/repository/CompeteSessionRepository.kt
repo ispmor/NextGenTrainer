@@ -3,7 +3,6 @@ package co.nextgentrainer.kotlin.data.repository
 import android.content.Context
 import android.util.Log
 import co.nextgentrainer.R
-import co.nextgentrainer.kotlin.CompeteActivity
 import co.nextgentrainer.kotlin.data.model.CompeteSession
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
@@ -20,8 +19,6 @@ class CompeteSessionRepository(private val context: Context) {
         .getReference("CompetitionSession")
     private val user = Firebase.auth.currentUser!!
 
-
-
     fun createNewSession(exercise: String): String {
         val keyTmp = database.push().key
         if (keyTmp == null) {
@@ -31,7 +28,7 @@ class CompeteSessionRepository(private val context: Context) {
         val session = CompeteSession(
             keyTmp,
             exercise,
-            user1=Firebase.auth.currentUser!!.displayName!!,
+            user1 = Firebase.auth.currentUser!!.displayName!!,
             startDateMillis = Date().time
         )
         database.child(keyTmp).setValue(session)
@@ -52,7 +49,7 @@ class CompeteSessionRepository(private val context: Context) {
 
                 if (value.isNullOrEmpty() && value != null) {
                     val tmpSession = it.child(value.keys.first()).getValue<CompeteSession>()
-                    tmpSession!!.user2 =  Firebase.auth.currentUser!!.displayName!!
+                    tmpSession!!.user2 = Firebase.auth.currentUser!!.displayName!!
 
                     tmpKey = key
                     updateSession(tmpSession)
@@ -76,8 +73,6 @@ class CompeteSessionRepository(private val context: Context) {
     fun setEndDateMillis(key: String, time: Long) {
         database.child(key).child("endDateMillis").setValue(time)
     }
-
-
 
     fun setFinished(key: String) {
         database.child(key).child("finished").setValue(true)

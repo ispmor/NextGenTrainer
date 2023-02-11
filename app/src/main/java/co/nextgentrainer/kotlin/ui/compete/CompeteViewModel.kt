@@ -23,8 +23,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 @HiltViewModel
 class CompeteViewModel @Inject constructor(
@@ -41,7 +42,6 @@ class CompeteViewModel @Inject constructor(
     private var key: String? = null
     private var notStartedYet = true
 
-
     private var imageProcessor = selectModel(
         selectedModel,
         context = application.applicationContext,
@@ -50,7 +50,7 @@ class CompeteViewModel @Inject constructor(
         workoutRepository
     )
 
-    fun startSession(){
+    fun startSession() {
         if (session == null) {
             competeSessionRepository.getCompeteSessionReference().addOnSuccessListener {
                 val value = it.getValue<HashMap<String, CompeteSession>>()
@@ -59,7 +59,6 @@ class CompeteViewModel @Inject constructor(
                     key = value.keys.toList()[0]
                     val tmpSession = value[key]!!
                     tmpSession.user2 = Firebase.auth.currentUser!!.displayName!!
-
 
                     competeSessionRepository.updateSession(tmpSession)
                     Log.d(TAG, "New key is: $key")
@@ -72,14 +71,17 @@ class CompeteViewModel @Inject constructor(
                 Log.w(TAG, "Failed to read value.", it)
             }
         }
-        Log.d("STATE:-------", CompeteState(
-            startButtonVisibility = View.INVISIBLE,
-            countdownTextViewVisibility = View.VISIBLE,
-            challengeRuleTextViewVisibility = View.VISIBLE,
-            challengeRuleTextViewText = "Waiting for the opponent to join",
-            againstTextViewText = "Waiting for the opponent to join",
-            againstTextViewVisibility = View.VISIBLE
-        ).toString())
+        Log.d(
+            "STATE:-------",
+            CompeteState(
+                startButtonVisibility = View.INVISIBLE,
+                countdownTextViewVisibility = View.VISIBLE,
+                challengeRuleTextViewVisibility = View.VISIBLE,
+                challengeRuleTextViewText = "Waiting for the opponent to join",
+                againstTextViewText = "Waiting for the opponent to join",
+                againstTextViewVisibility = View.VISIBLE
+            ).toString()
+        )
         _competeViewState.value = CompeteState(
             startButtonVisibility = View.INVISIBLE,
             countdownTextViewVisibility = View.VISIBLE,
@@ -95,7 +97,7 @@ class CompeteViewModel @Inject constructor(
     }
 
     @androidx.camera.core.ExperimentalGetImage
-    fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay){
+    fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay) {
         imageProcessor.processImageProxy(imageProxy, graphicOverlay)
     }
 
@@ -121,7 +123,6 @@ class CompeteViewModel @Inject constructor(
             startButtonVisibility = View.INVISIBLE
         )
     }
-
 
     private fun bindSessionToKey(bindingKey: String) {
         competeSessionRepository.getSessionFromKey(bindingKey).addValueEventListener(object : ValueEventListener {
@@ -165,7 +166,7 @@ class CompeteViewModel @Inject constructor(
             return
         }
 
-        if (tmpSession.user1Finished ) {
+        if (tmpSession.user1Finished) {
             session?.user1Finished = true
         }
 
@@ -197,7 +198,7 @@ class CompeteViewModel @Inject constructor(
             session?.reps1 = tmpSession.reps1
         }
 
-        if (session?.reps2 != tmpSession.reps2 && tmpSession.reps2 > 0 ) {
+        if (session?.reps2 != tmpSession.reps2 && tmpSession.reps2 > 0) {
             session?.reps2 = tmpSession.reps2
         }
 
@@ -286,7 +287,6 @@ class CompeteViewModel @Inject constructor(
         var againstTextViewText: String
         if (session!!.reps1 == session!!.reps2) {
             againstTextViewText = "TIE"
-
         } else {
 
             val iWon = if (whoAmI == session!!.user1) {
@@ -332,5 +332,4 @@ class CompeteViewModel @Inject constructor(
     companion object {
         private const val TAG = "CompeteViewModel"
     }
-
 }

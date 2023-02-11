@@ -3,8 +3,6 @@ package co.nextgentrainer.kotlin.posedetector
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import co.nextgentrainer.GraphicOverlay
 import co.nextgentrainer.kotlin.VisionProcessorBase
 import co.nextgentrainer.kotlin.data.model.Repetition

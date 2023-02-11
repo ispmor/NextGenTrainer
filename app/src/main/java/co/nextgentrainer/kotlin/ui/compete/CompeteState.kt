@@ -1,9 +1,7 @@
 package co.nextgentrainer.kotlin.ui.compete
 
-import android.opengl.Visibility
 import android.view.View
 import co.nextgentrainer.kotlin.data.model.ExerciseSet
-import co.nextgentrainer.kotlin.data.model.Repetition
 
 data class CompeteState(
     val exerciseSet: ExerciseSet = ExerciseSet(),
