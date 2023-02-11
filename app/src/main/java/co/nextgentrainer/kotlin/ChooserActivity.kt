@@ -9,11 +9,18 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import android.text.Html
 import android.util.Log
-import android.view.*
+import android.view.ContextMenu
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.view.MenuItem
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.*
+import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
@@ -109,7 +116,7 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
                 val builder = AlertDialog.Builder(this)
                 val wv = WebView(this)
                 wv.settings.javaScriptEnabled = true
-                wv.loadUrl("https://docs.google.com/forms/d/e/1FAIpQLSeb3LqaPzDik4yCRFvX7XTCaYoGJ48-eSNG9Ron_-LNGbNmPQ/viewform?usp=sf_link&hl=en")
+                wv.loadUrl(getString(R.string.feedback_form))
                 wv.webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                         view.loadUrl(url)

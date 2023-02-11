@@ -13,6 +13,6 @@ data class CompeteSession(
     var startDateMillis: Long = 0,
     var endDateMillis: Long = 0,
     var finished: Boolean = false,
-    var user1_finished: Boolean = false,
-    var user2_finished: Boolean = false
+    var user1Finished: Boolean = false,
+    var user2Finished: Boolean = false
 )

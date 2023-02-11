@@ -28,10 +28,14 @@ class CompeteSessionRepository(private val context: Context) {
             Log.w(TAG, "Couldn't get push key for competitionsession")
             return ""
         }
-        val session = CompeteSession(keyTmp, exercise, user1=Firebase.auth.currentUser!!.displayName!!, startDateMillis = Date().time)
+        val session = CompeteSession(
+            keyTmp,
+            exercise,
+            user1=Firebase.auth.currentUser!!.displayName!!,
+            startDateMillis = Date().time
+        )
         database.child(keyTmp).setValue(session)
 
-//        bindSessionToKey(keyTmp)
         return keyTmp
     }
 

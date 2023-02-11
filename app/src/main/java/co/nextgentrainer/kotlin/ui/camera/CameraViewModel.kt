@@ -3,21 +3,19 @@ package co.nextgentrainer.kotlin.ui.camera
 import android.app.Application
 import android.view.View
 import androidx.camera.core.ImageProxy
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.nextgentrainer.GraphicOverlay
-import co.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
 import co.nextgentrainer.kotlin.data.repository.MovementRepository
 import co.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import co.nextgentrainer.kotlin.data.repository.WorkoutRepository
-import co.nextgentrainer.kotlin.posedetector.ExerciseProcessor
-import co.nextgentrainer.kotlin.utils.CameraActivityHelper
 import co.nextgentrainer.kotlin.utils.CameraActivityHelper.selectModel
 import co.nextgentrainer.kotlin.utils.Constants
-import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
@@ -25,7 +23,7 @@ class CameraViewModel @Inject constructor(
     val workoutRepository: WorkoutRepository,
     val movementRepository: MovementRepository,
     val application: Application
-) : ViewModel(), DefaultLifecycleObserver {
+) : ViewModel() {
     private val _cameraViewState = MutableLiveData<CameraActivityState>()
     val cameraViewState: LiveData<CameraActivityState> = _cameraViewState
     var selectedModel = Constants.SQUATS_TRAINER
@@ -42,7 +40,11 @@ class CameraViewModel @Inject constructor(
         if (exerciseSet == null) {
             _cameraViewState.value = CameraActivityState(userMessage = "No repetitions")
         } else {
-            _cameraViewState.value = CameraActivityState(exerciseSet = exerciseSet, setFinished = true, startButtonVisibility = View.VISIBLE)
+            _cameraViewState.value = CameraActivityState(
+                exerciseSet = exerciseSet,
+                setFinished = true,
+                startButtonVisibility = View.VISIBLE
+            )
             viewModelScope.launch {
                 workoutRepository.getAllWorkouts(false)
                 workoutRepository.addExerciseSetToWorkout(exerciseSet)

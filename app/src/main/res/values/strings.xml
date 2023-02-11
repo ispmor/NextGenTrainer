@@ -213,5 +213,6 @@
     <string name="repetition_gif">Repetition Gif</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="feedback_form"><![CDATA[https://docs.google.com/forms/d/e/1FAIpQLSeb3LqaPzDik4yCRFvX7XTCaYoGJ48-eSNG9Ron_-LNGbNmPQ/viewform?usp=sf_link&hl=en]]></string>
 
 </resources>

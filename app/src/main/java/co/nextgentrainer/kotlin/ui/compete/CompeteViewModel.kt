@@ -144,7 +144,7 @@ class CompeteViewModel @Inject constructor(
                     }
                     updateSession(sessionTmp)
 
-                    if (sessionTmp.user1_finished && sessionTmp.user2_finished) {
+                    if (sessionTmp.user1Finished && sessionTmp.user2Finished) {
                         updateFinished()
                     }
                     Log.d(TAG, "Value is: $session")
@@ -165,12 +165,12 @@ class CompeteViewModel @Inject constructor(
             return
         }
 
-        if (tmpSession.user1_finished ) {
-            session?.user1_finished = true
+        if (tmpSession.user1Finished ) {
+            session?.user1Finished = true
         }
 
-        if (tmpSession.user2_finished) {
-            session?.user2_finished = true
+        if (tmpSession.user2Finished) {
+            session?.user2Finished = true
         }
 
         if (tmpSession.finished) {
@@ -201,11 +201,11 @@ class CompeteViewModel @Inject constructor(
             session?.reps2 = tmpSession.reps2
         }
 
-        if (session?.startDateMillis != tmpSession.startDateMillis && tmpSession.startDateMillis > 0) {
+        if (tmpSession.startDateMillis > 0) {
             session?.startDateMillis = tmpSession.startDateMillis
         }
 
-        if (session?.endDateMillis != tmpSession.endDateMillis && tmpSession.endDateMillis > 0) {
+        if (tmpSession.endDateMillis > 0) {
             session?.endDateMillis = tmpSession.endDateMillis
         }
     }

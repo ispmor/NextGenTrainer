@@ -209,8 +209,8 @@ class QualityDetector(private val movementRepository: MovementRepository) {
                     abs((leftKneeAngle[i]!! + rightKneeAngle[i]!!) * HALF) < DEG_45
             )
             mouthAboveWrist.add(
-                movement.mouthMovement[i]!!.y -
-                    movement.rightWristMovement[i]!!.y < ZERO
+                movement.mouthMovement[i].y -
+                    movement.rightWristMovement[i].y < ZERO
             )
         }
         noKipping = legsAndTorsoStraightMoreOrLess.stream().allMatch { i -> i }
