@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -20,32 +20,13 @@ import androidx.lifecycle.ViewModelProvider
 import co.nextgentrainer.CameraXViewModel
 import co.nextgentrainer.GraphicOverlay
 import co.nextgentrainer.R
-import co.nextgentrainer.kotlin.data.model.CompeteSession
-import co.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
-import co.nextgentrainer.kotlin.data.repository.GifRepository
-import co.nextgentrainer.kotlin.data.repository.MovementRepository
-import co.nextgentrainer.kotlin.data.repository.RepetitionRepository
-import co.nextgentrainer.kotlin.data.repository.WorkoutRepository
-import co.nextgentrainer.kotlin.data.source.ExerciseSetDataSource
-import co.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
-import co.nextgentrainer.kotlin.data.source.WorkoutSource
-import co.nextgentrainer.kotlin.posedetector.ExerciseProcessor
-import co.nextgentrainer.kotlin.utils.CameraActivityHelper
+import co.nextgentrainer.kotlin.ui.compete.CompeteViewModel
 import co.nextgentrainer.kotlin.utils.Constants
 import co.nextgentrainer.preference.PreferenceUtils
 import com.google.android.gms.common.annotation.KeepName
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import com.google.mlkit.common.MlKitException
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Date
-import javax.inject.Inject
 
 @KeepName
 @AndroidEntryPoint
@@ -58,65 +39,40 @@ class CompeteActivity :
     private var previewUseCase: Preview? = null
     private var analysisUseCase: ImageAnalysis? = null
     private var needUpdateGraphicOverlayImageSourceInfo = false
-    private var selectedModel = Constants.SQUATS_TRAINER
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
     private var cameraSelector: CameraSelector? = null
-    private lateinit var imageProcessor: ExerciseProcessor
-    private lateinit var database: DatabaseReference
-    private var session: CompeteSession? = null
-    private var key: String? = null
-    private var whoAmI: String? = null
     private lateinit var challengeRuleTextView: TextView
     private lateinit var challengeTimer: CountDownTimer
     private lateinit var countdownTextView: TextView
     private lateinit var againstTextView: TextView
     private lateinit var timer: CountDownTimer
-    private var notStartedYet = true
-    private lateinit var movementRepository: MovementRepository
-    private lateinit var repetitionRepository: RepetitionRepository
-    private lateinit var exerciseSetRepository: ExerciseSetRepository
-    private lateinit var workoutRepository: WorkoutRepository
-
-    @Inject lateinit var gifRepository: GifRepository
+    private val viewModel: CompeteViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compete)
         Log.d(TAG, "onCreate")
-        movementRepository = MovementRepository()
-        repetitionRepository = RepetitionRepository(RepetitionFirebaseSource(), gifRepository)
+
         countdownTextView = findViewById(R.id.challengeCounterTextView)
 
         againstTextView = findViewById(R.id.textViewAgainst)
         againstTextView.text = getString(R.string.waiting)
 
-        exerciseSetRepository = ExerciseSetRepository(ExerciseSetDataSource())
-        workoutRepository = WorkoutRepository(WorkoutSource(this))
         challengeRuleTextView = findViewById(R.id.challengeTextView)
+        challengeRuleTextView.gravity = Gravity.CENTER
         challengeTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 challengeRuleTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
             }
 
             override fun onFinish() {
-                updateSessionHasEnded()
-                challengeRuleTextView.gravity = Gravity.CENTER
-                imageProcessor.isStarted = false
+                viewModel.updateSessionHasEnded()
+                viewModel.turnOffProcessing()
             }
         }
 
-        database = Firebase.database(getString(R.string.database_url))
-            .getReference(getString(R.string.competitionSession))
-
-        imageProcessor = CameraActivityHelper.selectModel(
-            selectedModel,
-            this,
-            movementRepository,
-            repetitionRepository,
-            workoutRepository
-        )
         if (savedInstanceState != null) {
-            selectedModel = savedInstanceState.getString(
+            viewModel.selectedModel = savedInstanceState.getString(
                 Constants.STATE_SELECTED_MODEL,
                 Constants.REP_COUNTER
             )
@@ -142,42 +98,31 @@ class CompeteActivity :
             }
 
             override fun onFinish() {
-                notStartedYet = false
-                countdownTextView.visibility = View.INVISIBLE
-                imageProcessor.isStarted = true
+                viewModel.turnOnProcessing()
                 challengeTimer.start()
-                challengeRuleTextView.gravity = Gravity.END
                 challengeRuleTextView.textSize = 90f
             }
         }
 
         val startButton = findViewById<FloatingActionButton>(R.id.challenge_start)
         startButton.setOnClickListener {
-            if (session == null) {
-                database.orderByChild("finished").equalTo(false).limitToFirst(1).get().addOnSuccessListener {
-                    val value = it.getValue<HashMap<String, Any>>()
+            viewModel.startSession()
+        }
 
-                    if (key.isNullOrEmpty() && value != null) {
-                        key = value.keys.first()
-                        val tmpSession = it.child(key!!).getValue<CompeteSession>()
-                        tmpSession!!.user2 = "test-2USER"
-                        whoAmI = "test-2USER"
+        viewModel.competeViewState.observe(this) {
+            startButton.visibility = it.startButtonVisibility
+            countdownTextView.visibility = it.countdownTextViewVisibility
+            countdownTextView.text = it.countDownTextVewText
+            challengeRuleTextView.text = it.challengeRuleTextViewText
+            challengeRuleTextView.visibility = it.challengeRuleTextViewVisibility
+            challengeRuleTextView.textSize = it.challengeRuleTextViewTextSize
+            againstTextView.text = it.againstTextViewText
+            againstTextView.visibility = it.againstTextViewVisibility
 
-                        updateSession(tmpSession)
-                        Log.d(TAG, "New key is: $key")
-                        Log.d(TAG, "Value is: $session")
-                    } else if (key.isNullOrEmpty() && value == null) {
-                        whoAmI = "Test-USER1"
-                        key = createNewSession("squats", "Test-USER1")
-                    }
-                    bindSessionToKey(key!!)
-                }.addOnFailureListener {
-                    // Failed to read value
-                    Log.w(TAG, "Failed to read value.", it)
-                }
+            if (it.startTimer) {
+                timer.start()
+                viewModel.timerStarted(it)
             }
-            startButton.visibility = View.INVISIBLE
-            countdownTextView.visibility = View.VISIBLE
         }
     }
 
@@ -188,12 +133,12 @@ class CompeteActivity :
 
     override fun onPause() {
         super.onPause()
-        imageProcessor.stop()
+        viewModel.stop()
     }
 
     public override fun onDestroy() {
         super.onDestroy()
-        imageProcessor.stop()
+        viewModel.stop()
     }
 
     private fun bindAllCameraUseCases() {
@@ -205,6 +150,9 @@ class CompeteActivity :
     }
 
     private fun bindPreviewUseCase() {
+        if (previewView == null) {
+            return
+        }
         if (!PreferenceUtils.isCameraLiveViewportEnabled(this)) {
             return
         }
@@ -234,15 +182,9 @@ class CompeteActivity :
         if (analysisUseCase != null) {
             cameraProvider!!.unbind(analysisUseCase)
         }
-        imageProcessor.stop()
+        viewModel.stop()
 
-        imageProcessor = CameraActivityHelper.selectModel(
-            selectedModel,
-            this,
-            movementRepository,
-            repetitionRepository,
-            workoutRepository
-        )
+        viewModel.getImageProcessor()
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
@@ -274,7 +216,7 @@ class CompeteActivity :
                 needUpdateGraphicOverlayImageSourceInfo = false
             }
             try {
-                imageProcessor.processImageProxy(imageProxy, graphicOverlay!!)
+                viewModel.processImageProxy(imageProxy, graphicOverlay!!)
             } catch (e: MlKitException) {
                 Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
                 Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT)
@@ -282,121 +224,6 @@ class CompeteActivity :
             }
         }
         cameraProvider!!.bindToLifecycle( /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase)
-    }
-
-    private fun createNewSession(exercise: String?, user1: String?): String {
-        val keyTmp = database.push().key
-        if (keyTmp == null) {
-            Log.w(TAG, "Couldn't get push key for competitionsession")
-            return ""
-        }
-        session = CompeteSession(keyTmp, exercise, user1, startDateMillis = Date().time)
-        database.child(keyTmp).setValue(session)
-
-        bindSessionToKey(keyTmp)
-        return keyTmp
-    }
-
-    private fun bindSessionToKey(bindingKey: String) {
-        database.child(bindingKey).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val sessionTmp = dataSnapshot.getValue<CompeteSession>()
-                if (sessionTmp != null) {
-                    if (
-                        bothUsersExist(sessionTmp) &&
-                        sessionTmp.endDateMillis == null &&
-                        notStartedYet
-                    ) {
-                        countdownTextView.visibility = View.VISIBLE
-                        timer.start()
-                        againstTextView.visibility = View.INVISIBLE
-                    }
-
-                    session = sessionTmp
-
-                    if (sessionTmp.finished) {
-                        updateFinished()
-                    }
-                    Log.d(TAG, "Value is: $session")
-                }
-                Log.d(TAG, "Empty TMP session")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException())
-            }
-        })
-    }
-
-    private fun bothUsersExist(tmpSession: CompeteSession): Boolean {
-        return !tmpSession.user1.isNullOrEmpty() && !tmpSession.user2.isNullOrEmpty()
-    }
-
-    private fun updateSession(
-        session: CompeteSession
-    ) {
-        database.child(session.uid!!).setValue(session)
-    }
-
-    fun updateSessionHasEnded() {
-        updateReps()
-
-        if (session?.endDateMillis == null) {
-            session?.endDateMillis = Date().time
-            database.child(key!!).child("endDateMillis").setValue(Date().time)
-        } else {
-            session?.finished = true
-            database.child(key!!).child("finished").setValue(true)
-        }
-    }
-
-    private fun updateReps() {
-        if (whoAmI == session!!.user1) {
-            session!!.reps1 = getReps()
-            database.child(key!!).child("reps1").setValue(getReps())
-        } else {
-            session!!.reps2 = getReps()
-            database.child(key!!).child("reps2").setValue(getReps())
-        }
-    }
-
-    private fun getReps(): Int {
-        return imageProcessor.lastQualifiedRepetition!!.repetitionCounter!!.numRepeats
-    }
-
-    fun updateFinished() {
-        againstTextView.visibility = View.VISIBLE
-        challengeRuleTextView.textSize = 34f
-        val myReps = if (whoAmI == session!!.user1) {
-            session!!.reps1
-        } else {
-            session!!.reps2
-        }
-
-        val opponentReps = if (whoAmI != session!!.user1) {
-            session!!.reps1
-        } else {
-            session!!.reps2
-        }
-        challengeRuleTextView.text = "You did: $myReps reps.\nOpponent: $opponentReps reps."
-
-        if (session!!.reps1 == session!!.reps2) {
-            againstTextView.text = getString(R.string.tie)
-            return
-        }
-
-        val iWon = if (whoAmI == session!!.user1) {
-            session!!.reps1 > session!!.reps2
-        } else {
-            session!!.reps1 < session!!.reps2
-        }
-
-        if (iWon) {
-            againstTextView.text = getString(R.string.you_won)
-        } else {
-            againstTextView.text = getString(R.string.you_lost)
-        }
     }
 
     companion object {

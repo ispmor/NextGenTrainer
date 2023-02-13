@@ -10,9 +10,11 @@ app/release/
 app/debug/
 
 *.pepk
+*.aab
 
 google-services.json
 *local.properties*
 
 nextgentrainer-keystore
 *.apk
+*.DS_Store

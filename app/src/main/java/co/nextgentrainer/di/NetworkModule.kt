@@ -1,11 +1,14 @@
 package co.nextgentrainer.di
 
 import android.content.Context
+import co.nextgentrainer.kotlin.data.repository.CompeteSessionRepository
+import co.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
 import co.nextgentrainer.kotlin.data.repository.GifRepository
 import co.nextgentrainer.kotlin.data.repository.MovementRepository
 import co.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import co.nextgentrainer.kotlin.data.repository.WorkoutRepository
 import co.nextgentrainer.kotlin.data.source.CloudStorageSource
+import co.nextgentrainer.kotlin.data.source.ExerciseSetDataSource
 import co.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
 import co.nextgentrainer.kotlin.data.source.WorkoutSource
 import dagger.Module
@@ -47,6 +50,18 @@ object NetworkModule {
     @Provides
     fun provideMovementRepository(): MovementRepository {
         return MovementRepository()
+    }
+
+    @Singleton
+    @Provides
+    fun provideExerciseSetRepository(): ExerciseSetRepository {
+        return ExerciseSetRepository(ExerciseSetDataSource())
+    }
+
+    @Singleton
+    @Provides
+    fun provideCompeteSessionRepository(@ApplicationContext context: Context): CompeteSessionRepository {
+        return CompeteSessionRepository(context)
     }
 
     private fun createDefaultCronetEngine(context: Context): CronetEngine {

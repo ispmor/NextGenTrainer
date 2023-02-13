@@ -1,8 +1,6 @@
 package co.nextgentrainer.kotlin
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.InputType
@@ -14,11 +12,11 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraInfoUnavailableException
@@ -34,32 +32,17 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import co.nextgentrainer.CameraXViewModel
 import co.nextgentrainer.GraphicOverlay
 import co.nextgentrainer.R
-import co.nextgentrainer.kotlin.data.repository.ExerciseSetRepository
-import co.nextgentrainer.kotlin.data.repository.GifRepository
-import co.nextgentrainer.kotlin.data.repository.MovementRepository
-import co.nextgentrainer.kotlin.data.repository.RepetitionRepository
-import co.nextgentrainer.kotlin.data.repository.WorkoutRepository
-import co.nextgentrainer.kotlin.data.source.ExerciseSetDataSource
-import co.nextgentrainer.kotlin.data.source.RepetitionFirebaseSource
-import co.nextgentrainer.kotlin.data.source.WorkoutSource
-import co.nextgentrainer.kotlin.posedetector.ExerciseProcessor
 import co.nextgentrainer.kotlin.ui.camera.CameraViewModel
-import co.nextgentrainer.kotlin.utils.CameraActivityHelper.saveDataToFileInExternalStorage
-import co.nextgentrainer.kotlin.utils.CameraActivityHelper.selectModel
-import co.nextgentrainer.kotlin.utils.Constants.CREATE_FILE
 import co.nextgentrainer.kotlin.utils.Constants.RECORD
 import co.nextgentrainer.kotlin.utils.Constants.REP_COUNTER
 import co.nextgentrainer.kotlin.utils.Constants.SQUATS_TRAINER
 import co.nextgentrainer.kotlin.utils.Constants.STATE_SELECTED_MODEL
 import co.nextgentrainer.preference.PreferenceUtils
-import co.nextgentrainer.preference.SettingsActivity
-import co.nextgentrainer.preference.SettingsActivity.LaunchSource
 import com.google.android.gms.common.annotation.KeepName
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.common.MlKitException
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @KeepName
 @AndroidEntryPoint
@@ -73,52 +56,23 @@ class CameraActivity :
     private var previewUseCase: Preview? = null
     private var analysisUseCase: ImageAnalysis? = null
     private var needUpdateGraphicOverlayImageSourceInfo = false
-    private var selectedModel = SQUATS_TRAINER
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
     private var cameraSelector: CameraSelector? = null
-    private var countersAsString: String? = null
-    private lateinit var imageProcessor: ExerciseProcessor
-    private lateinit var movementRepository: MovementRepository
-    private lateinit var repetitionRepository: RepetitionRepository
-    private lateinit var exerciseSetRepository: ExerciseSetRepository
-    private lateinit var exerciseSetDataSource: ExerciseSetDataSource
-    private lateinit var cameraViewModel: CameraViewModel
-    private lateinit var workoutRepository: WorkoutRepository
+    private val viewModel: CameraViewModel by viewModels()
 
-    @Inject
-    lateinit var gifRepository: GifRepository
-
-    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        movementRepository = MovementRepository()
-        val repetitionFirebaseSource = RepetitionFirebaseSource()
-        repetitionRepository = RepetitionRepository(repetitionFirebaseSource, gifRepository)
-        exerciseSetDataSource = ExerciseSetDataSource()
-        exerciseSetRepository = ExerciseSetRepository(exerciseSetDataSource)
-        workoutRepository = WorkoutRepository(WorkoutSource(this))
-        imageProcessor = selectModel(
-            selectedModel,
-            this,
-            movementRepository,
-            repetitionRepository,
-            workoutRepository
-        )
 
         if (savedInstanceState != null) {
-            selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
+            viewModel.selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
         }
 
-        cameraViewModel = CameraViewModel(
-            repetitionRepository,
-            workoutRepository
-        )
-
-        cameraViewModel.initWorkouts()
+        viewModel.initWorkouts()
 
         cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
         setContentView(R.layout.activity_camera_preview)
+
         previewView = findViewById(R.id.preview_view)
         if (previewView == null) {
             Log.d(TAG, "previewView is null")
@@ -129,24 +83,17 @@ class CameraActivity :
         }
         val spinner = findViewById<Spinner>(R.id.spinner)
         val options: MutableList<String> = ArrayList()
-//        options.add(REP_COUNTER)
-//        options.add(PUSH_UPS_TRAINER)
-//        options.add(PULL_UPS_TRAINER)
         options.add(SQUATS_TRAINER)
         options.add(RECORD)
 
-        // Creating adapter for spinner
         val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
-        // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        // attaching data adapter to spinner
         spinner.adapter = dataAdapter
         spinner.onItemSelectedListener = this
         val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
         facingSwitch.setOnCheckedChangeListener(this)
 
-        ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
-            .get(CameraXViewModel::class.java)
+        ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))[CameraXViewModel::class.java]
             .processCameraProvider
             .observe(
                 this
@@ -154,15 +101,6 @@ class CameraActivity :
                 cameraProvider = provider
                 bindAllCameraUseCases()
             }
-        val settingsButton = findViewById<ImageView>(R.id.settings_button)
-        settingsButton.setOnClickListener {
-            val intent = Intent(applicationContext, SettingsActivity::class.java)
-            intent.putExtra(
-                SettingsActivity.EXTRA_LAUNCH_SOURCE,
-                LaunchSource.CAMERAX_LIVE_PREVIEW
-            )
-            startActivity(intent)
-        }
 
         val countdownTextView = findViewById<TextView>(R.id.counterTextView)
 
@@ -172,37 +110,29 @@ class CameraActivity :
             }
 
             override fun onFinish() {
-                countdownTextView.visibility = View.INVISIBLE
-                imageProcessor.isStarted = true
+                viewModel.startMovementProcessing()
             }
         }
 
         val startButton = findViewById<FloatingActionButton>(R.id.floatingActionButton)
         startButton.setOnClickListener {
-            startButton.visibility = View.INVISIBLE
-            countdownTextView.visibility = View.VISIBLE
-            timer.start()
+            viewModel.startExerciseCountDown()
         }
 
         val saveButton = findViewById<Button>(R.id.save_button)
         saveButton.setOnClickListener {
-            var exerciseName: String
-
+            viewModel.resetToDefaultState()
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("Exercise Name")
-
             val input = EditText(this)
-
             input.inputType = InputType.TYPE_CLASS_TEXT
+
+            builder.setTitle("Exercise Name")
             builder.setView(input)
 
-// Set up the buttons
-            builder.setPositiveButton("OK") { dialog, which ->
+            builder.setPositiveButton("OK") { dialog, _ ->
                 run {
-                    exerciseName = input.text.toString()
-                    cameraViewModel.saveExerciseSet()
-                    imageProcessor.poseClassifierProcessor?.saveRecording(exerciseName.uppercase())
-                    imageProcessor.isStarted = false
+                    viewModel.saveExerciseSet()
+                    viewModel.saveRecording(input.text.toString())
                     dialog.dismiss()
                     Snackbar.make(it, "Successfully saved repetition", Snackbar.LENGTH_LONG)
                         .setAction("CLOSE", {})
@@ -211,10 +141,10 @@ class CameraActivity :
             }
             builder.setNegativeButton(
                 "Cancel"
-            ) { dialog, which ->
+            ) { dialog, _ ->
                 run {
                     dialog.cancel()
-                    imageProcessor.isStarted = false
+                    viewModel.resetToDefaultState()
                     Snackbar.make(it, "Did not save the movement", Snackbar.LENGTH_LONG)
                         .setAction("CLOSE", {})
                         .show()
@@ -223,19 +153,29 @@ class CameraActivity :
 
             builder.show()
         }
+
+        viewModel.cameraViewState.observe(
+            this
+        ) {
+            countdownTextView.visibility = it.countDownTextVisibility
+            startButton.visibility = it.startButtonVisibility
+            if (it.startTimer) {
+                timer.start()
+            }
+        }
     }
 
     override fun onSaveInstanceState(bundle: Bundle) {
         super.onSaveInstanceState(bundle)
-        bundle.putString(STATE_SELECTED_MODEL, selectedModel)
+        bundle.putString(STATE_SELECTED_MODEL, viewModel.selectedModel)
     }
 
     @Synchronized
     override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
-        selectedModel = parent.getItemAtPosition(pos).toString()
-        Log.d(TAG, "Selected model: $selectedModel")
+        viewModel.selectedModel = parent.getItemAtPosition(pos).toString()
+        Log.d(TAG, "Selected model: ${viewModel.selectedModel}")
         bindAnalysisUseCase()
     }
 
@@ -278,12 +218,12 @@ class CameraActivity :
 
     override fun onPause() {
         super.onPause()
-        imageProcessor.stop()
+        viewModel.stop()
     }
 
     public override fun onDestroy() {
         super.onDestroy()
-        imageProcessor.stop()
+        viewModel.stop()
     }
 
     private fun bindAllCameraUseCases() {
@@ -328,15 +268,8 @@ class CameraActivity :
         if (analysisUseCase != null) {
             cameraProvider!!.unbind(analysisUseCase)
         }
-        imageProcessor.stop()
-
-        imageProcessor = selectModel(
-            selectedModel,
-            this,
-            movementRepository,
-            repetitionRepository,
-            workoutRepository
-        )
+        viewModel.stop()
+        viewModel.getImageProcessor()
 
         val builder = ImageAnalysis.Builder()
         val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
@@ -367,7 +300,7 @@ class CameraActivity :
                 needUpdateGraphicOverlayImageSourceInfo = false
             }
             try {
-                imageProcessor.processImageProxy(imageProxy, graphicOverlay!!)
+                viewModel.processImageProxy(imageProxy, graphicOverlay!!)
             } catch (e: MlKitException) {
                 Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
                 Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT)
@@ -379,17 +312,6 @@ class CameraActivity :
             cameraSelector!!,
             analysisUseCase
         )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CREATE_FILE && resultCode == RESULT_OK) {
-            val uri: Uri?
-            if (data != null) {
-                uri = data.data
-                saveDataToFileInExternalStorage(countersAsString, uri, this)
-            }
-        }
     }
 
     companion object {

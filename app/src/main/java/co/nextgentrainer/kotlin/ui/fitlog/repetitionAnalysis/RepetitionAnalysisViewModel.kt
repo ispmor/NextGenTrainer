@@ -121,7 +121,7 @@ class RepetitionAnalysisViewModel @Inject constructor(
         }
 
         if (movement.rightElbowAngle.isNotEmpty()) {
-            val angle = movement.rightElbowAngle.map { it!!.toFloat() }
+            val angle = movement.rightElbowAngle.map { it.toFloat() }
             val chartId = "${movementId}_rightElbowAngle"
             val entries = mutableListOf<Entry>()
             for (i in xInSeconds.indices) {

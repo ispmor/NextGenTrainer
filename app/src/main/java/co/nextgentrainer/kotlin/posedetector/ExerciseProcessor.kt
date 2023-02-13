@@ -32,7 +32,7 @@ class ExerciseProcessor(
     private val baseExercise: String,
     private val movementRepository: MovementRepository,
     private val repetitionRepository: RepetitionRepository,
-    private var workoutRepository: WorkoutRepository
+    private var workoutRepository: WorkoutRepository,
 ) : VisionProcessorBase<ExerciseProcessor.PoseWithClassification>(context) {
     var isStarted: Boolean = false
     private val detector: PoseDetector
@@ -54,6 +54,10 @@ class ExerciseProcessor(
         this.isStreamMode = isStreamMode
         this.context = context
         classificationExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    fun setIsProcessing(state: Boolean) {
+        isStarted = state
     }
 
     override fun stop() {

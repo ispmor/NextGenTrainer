@@ -177,7 +177,7 @@
         app:layout_constraintEnd_toStartOf="@id/gearImageButton"
         app:layout_constraintStart_toStartOf="@+id/button3"
         app:layout_constraintTop_toTopOf="@+id/button3"
-        app:srcCompat="@drawable/bell_ikon" />
+        app:srcCompat="@drawable/feedback_icon" />
 
     <ImageButton
         android:id="@+id/gearImageButton"

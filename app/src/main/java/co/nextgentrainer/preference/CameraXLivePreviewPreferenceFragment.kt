@@ -20,7 +20,7 @@ import co.nextgentrainer.R
  */
 @RequiresApi(VERSION_CODES.O)
 class CameraXLivePreviewPreferenceFragment : LivePreviewPreferenceFragment() {
-    public override fun setUpCameraPreferences() {
+    override fun setUpCameraPreferences() {
         val cameraPreference = findPreference(getString(R.string.pref_category_key_camera)) as PreferenceCategory
         cameraPreference.removePreference(
             findPreference(getString(R.string.pref_key_rear_camera_preview_size))

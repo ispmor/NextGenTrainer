@@ -14,11 +14,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import co.nextgentrainer.BuildConfig
@@ -106,6 +109,36 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
 
         findViewById<TextView>(R.id.competeTextView).setOnClickListener {
             startActivity(Intent(this, CompeteActivity::class.java))
+        }
+
+        findViewById<ImageButton>(R.id.bellButton).setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            val wv = WebView(this)
+            wv.settings.javaScriptEnabled = true
+            wv.loadUrl(getString(R.string.feedback_form))
+            wv.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                    view.loadUrl(url)
+                    return true
+                }
+            }
+
+            builder.setTitle("Your feedback:")
+
+            builder.setView(wv)
+
+            builder.setNegativeButton(
+                "Cancel"
+            ) { dialog, _ ->
+                run {
+                    dialog.cancel()
+                    Snackbar.make(it, "You're the BEST! Thanks for helping.", Snackbar.LENGTH_LONG)
+                        .setAction("CLOSE", {})
+                        .show()
+                }
+            }
+
+            builder.show()
         }
 
         val profilePictureView = findViewById<ImageView>(R.id.profileImageView)

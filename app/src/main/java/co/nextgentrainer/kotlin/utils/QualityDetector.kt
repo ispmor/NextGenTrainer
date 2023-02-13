@@ -57,12 +57,12 @@ class QualityDetector(private val movementRepository: MovementRepository) {
             shoulderHipDistance.add(
                 (
 
-                    movement.leftHipMovement[it]!!.y +
-                        movement.rightHipMovement[it]!!.y
+                    movement.leftHipMovement[it].y +
+                        movement.rightHipMovement[it].y
                     ) * HALF -
                     (
-                    movement.leftShoulderMovement[it]!!.y +
-                        movement.rightShoulderMovement[it]!!.y
+                    movement.leftShoulderMovement[it].y +
+                        movement.rightShoulderMovement[it].y
                     ) * HALF
             )
         }
@@ -209,8 +209,8 @@ class QualityDetector(private val movementRepository: MovementRepository) {
                     abs((leftKneeAngle[i]!! + rightKneeAngle[i]!!) * HALF) < DEG_45
             )
             mouthAboveWrist.add(
-                movement.mouthMovement[i]!!.y -
-                    movement.rightWristMovement[i]!!.y < ZERO
+                movement.mouthMovement[i].y -
+                    movement.rightWristMovement[i].y < ZERO
             )
         }
         noKipping = legsAndTorsoStraightMoreOrLess.stream().allMatch { i -> i }
@@ -256,18 +256,18 @@ class QualityDetector(private val movementRepository: MovementRepository) {
         val repTime = getRepTime(posesTimestamps)
         for (i in poseList.indices) {
             wristsToHeadDistanceIsGreaterThanToAnkles.add(
-                Companion.getDistanceBetween3dPoints(
+                getDistanceBetween3dPoints(
                     movement.mouthMovement[i],
-                    movement.leftWristMovement[i]!!
-                ) < Companion.getDistanceBetween3dPoints(
-                    movement.leftAnkleMovement[i]!!,
-                    movement.leftWristMovement[i]!!
+                    movement.leftWristMovement[i]
+                ) < getDistanceBetween3dPoints(
+                    movement.leftAnkleMovement[i],
+                    movement.leftWristMovement[i]
                 )
             )
             anklesMoreOrLessLevelWithHeap.add(
-                movement.rightAnkleMovement[i]!!.y -
+                movement.rightAnkleMovement[i].y -
                     DISTANCE_MULTIPLIER
-                    * movement.rightHipMovement[i]!!.y < ZERO
+                    * movement.rightHipMovement[i].y < ZERO
             )
         }
         kneesInStablePosition = calculateSD(movement.rightKneeAngle) < DEG_15

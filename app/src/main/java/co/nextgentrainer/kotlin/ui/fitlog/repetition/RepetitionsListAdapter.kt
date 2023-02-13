@@ -27,7 +27,7 @@ class RepetitionsListAdapter(val viewModel: RepetitionsViewModel) :
 
     override fun onBindViewHolder(holder: RepetitionsViewHolder, position: Int) {
         val currentItem = getItem(position)
-        holder.bind(currentItem, position)
+        holder.bind(currentItem, position, itemCount)
 
         holder.itemView.setOnClickListener {
             viewModel.selectRepetition(currentItem)
@@ -36,7 +36,7 @@ class RepetitionsListAdapter(val viewModel: RepetitionsViewModel) :
 
     class RepetitionsViewHolder(private val binding: LayoutRepetitionsListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(repetition: Repetition, position: Int) {
+        fun bind(repetition: Repetition, position: Int, itemCount: Int) {
             val quality = repetition.quality?.quality!!.roundToInt()
 
             binding.apply {
@@ -49,7 +49,7 @@ class RepetitionsListAdapter(val viewModel: RepetitionsViewModel) :
                 exerciseNameTextView.text = buildString {
                     append(position + 1)
                     append("/")
-                    append((repetition.repetitionCounter?.numRepeats?.plus(1)).toString())
+                    append(itemCount)
                 }
 
                 val arrayOfQualityMarkersActive = listOf(

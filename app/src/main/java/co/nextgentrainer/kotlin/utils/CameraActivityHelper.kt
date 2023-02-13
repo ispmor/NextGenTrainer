@@ -7,11 +7,7 @@ import co.nextgentrainer.kotlin.data.repository.MovementRepository
 import co.nextgentrainer.kotlin.data.repository.RepetitionRepository
 import co.nextgentrainer.kotlin.data.repository.WorkoutRepository
 import co.nextgentrainer.kotlin.posedetector.ExerciseProcessor
-import co.nextgentrainer.kotlin.utils.Constants.PULL_UPS_TRAINER
-import co.nextgentrainer.kotlin.utils.Constants.PUSH_UPS_TRAINER
 import co.nextgentrainer.kotlin.utils.Constants.RECORD
-import co.nextgentrainer.kotlin.utils.Constants.REP_COUNTER
-import co.nextgentrainer.kotlin.utils.Constants.SIT_UPS_TRAINER
 import co.nextgentrainer.kotlin.utils.Constants.SQUATS_TRAINER
 import co.nextgentrainer.preference.PreferenceUtils
 import java.io.FileOutputStream
@@ -26,51 +22,51 @@ object CameraActivityHelper {
         workoutRepository: WorkoutRepository
     ): ExerciseProcessor {
         return when (selectedModel) {
-            REP_COUNTER -> {
-                val poseDetectorOptions =
-                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(context)
-
-                ExerciseProcessor(
-                    context,
-                    poseDetectorOptions,
-                    true, /* isStreamMode = */
-                    true,
-                    "all",
-                    movementRepository,
-                    repetitionRepository,
-                    workoutRepository,
-                )
-            }
-            PUSH_UPS_TRAINER -> ExerciseProcessor(
-                context,
-                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
-                true,
-                true,
-                "pushups",
-                movementRepository,
-                repetitionRepository,
-                workoutRepository
-            )
-            PULL_UPS_TRAINER -> ExerciseProcessor(
-                context,
-                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
-                true,
-                true,
-                "pullups",
-                movementRepository,
-                repetitionRepository,
-                workoutRepository
-            )
-            SIT_UPS_TRAINER -> ExerciseProcessor(
-                context,
-                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
-                true,
-                true,
-                "situps",
-                movementRepository,
-                repetitionRepository,
-                workoutRepository
-            )
+//            REP_COUNTER -> {
+//                val poseDetectorOptions =
+//                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(context)
+//
+//                ExerciseProcessor(
+//                    context,
+//                    poseDetectorOptions,
+//                    true, /* isStreamMode = */
+//                    true,
+//                    "all",
+//                    movementRepository,
+//                    repetitionRepository,
+//                    workoutRepository,
+//                )
+//            }
+//            PUSH_UPS_TRAINER -> ExerciseProcessor(
+//                context,
+//                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
+//                true,
+//                true,
+//                "pushups",
+//                movementRepository,
+//                repetitionRepository,
+//                workoutRepository
+//            )
+//            PULL_UPS_TRAINER -> ExerciseProcessor(
+//                context,
+//                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
+//                true,
+//                true,
+//                "pullups",
+//                movementRepository,
+//                repetitionRepository,
+//                workoutRepository
+//            )
+//            SIT_UPS_TRAINER -> ExerciseProcessor(
+//                context,
+//                PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
+//                true,
+//                true,
+//                "situps",
+//                movementRepository,
+//                repetitionRepository,
+//                workoutRepository
+//            )
             SQUATS_TRAINER -> ExerciseProcessor(
                 context,
                 PreferenceUtils.getPoseDetectorOptionsForLivePreview(context),
