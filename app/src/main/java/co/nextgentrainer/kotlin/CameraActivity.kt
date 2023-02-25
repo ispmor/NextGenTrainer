@@ -106,7 +106,6 @@ class CameraActivity :
         val instructionUpperTextView = findViewById<TextView>(R.id.instructionTextUpper)
         val instructionLowerTextView = findViewById<TextView>(R.id.instructionTextLower)
 
-
         val timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 countdownTextView.text = (millisUntilFinished.div(1000).plus(1)).toString()
