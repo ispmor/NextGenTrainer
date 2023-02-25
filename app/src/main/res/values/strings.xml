@@ -8,6 +8,8 @@
     <string name="workout_plan" translatable="false">Plan</string>
     <string name="compete" translatable="false">Compete</string>
     <string name="challenge" translatable="false">Perform more squats in 30s. than your opponent and win!</string>
+    <string name="instruction_up" translatable="false">Stop moving for 5 seconds to save the session (for squats)</string>
+    <string name="instruction_down" translatable="false">If recording other movements, you need to click "SAVE"</string>
     <string name="ok" translatable="false">OK</string>
     <string name="permission_camera_rationale" translatable="false">Access to the camera is needed for detection</string>
     <string name="no_camera_permission" translatable="false">This application cannot run because it does not have the camera permission.  The application will now exit.</string>

@@ -12,5 +12,6 @@ data class CameraActivityState(
     val startButtonVisibility: Int = View.VISIBLE,
     val countDownTextVisibility: Int = View.INVISIBLE,
     val imageProcessorIsStarted: Boolean = false,
-    val startTimer: Boolean = false
+    val startTimer: Boolean = false,
+    val instructionVisibility: Int = View.VISIBLE
 )
