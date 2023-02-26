@@ -1,1 +1,3 @@
 -keep public class co.nextgentrainer.kotlin.data.model.*
+-keep class com.facebook.** {*;}
+-dontwarn com.facebook.**

@@ -217,4 +217,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="feedback_form"><![CDATA[https://docs.google.com/forms/d/e/1FAIpQLSeb3LqaPzDik4yCRFvX7XTCaYoGJ48-eSNG9Ron_-LNGbNmPQ/viewform?usp=sf_link&hl=en]]></string>
 
+    <!--Facebook-->
+    <string name="facebook_application_id">1664618620646270</string>
+    <string name="facebook_app_id">1664618620646270</string>
+    <string name="facebook_client_token">b7f3b5bdb36a546e180f96c1d850b6ea</string>
+
 </resources>

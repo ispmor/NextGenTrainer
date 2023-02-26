@@ -40,8 +40,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 33
 
-        versionCode 20
-        versionName "v1.20-alpha"
+        versionCode 21
+        versionName "v1.21-alpha"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "NextGenTrainer")
     }
@@ -84,6 +84,7 @@ android {
 }
 
 repositories {
+    mavenCentral()
     // Depending on AndroidX Snapshot Builds to get the latest CameraX libs.
     maven { url 'https://androidx.dev/snapshots/builds/6787662/artifacts/repository/' }
     maven { url 'https://jitpack.io' }
@@ -173,6 +174,10 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    //Facebook
+    implementation 'com.facebook.android:facebook-android-sdk:16.0.0'
+    implementation 'com.facebook.android:facebook-core:16.0.0'
 
 
 }
