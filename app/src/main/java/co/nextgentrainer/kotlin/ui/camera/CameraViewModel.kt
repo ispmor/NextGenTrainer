@@ -43,7 +43,8 @@ class CameraViewModel @Inject constructor(
             _cameraViewState.value = CameraActivityState(
                 exerciseSet = exerciseSet,
                 setFinished = true,
-                startButtonVisibility = View.VISIBLE
+                startButtonVisibility = View.VISIBLE,
+                instructionVisibility = View.VISIBLE
             )
             viewModelScope.launch {
                 workoutRepository.getAllWorkouts(false)
@@ -66,7 +67,8 @@ class CameraViewModel @Inject constructor(
         _cameraViewState.value = CameraActivityState(
             startButtonVisibility = View.INVISIBLE,
             countDownTextVisibility = View.VISIBLE,
-            startTimer = true
+            startTimer = true,
+            instructionVisibility = View.INVISIBLE
         )
 
         imageProcessor.setIsProcessing(false)
@@ -75,7 +77,8 @@ class CameraViewModel @Inject constructor(
     fun startMovementProcessing() {
         _cameraViewState.value = CameraActivityState(
             startButtonVisibility = View.INVISIBLE,
-            countDownTextVisibility = View.INVISIBLE
+            countDownTextVisibility = View.INVISIBLE,
+            instructionVisibility = View.INVISIBLE
         )
         imageProcessor.setIsProcessing(true)
     }

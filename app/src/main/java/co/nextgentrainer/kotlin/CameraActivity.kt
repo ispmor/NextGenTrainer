@@ -103,6 +103,8 @@ class CameraActivity :
             }
 
         val countdownTextView = findViewById<TextView>(R.id.counterTextView)
+        val instructionUpperTextView = findViewById<TextView>(R.id.instructionTextUpper)
+        val instructionLowerTextView = findViewById<TextView>(R.id.instructionTextLower)
 
         val timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -131,8 +133,11 @@ class CameraActivity :
 
             builder.setPositiveButton("OK") { dialog, _ ->
                 run {
+                    val exerciseName = input.text.toString().ifBlank {
+                        "Unnamed"
+                    }
                     viewModel.saveExerciseSet()
-                    viewModel.saveRecording(input.text.toString())
+                    viewModel.saveRecording(exerciseName)
                     dialog.dismiss()
                     Snackbar.make(it, "Successfully saved repetition", Snackbar.LENGTH_LONG)
                         .setAction("CLOSE", {})
@@ -159,6 +164,8 @@ class CameraActivity :
         ) {
             countdownTextView.visibility = it.countDownTextVisibility
             startButton.visibility = it.startButtonVisibility
+            instructionUpperTextView.visibility = it.instructionVisibility
+            instructionLowerTextView.visibility = it.instructionVisibility
             if (it.startTimer) {
                 timer.start()
             }

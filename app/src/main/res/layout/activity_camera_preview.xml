@@ -6,6 +6,40 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
+  <TextView
+      android:id="@+id/instructionTextLower"
+      android:layout_width="300dp"
+      android:layout_height="wrap_content"
+      android:background="@drawable/semi_transparent_cornered_box"
+      android:elevation="10dp"
+      android:gravity="center"
+      android:padding="10dp"
+      android:text="@string/instruction_down"
+      android:textColor="@color/white"
+      android:textSize="30sp"
+      android:visibility="visible"
+      app:layout_constraintBottom_toBottomOf="@+id/preview_view"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/floatingActionButton" />
+
+  <TextView
+      android:id="@+id/instructionTextUpper"
+      android:layout_width="300dp"
+      android:layout_height="wrap_content"
+      android:background="@drawable/semi_transparent_cornered_box"
+      android:elevation="10dp"
+      android:gravity="center"
+      android:padding="10dp"
+      android:text="@string/instruction_up"
+      android:textColor="@color/white"
+      android:textSize="30sp"
+      android:visibility="visible"
+      app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/preview_view" />
+
   <Button
       android:id="@+id/save_button"
       android:layout_width="wrap_content"
