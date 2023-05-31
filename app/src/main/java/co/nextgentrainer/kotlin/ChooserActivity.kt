@@ -1,7 +1,10 @@
 package co.nextgentrainer.kotlin
 
+import android.Manifest
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
@@ -23,6 +26,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import co.nextgentrainer.BuildConfig
 import co.nextgentrainer.FirebaseLoginActivity
@@ -69,6 +74,10 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+
+        if (!allRuntimePermissionsGranted()) {
+            getRuntimePermissions()
+        }
 
         auth = Firebase.auth
 
@@ -246,10 +255,61 @@ class ChooserActivity : AppCompatActivity(), OnItemClickListener, View.OnClickLi
         return super.onContextItemSelected(item)
     }
 
+    private fun allRuntimePermissionsGranted(): Boolean {
+        for (permission in REQUIRED_RUNTIME_PERMISSIONS) {
+            permission.let {
+                if (!isPermissionGranted(this, it)) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun getRuntimePermissions() {
+        val permissionsToRequest = ArrayList<String>()
+        for (permission in REQUIRED_RUNTIME_PERMISSIONS) {
+            permission.let {
+                if (!isPermissionGranted(this, it)) {
+                    permissionsToRequest.add(permission)
+                }
+            }
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                PERMISSION_REQUESTS
+            )
+        }
+    }
+
+    private fun isPermissionGranted(context: Context, permission: String): Boolean {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.i(FirebaseLoginActivity.TAG, "Permission granted: $permission")
+            return true
+        }
+        Log.i(FirebaseLoginActivity.TAG, "Permission NOT granted: $permission")
+        return false
+    }
+
     companion object {
         private const val TAG = "ChooserActivity"
         private val CLASSES = arrayOf<Class<*>>(
             CameraActivity::class.java
         )
+        private const val PERMISSION_REQUESTS = 2
+
+        private val REQUIRED_RUNTIME_PERMISSIONS =
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
     }
 }

@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -65,7 +67,8 @@ class CameraActivity :
         Log.d(TAG, "onCreate")
 
         if (savedInstanceState != null) {
-            viewModel.selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
+            viewModel.selectedModel =
+                savedInstanceState.getString(STATE_SELECTED_MODEL, REP_COUNTER)
         }
 
         viewModel.initWorkouts()
@@ -93,7 +96,10 @@ class CameraActivity :
         val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
         facingSwitch.setOnCheckedChangeListener(this)
 
-        ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))[CameraXViewModel::class.java]
+        ViewModelProvider(
+            this,
+            AndroidViewModelFactory.getInstance(application)
+        )[CameraXViewModel::class.java]
             .processCameraProvider
             .observe(
                 this
@@ -125,12 +131,24 @@ class CameraActivity :
         saveButton.setOnClickListener {
             viewModel.resetToDefaultState()
             val builder = AlertDialog.Builder(this)
+            builder.setTitle("Save recording")
+
+            val layout = LinearLayout(this)
+            layout.orientation = LinearLayout.VERTICAL
             val input = EditText(this)
+            input.hint = "Exercise Name"
+            input.layout(100, 20, 100, 10)
+            val quality = NumberPicker(this)
+            quality.minValue = 1
+            quality.maxValue = 5
+            quality.layout(100, 30, 100, 10)
+
             input.inputType = InputType.TYPE_CLASS_TEXT
 
-            builder.setTitle("Exercise Name")
-            builder.setView(input)
+            layout.addView(input)
+            layout.addView(quality)
 
+            builder.setView(layout)
             builder.setPositiveButton("OK") { dialog, _ ->
                 run {
                     val exerciseName = input.text.toString().ifBlank {

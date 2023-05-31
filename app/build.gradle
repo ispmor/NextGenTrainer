@@ -40,8 +40,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 33
 
-        versionCode 21
-        versionName "v1.21-alpha"
+        versionCode 22
+        versionName "v1.22-alpha"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "NextGenTrainer")
     }
